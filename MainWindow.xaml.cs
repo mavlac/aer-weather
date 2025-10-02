@@ -21,11 +21,11 @@ namespace Aer
 			this.Closed += (s, e) => WindowPlacementManager.Save(this);
 
 			// Saving and restoring the nav pane
-			NavView.IsPaneOpen = false; // TODO
+			NavigationViewStateManager.Restore(NavView, false);
+			this.Closed += (s, e) => NavigationViewStateManager.Save(NavView);
 
 			// Update back button and nav highlight when navigation happens
 			ContentFrame.Navigated += ContentFrame_Navigated;
-
 			ContentFrame.Navigate(typeof(MainPage));
 		}
 
