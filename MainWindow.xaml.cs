@@ -41,16 +41,9 @@ namespace Aer
 					.OfType<NavigationViewItem>()
 					.FirstOrDefault(x => (string)x.Tag == MainPage.NavigationViewItemTag);
 			}
-			else if (e.SourcePageType == typeof(AboutPage))
-			{
-				NavView.SelectedItem = NavView.MenuItems
-					.OfType<NavigationViewItem>()
-					.FirstOrDefault(x => (string)x.Tag == AboutPage.NavigationViewItemTag);
-			}
 			else
 			{
-				// Deselect items for other pages, like Settings
-				NavView.SelectedItem = null;
+				NavView.SelectedItem = NavView.SettingsItem;
 			}
 		}
 
@@ -69,9 +62,6 @@ namespace Aer
 					{
 						case MainPage.NavigationViewItemTag:
 							ContentFrame.Navigate(typeof(MainPage));
-							break;
-						case AboutPage.NavigationViewItemTag:
-							ContentFrame.Navigate(typeof(AboutPage));
 							break;
 					}
 				}

@@ -23,7 +23,6 @@
 		<!-- Navigation items -->
 		<NavigationView.MenuItems>
 			<NavigationViewItem Content="Home" Icon="Home" Tag="home"/>
-			<NavigationViewItem Content="About" Icon="Contact2" Tag="about"/>
 		</NavigationView.MenuItems>
 
 		<!-- Frame to host pages -->
