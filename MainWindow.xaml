@@ -14,11 +14,11 @@
 	</Window.SystemBackdrop>
 
 	<NavigationView x:Name="NavView"
-		IsBackButtonVisible="Visible"
-		IsSettingsVisible="True"
-		PaneDisplayMode="Left"
-		BackRequested="NavView_BackRequested"
-		SelectionChanged="NavView_SelectionChanged">
+	IsBackButtonVisible="Visible"
+	IsSettingsVisible="True"
+	PaneDisplayMode="Left"
+	BackRequested="NavView_BackRequested"
+	SelectionChanged="NavView_SelectionChanged">
 
 		<!-- Navigation items -->
 		<NavigationView.MenuItems>

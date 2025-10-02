@@ -1,49 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Page
-    x:Class="Aer.SettingsPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Aer"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	x:Class="Aer.SettingsPage"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="using:Aer"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:controls="using:CommunityToolkit.WinUI.Controls"
 	xmlns:ui="using:CommunityToolkit.WinUI"
 	xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	mc:Ignorable="d">
 
-    mc:Ignorable="d">
+	<Page.Resources>
+		<!--  These styles can be referenced to create a consistent SettingsPage layout  -->
 
-	<ScrollViewer>
-		<Grid>
-			<StackPanel MaxWidth="1000"
-                        HorizontalAlignment="Stretch"
-                        Spacing="10">
+		<!--  Spacing between cards  -->
+		<x:Double x:Key="SettingsCardSpacing">4</x:Double>
 
-				<!--  Example 'About' section  -->
-	<TextBlock
-                           Text="About" />
+		<!--  Style (inc. the correct spacing) of a section header  -->
+		<Style x:Key="SettingsSectionHeaderTextBlockStyle"
+               BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+               TargetType="TextBlock">
+			<Style.Setters>
+				<Setter Property="Margin" Value="1,30,0,6" />
+			</Style.Setters>
+		</Style>
+	</Page.Resources>
 
-	<controls:SettingsExpander Description="© 2023. All rights reserved."
-                                           Header="Community Toolkit Gallery"
-                                           HeaderIcon="{ui:BitmapIcon Source=ms-appx:///Assets/AppTitleBar.scale-200.png}">
-		<TextBlock win:IsTextSelectionEnabled="True"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Text="Version 8.0.0" />
-		<controls:SettingsExpander.Items>
-			<controls:SettingsCard HorizontalContentAlignment="Left"
-                                               ContentAlignment="Left">
-				<StackPanel Margin="-12,0,0,0"
-                                        Orientation="Vertical">
-					<HyperlinkButton Content="Link 1" />
-					<HyperlinkButton Content="Link 2" />
-					<HyperlinkButton Content="Link 3" />
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState x:Name="LeftMedium">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="{StaticResource Breakpoint1008Plus}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters />
+				</VisualState>
+				<VisualState x:Name="LeftCompact">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="{StaticResource Breakpoint641Plus}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters />
+				</VisualState>
+
+				<VisualState x:Name="LeftMinimal">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="0" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="Scroller.Padding" Value="16,0,16,0" />
+						<Setter Target="HeaderText.Margin" Value="16,8,16,0" />
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+		<TextBlock x:Name="HeaderText"
+                   Margin="36,24,36,0"
+                   Style="{StaticResource TitleTextBlockStyle}"
+                   Text="Settings" />
+		<ScrollViewer x:Name="Scroller"
+                      Grid.Row="1"
+                      Padding="36,0,36,0">
+			<Grid>
+				<StackPanel HorizontalAlignment="Stretch"
+                            Spacing="{StaticResource SettingsCardSpacing}">
+					<win:StackPanel.ChildrenTransitions>
+						<win:EntranceThemeTransition FromVerticalOffset="50" />
+						<win:RepositionThemeTransition IsStaggeringEnabled="False" />
+					</win:StackPanel.ChildrenTransitions>
+
+					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                               Text="About" />
+
+					<controls:SettingsExpander Description="© 2025. All rights reserved."
+                                               Header="Aer"
+                                               IsExpanded="True">
+						<controls:SettingsExpander.HeaderIcon>
+							<BitmapIcon ShowAsMonochrome="False"
+                                        UriSource="ms-appx:///Assets/AppTitleBar.png" />
+						</controls:SettingsExpander.HeaderIcon>
+						<TextBlock win:IsTextSelectionEnabled="True"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Text="{x:Bind AppVersion}" />
+						<controls:SettingsExpander.Items>
+							<controls:SettingsCard HorizontalContentAlignment="Left"
+                                                   ContentAlignment="Left">
+								<StackPanel Margin="-12,0,0,0"
+                                            Orientation="Vertical">
+									<HyperlinkButton Content="Privacy Statement"
+                                                     NavigateUri="http://aka.ms/privacy" />
+									<HyperlinkButton Click="HyperlinkButton_Click">
+										<TextBlock Text="www.microsoft.com" TextDecorations="Underline" />
+									</HyperlinkButton>
+								</StackPanel>
+							</controls:SettingsCard>
+							<controls:SettingsCard HorizontalContentAlignment="Left"
+                                                   ContentAlignment="Vertical"
+                                                   Header="Dependencies">
+								<StackPanel Margin="-12,0,0,0"
+                                            Orientation="Vertical">
+									<HyperlinkButton Content="ColorCode"
+                                                     NavigateUri="https://aka.ms/colorcode" />
+								</StackPanel>
+							</controls:SettingsCard>
+							<controls:SettingsCard HorizontalContentAlignment="Left"
+                                                   ContentAlignment="Vertical"
+                                                   Header="Useful links">
+								<StackPanel Margin="-12,0,0,0"
+                                            Orientation="Vertical">
+									<HyperlinkButton Content="GitHub repository"
+                                                     NavigateUri="https://aka.ms/toolkit/windows" />
+									<HyperlinkButton Content="Documentation"
+                                                     NavigateUri="https://aka.ms/toolkit/docs" />
+									<HyperlinkButton Content="UWP Community Discord"
+                                                     NavigateUri="https://aka.ms/wct/discord" />
+								</StackPanel>
+							</controls:SettingsCard>
+						</controls:SettingsExpander.Items>
+					</controls:SettingsExpander>
 				</StackPanel>
-			</controls:SettingsCard>
-		</controls:SettingsExpander.Items>
-	</controls:SettingsExpander>
-	<HyperlinkButton Margin="0,8,0,0"
-                                 Content="Send feedback" />
-			</StackPanel>
-		</Grid>
-	</ScrollViewer>
-
+			</Grid>
+		</ScrollViewer>
+	</Grid>
 </Page>

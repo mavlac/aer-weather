@@ -11,6 +11,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -24,9 +25,16 @@ namespace Aer
 	/// </summary>
 	public sealed partial class SettingsPage : Page
 	{
+		public string AppVersion => $"Version {Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
+
 		public SettingsPage()
 		{
 			InitializeComponent();
+		}
+
+		private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+		{
+			// TODO
 		}
 	}
 }
