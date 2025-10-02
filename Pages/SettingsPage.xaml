@@ -6,9 +6,44 @@
     xmlns:local="using:Aer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+	xmlns:ui="using:CommunityToolkit.WinUI"
+	xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+
     mc:Ignorable="d">
 
-	<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-		<TextBlock Text="Settings Page" FontSize="24" Margin="0,0,0,20"/>
-	</StackPanel>
+	<ScrollViewer>
+		<Grid>
+			<StackPanel MaxWidth="1000"
+                        HorizontalAlignment="Stretch"
+                        Spacing="10">
+
+				<!--  Example 'About' section  -->
+	<TextBlock
+                           Text="About" />
+
+	<controls:SettingsExpander Description="© 2023. All rights reserved."
+                                           Header="Community Toolkit Gallery"
+                                           HeaderIcon="{ui:BitmapIcon Source=ms-appx:///Assets/AppTitleBar.scale-200.png}">
+		<TextBlock win:IsTextSelectionEnabled="True"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Text="Version 8.0.0" />
+		<controls:SettingsExpander.Items>
+			<controls:SettingsCard HorizontalContentAlignment="Left"
+                                               ContentAlignment="Left">
+				<StackPanel Margin="-12,0,0,0"
+                                        Orientation="Vertical">
+					<HyperlinkButton Content="Link 1" />
+					<HyperlinkButton Content="Link 2" />
+					<HyperlinkButton Content="Link 3" />
+				</StackPanel>
+			</controls:SettingsCard>
+		</controls:SettingsExpander.Items>
+	</controls:SettingsExpander>
+	<HyperlinkButton Margin="0,8,0,0"
+                                 Content="Send feedback" />
+			</StackPanel>
+		</Grid>
+	</ScrollViewer>
+
 </Page>
