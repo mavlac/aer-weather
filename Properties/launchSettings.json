@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Aer (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Aer (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

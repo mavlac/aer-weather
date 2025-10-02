@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="Aer.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="using:Aer"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	Title="Aer">
+
+	<Window.SystemBackdrop>
+		<MicaBackdrop />
+	</Window.SystemBackdrop>
+
+	<NavigationView x:Name="NavView"
+		IsBackButtonVisible="Visible"
+		IsSettingsVisible="True"
+		PaneDisplayMode="Left"
+		BackRequested="NavView_BackRequested"
+		SelectionChanged="NavView_SelectionChanged">
+
+		<!-- Navigation items -->
+		<NavigationView.MenuItems>
+			<NavigationViewItem Content="Home" Icon="Home" Tag="home"/>
+			<NavigationViewItem Content="About" Icon="Contact2" Tag="about"/>
+		</NavigationView.MenuItems>
+
+		<!-- Frame to host pages -->
+		<Frame x:Name="ContentFrame"/>
+	</NavigationView>
+</Window>
