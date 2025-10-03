@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,8 +26,12 @@ namespace Aer
 		public static string? LocationName { get; private set; }
 		public static double? LocationLatitude { get; private set; }
 		public static double? LocationLongitude { get; private set; }
-		public static string? LocationCoordinates => LocationLatitude is null || LocationCoordinates is null ? null : $"{LocationLatitude}, {LocationLongitude}";
 		public static string? LastUpdateTime { get; private set; }
+
+		/// <summary>
+		/// Readable Latitude and Longitude. Both values are stored separately.
+		/// </summary>
+		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString(CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString(CultureInfo.InvariantCulture)}";
 
 		public static event Action? Updated;
 
