@@ -23,8 +23,6 @@ namespace Aer
 	/// </summary>
 	public sealed partial class HomePage : Page
 	{
-		public const string NavigationViewItemTag = "home";
-
 		public HomePage()
 		{
 			InitializeComponent();

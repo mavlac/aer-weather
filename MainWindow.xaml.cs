@@ -9,8 +9,8 @@ namespace Aer
 {
 	public sealed partial class MainWindow : Window
 	{
-		private const int DefaultWindowWidth = 1280;
-		private const int DefaultWindowHeight = 800;
+		private const int DefaultWindowWidth = 1600;
+		private const int DefaultWindowHeight = 1024;
 
 		public MainWindow()
 		{
@@ -32,12 +32,12 @@ namespace Aer
 			ContentFrame.Navigate(typeof(HomePage));
 		}
 
-		// Nav pane width responsivity
+		// Responsivity
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
 		{
 			if (e.Size.Width < (double)Application.Current.Resources["Breakpoint840Plus"])
 			{
-				NavView.OpenPaneLength = 160;
+				NavView.OpenPaneLength = (double)Application.Current.Resources["NavPaneNarrowWidth"];
 			}
 			else
 			{
@@ -55,7 +55,7 @@ namespace Aer
 			{
 				NavView.SelectedItem = NavView.MenuItems
 					.OfType<NavigationViewItem>()
-					.FirstOrDefault(x => (string)x.Tag == HomePage.NavigationViewItemTag);
+					.FirstOrDefault(x => (string)x.Tag == (string)Application.Current.Resources["HomePageNavigationTag"]);
 			}
 			else
 			{
@@ -74,11 +74,9 @@ namespace Aer
 			{
 				if (args.SelectedItem is NavigationViewItem selectedItem)
 				{
-					switch (selectedItem.Tag)
+					if ((string)selectedItem.Tag == (string)Application.Current.Resources["HomePageNavigationTag"])
 					{
-						case HomePage.NavigationViewItemTag:
-							ContentFrame.Navigate(typeof(HomePage));
-							break;
+						ContentFrame.Navigate(typeof(HomePage));
 					}
 				}
 			}

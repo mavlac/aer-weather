@@ -1,4 +1,5 @@
-﻿using Microsoft.UI;
+﻿using Aer.Utils;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
@@ -11,7 +12,7 @@ namespace Aer
 	{
 		public static void Save(Window window)
 		{
-			var appWindow = GetAppWindow(window);
+			var appWindow = WindowUtils.GetAppWindow(window);
 			if (appWindow == null) return;
 
 			var settings = ApplicationData.Current.LocalSettings;
@@ -33,7 +34,7 @@ namespace Aer
 
 		public static void Restore(Window window, int defaultWidth, int defaultHeight)
 		{
-			var appWindow = GetAppWindow(window);
+			var appWindow = WindowUtils.GetAppWindow(window);
 			if (appWindow == null) return;
 
 			var settings = ApplicationData.Current.LocalSettings;
@@ -74,13 +75,6 @@ namespace Aer
 			{
 				overlapped.Maximize();
 			}
-		}
-
-		private static AppWindow? GetAppWindow(Window window)
-		{
-			var hwnd = WindowNative.GetWindowHandle(window);
-			var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
-			return AppWindow.GetFromWindowId(windowId);
 		}
 
 		private static bool IsRectVisible(RectInt32 rect, Window window)

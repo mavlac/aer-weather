@@ -1,3 +1,6 @@
+using Aer.Utils;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -30,6 +33,16 @@ namespace Aer
 		public SettingsPage()
 		{
 			InitializeComponent();
+		}
+
+		public string? WindowSizeInfoText()
+		{
+			if (App.MainWindow == null) return null;
+
+			var appWindow = WindowUtils.GetAppWindow(App.MainWindow);
+			if (appWindow == null) return null;
+
+			return "Window size: " + appWindow.Size.Width + ", " + appWindow.Size.Height;
 		}
 
 		private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
