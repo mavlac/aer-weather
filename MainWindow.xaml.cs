@@ -30,7 +30,7 @@ namespace Aer
 			NavigationViewStateManager.Restore(NavView, false);
 			this.Closed += (s, e) => NavigationViewStateManager.Save(NavView);
 
-			// Update back button and nav highlight when navigation happens
+			// UpdateFromNetworkDataProvider back button and nav highlight when navigation happens
 			ContentFrame.Navigated += ContentFrame_Navigated;
 			ContentFrame.Navigate(typeof(HomePage));
 		}

@@ -2,6 +2,7 @@ using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.Generic;
 using Windows.ApplicationModel;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -41,6 +42,17 @@ namespace Aer
 					var uri = new Uri(url);
 					await Windows.System.Launcher.LaunchUriAsync(uri);
 				}
+			}
+		}
+
+		private void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs e)
+		{
+			Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+			var containersToRemove = new List<string>(localSettings.Containers.Keys); // Create a list of keys to avoid modifying while iterating
+
+			foreach (var key in containersToRemove)
+			{
+				localSettings.DeleteContainer(key);
 			}
 		}
 	}

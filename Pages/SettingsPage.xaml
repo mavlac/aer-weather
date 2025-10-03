@@ -60,12 +60,15 @@
 						<controls:SettingsExpander.Items>
 							<controls:SettingsCard HorizontalContentAlignment="Left"
 												   ContentAlignment="Vertical"
-												   Header="App Info">
-								<StackPanel Margin="0,0,0,0"
+												   Header="Debug Info">
+								<StackPanel Margin="-12,0,0,0"
 											Orientation="Vertical">
 									<TextBlock win:IsTextSelectionEnabled="True"
 										Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-										Text="{x:Bind WindowSizeInfoText()}" />
+										Text="{x:Bind WindowSizeInfoText()}"
+										Padding="12,8,0,8"/>
+									<HyperlinkButton Content="Clear local data and settings"
+										Click="ClearLocalSettingsButton_Click" />
 								</StackPanel>
 							</controls:SettingsCard>
 							<controls:SettingsCard HorizontalContentAlignment="Left"

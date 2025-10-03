@@ -20,18 +20,18 @@
 				Style="{StaticResource HeaderTextBlockStyle}"
 				HorizontalAlignment="Left"
 				Grid.Column="0"
-				Text="Mainly Clear, 27 °C" />
+				Text="HeaderText" />
 			<TextBlock
 				x:Name="SubHeaderText"
 				Style="{StaticResource BaseTextBlockStyle}"
 				Padding="0,16,0,0"
-				Text="Location" />
+				Text="SubHeaderText" />
 			<TextBlock
 				x:Name="LastUpdateTimeText"
 				Style="{StaticResource CaptionTextBlockStyle}"
 				Grid.Column="1"
 				Padding="0,4,0,0"
-				Text="Updated 3.10.2025 13:02" />
+				Text="LastUpdateTimeText" />
 		</StackPanel>
 		<ScrollViewer x:Name="Scroller"
 			  Grid.Row="1"

@@ -9,24 +9,25 @@ namespace Aer.Utils
 {
 	public static class WindowPlacementManager
 	{
+		public static string SettingsPrefix => nameof(WindowPlacementManager);
+
 		public static void Save(Window window)
 		{
 			var appWindow = WindowUtils.GetAppWindow(window);
 			if (appWindow == null) return;
 
 			var settings = ApplicationData.Current.LocalSettings;
-			var prefix = window.GetType().Name;
 
 			var pos = appWindow.Position;
 			var size = appWindow.Size;
 
-			settings.Values[$"{prefix}_X"] = pos.X;
-			settings.Values[$"{prefix}_Y"] = pos.Y;
-			settings.Values[$"{prefix}_W"] = size.Width;
-			settings.Values[$"{prefix}_H"] = size.Height;
+			settings.Values[$"{SettingsPrefix}_X"] = pos.X;
+			settings.Values[$"{SettingsPrefix}_Y"] = pos.Y;
+			settings.Values[$"{SettingsPrefix}_W"] = size.Width;
+			settings.Values[$"{SettingsPrefix}_H"] = size.Height;
 
 			// Save maximized state (ignore minimized)
-			settings.Values[$"{prefix}_IsMaximized"] =
+			settings.Values[$"{SettingsPrefix}_IsMaximized"] =
 				appWindow.Presenter is OverlappedPresenter o &&
 				o.State == OverlappedPresenterState.Maximized;
 		}
@@ -37,13 +38,12 @@ namespace Aer.Utils
 			if (appWindow == null) return;
 
 			var settings = ApplicationData.Current.LocalSettings;
-			var prefix = window.GetType().Name;
 
 			// try size + position
-			if (settings.Values.TryGetValue($"{prefix}_W", out var wObj) &&
-				settings.Values.TryGetValue($"{prefix}_H", out var hObj) &&
-				settings.Values.TryGetValue($"{prefix}_X", out var xObj) &&
-				settings.Values.TryGetValue($"{prefix}_Y", out var yObj))
+			if (settings.Values.TryGetValue($"{SettingsPrefix}_W", out var wObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_H", out var hObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_X", out var xObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_Y", out var yObj))
 			{
 				int x = (int)xObj;
 				int y = (int)yObj;
@@ -67,7 +67,7 @@ namespace Aer.Utils
 			}
 
 			// try maximized
-			if (settings.Values.TryGetValue($"{prefix}_IsMaximized", out var maxObj) &&
+			if (settings.Values.TryGetValue($"{SettingsPrefix}_IsMaximized", out var maxObj) &&
 				maxObj is bool isMaximized &&
 				isMaximized &&
 				appWindow.Presenter is OverlappedPresenter overlapped)

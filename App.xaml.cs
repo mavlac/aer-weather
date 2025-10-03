@@ -35,8 +35,9 @@ namespace Aer
 		public App()
 		{
 			InitializeComponent();
-			
-			Data.Initialize();
+
+			Data.LoadLastSavedValues();
+			Data.UpdateFromNetworkDataProvider();
 		}
 
 		/// <summary>

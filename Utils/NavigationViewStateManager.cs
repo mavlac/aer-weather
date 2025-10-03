@@ -10,20 +10,20 @@ namespace Aer.Utils
 {
 	class NavigationViewStateManager
 	{
+		public static string SettingsPrefix => nameof(NavigationViewStateManager);
+
 		public static void Save(NavigationView navigationView)
 		{
 			var settings = ApplicationData.Current.LocalSettings;
-			var prefix = navigationView.GetType().Name;
 
-			settings.Values[$"{prefix}_NavigationView_IsPaneOpen"] = navigationView.IsPaneOpen;
+			settings.Values[$"{SettingsPrefix}_NavigationView_IsPaneOpen"] = navigationView.IsPaneOpen;
 		}
 
 		public static void Restore(NavigationView navigationView, bool defaultNavPaneOpenState)
 		{
 			var settings = ApplicationData.Current.LocalSettings;
-			var prefix = navigationView.GetType().Name;
 
-			if (settings.Values.TryGetValue($"{prefix}_NavigationView_IsPaneOpen", out var isPaneOpen))
+			if (settings.Values.TryGetValue($"{SettingsPrefix}_NavigationView_IsPaneOpen", out var isPaneOpen))
 			{
 				navigationView.IsPaneOpen = (bool)isPaneOpen;
 			}
