@@ -29,38 +29,13 @@
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup>
-				<VisualState x:Name="LeftMedium">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="{StaticResource Breakpoint1008Plus}" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters />
-				</VisualState>
-				<VisualState x:Name="LeftCompact">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="{StaticResource Breakpoint641Plus}" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters />
-				</VisualState>
-				<VisualState x:Name="LeftMinimal">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="0" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="Scroller.Padding" Value="16,0,16,0" />
-						<Setter Target="HeaderText.Margin" Value="16,8,16,0" />
-					</VisualState.Setters>
-				</VisualState>
-			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>
 		<TextBlock x:Name="HeaderText"
-				   Margin="36,24,36,0"
-				   Style="{StaticResource TitleTextBlockStyle}"
+				   Margin="24,24,24,0"
+				   Style="{StaticResource SubtitleTextBlockStyle}"
 				   Text="Settings" />
 		<ScrollViewer x:Name="Scroller"
 					  Grid.Row="1"
-					  Padding="36,0,36,0">
+					  Padding="24,0,24,0">
 			<Grid>
 				<StackPanel HorizontalAlignment="Stretch">
 					

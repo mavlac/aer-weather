@@ -8,59 +8,35 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-	<Page.Resources>
-		<!--  These styles can be referenced to create a consistent SettingsPage layout  -->
-
-		<!--  Style (inc. the correct spacing) of a section header  -->
-		<Style x:Key="SettingsSectionHeaderTextBlockStyle"
-			   BasedOn="{StaticResource BodyStrongTextBlockStyle}"
-			   TargetType="TextBlock">
-			<Style.Setters>
-				<Setter Property="Margin" Value="1,30,0,6" />
-			</Style.Setters>
-		</Style>
-	</Page.Resources>
-
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup>
-				<VisualState x:Name="LeftMedium">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="{StaticResource Breakpoint1008Plus}" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters />
-				</VisualState>
-				<VisualState x:Name="LeftCompact">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="{StaticResource Breakpoint641Plus}" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters />
-				</VisualState>
-				<VisualState x:Name="LeftMinimal">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="0" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="Scroller.Padding" Value="16,0,16,0" />
-						<Setter Target="HeaderText.Margin" Value="16,8,16,0" />
-					</VisualState.Setters>
-				</VisualState>
-			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>
-		<TextBlock x:Name="HeaderText"
-			   Margin="36,24,36,0"
-			   Style="{StaticResource HeaderTextBlockStyle}"
-			   Text="Prague" />
+		<StackPanel x:Name="HeaderPanel"
+			Orientation="Vertical"
+			Padding="24,18,24,0">
+			<TextBlock x:Name="HeaderText"
+				Style="{StaticResource HeaderTextBlockStyle}"
+				HorizontalAlignment="Left"
+				Grid.Column="0"
+				Text="Mainly Clear, 27 °C" />
+			<TextBlock
+				x:Name="SubHeaderText"
+				Style="{StaticResource BaseTextBlockStyle}"
+				Padding="0,16,0,0"
+				Text="Prague, 50.08804 14.42076" />
+			<TextBlock
+				x:Name="LastUpdateTimeText"
+				Style="{StaticResource CaptionTextBlockStyle}"
+				Grid.Column="1"
+				Padding="0,4,0,0"
+				Text="Updated 3.10.2025 13:02" />
+		</StackPanel>
 		<ScrollViewer x:Name="Scroller"
 			  Grid.Row="1"
 			  Padding="36,10,36,0">
 			<Grid>
-				<TextBlock Style="{StaticResource BodyTextBlockStyle}"
-					   Text="Light Rain" />
 				<StackPanel HorizontalAlignment="Stretch">
 					<!-- Content -->
 				</StackPanel>
