@@ -10,20 +10,22 @@ namespace Aer
 {
 	public static class Data
 	{
-		private const string DefaultLocationName = "Prague";
+		private const string LocationNameFormat = "{0}, {1}";
 		private const double DefaultLocationLatitude = 50.08804;
 		private const double DefaultLocationLongitude = 14.42076;
 		private const string DefaultLastUpdateTime = "—";
 
+		private static string DefaultLocationName => string.Format(LocationNameFormat, "Prague", "CZ");
+
 		private static string SettingsPrefix => nameof(Data);
 
-		public static bool IsValid { get; private set; }
+		public static bool IsWeatherDataValid { get; private set; }
 		public static string? Condition { get; private set; }
 		public static string? Temperature { get; private set; }
 		public static string? LocationName { get; private set; }
 		public static double? LocationLatitude { get; private set; }
 		public static double? LocationLongitude { get; private set; }
-		public static string? LocationCoordinates => $"{LocationLatitude}, {LocationLongitude}";
+		public static string? LocationCoordinates => LocationLatitude is null || LocationCoordinates is null ? null : $"{LocationLatitude}, {LocationLongitude}";
 		public static string? LastUpdateTime { get; private set; }
 
 		public static event Action? Updated;
@@ -47,7 +49,7 @@ namespace Aer
 				Condition = (string)conditionNameObj;
 				Temperature = (string)temperatureNameObj;
 				LastUpdateTime = (string)lastUpdateTimeObj;
-				IsValid = true;
+				IsWeatherDataValid = true;
 			}
 			else
 			{
@@ -55,8 +57,23 @@ namespace Aer
 				LocationLatitude = DefaultLocationLatitude;
 				LocationLongitude = DefaultLocationLongitude;
 				LastUpdateTime = DefaultLastUpdateTime;
-				IsValid = false;
+				IsWeatherDataValid = false;
 			}
+		}
+
+		public static void SetLocation(string newLocationCity, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
+		{
+			LocationName = string.Format(LocationNameFormat, newLocationCity, newLocationCountry);
+			LocationLatitude = newLocationLatitude;
+			LocationLongitude = newLocationLongitude;
+
+			var settings = ApplicationData.Current.LocalSettings;
+
+			settings.Values[$"{SettingsPrefix}_{nameof(LocationName)}"] = LocationName;
+			settings.Values[$"{SettingsPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
+			settings.Values[$"{SettingsPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
+
+			IsWeatherDataValid = false; // New data must be loaded
 		}
 
 		public static void UpdateFromNetworkDataProvider()
@@ -64,7 +81,7 @@ namespace Aer
 			// TODO: implement loading from data provider
 
 			// TODO: On Success
-			//IsValid = true;
+			//IsWeatherDataValid = true;
 			//Updated?.Invoke();
 
 			//Save();
@@ -72,13 +89,10 @@ namespace Aer
 
 		public static void Save()
 		{
-			if (!IsValid) throw new InvalidOperationException("Data must be loaded before it can be saved.");
+			if (!IsWeatherDataValid) throw new InvalidOperationException("Data must be loaded before it can be saved.");
 
 			var settings = ApplicationData.Current.LocalSettings;
 
-			settings.Values[$"{SettingsPrefix}_{nameof(LocationName)}"] = LocationName;
-			settings.Values[$"{SettingsPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
-			settings.Values[$"{SettingsPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
 			settings.Values[$"{SettingsPrefix}_{nameof(Condition)}"] = Condition;
 			settings.Values[$"{SettingsPrefix}_{nameof(Temperature)}"] = Temperature;
 			settings.Values[$"{SettingsPrefix}_{nameof(LastUpdateTime)}"] = LastUpdateTime;

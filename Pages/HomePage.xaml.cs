@@ -30,7 +30,7 @@ namespace Aer
 
 		private void UpdatePageDataContent()
 		{
-			if (Data.IsValid)
+			if (Data.IsWeatherDataValid)
 			{
 				HeaderText.Text = string.Format(HeaderFormat, Data.Condition, Data.Temperature);
 				SubHeaderText.Text = Data.LocationName;

@@ -42,7 +42,7 @@ namespace Aer
 		#region Location Section
 		private void UpdateLocationSectionFromData()
 		{
-			// Fallback should never be needed, default location and coordinates are used if nothing else is set
+			// Fallbacks should never be needed, default location and coordinates are used if nothing else is set
 			LocationSettingsCard.Header = Data.LocationName ?? "Unknown location";
 			LocationSettingsCard.Description = Data.LocationCoordinates ?? "No coordinates";
 		}
@@ -55,6 +55,8 @@ namespace Aer
 		private void LocationAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
 		{
 			// TODO
+			//Data.SetLocation(...);
+			//Data.UpdateFromNetworkDataProvider();
 		}
 		#endregion
 
