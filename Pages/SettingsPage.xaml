@@ -45,9 +45,10 @@
 					<controls:SettingsCard x:Name="LocationSettingsCard"
 										   Header="LocationSettingsCard.Header"
 										   Description="LocationSettingsCard.Description">
-						<AutoSuggestBox PlaceholderText="Type a location"
+						<AutoSuggestBox x:Name="LocationAutoSuggestBox"
 										TextChanged="LocationAutoSuggestBox_TextChanged"
 										SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
+										PlaceholderText="Type a location"
 										Width="300"/>
 					</controls:SettingsCard>
 
@@ -93,6 +94,11 @@
 										<TextBlock Text="Windows Community Toolkit"
 												   TextDecorations="Underline"
 												   DataContext="https://github.com/CommunityToolkit/Windows"/>
+									</HyperlinkButton>
+									<HyperlinkButton Click="HyperlinkButton_Click">
+										<TextBlock Text="GeoNames"
+												   TextDecorations="Underline"
+												   DataContext="https://www.geonames.org/"/>
 									</HyperlinkButton>
 								</StackPanel>
 							</controls:SettingsCard>

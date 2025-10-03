@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -46,6 +47,8 @@ namespace Aer
 		/// <param name="args">Details about the launch request and process.</param>
 		protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
 		{
+			Debug.WriteLine("App OnLaunched");
+
 			MainWindow = new MainWindow();
 			MainWindow.Activate();
 		}

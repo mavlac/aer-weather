@@ -3,6 +3,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -49,11 +52,37 @@ namespace Aer
 
 		private void LocationAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
 		{
-			// TODO
+			if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
+				return;
+
+			if (!GeoNames.IsLoaded)
+			{
+				Task.Run(GeoNames.Load);
+			}
+
+			string query = sender.Text;
+
+			// Clear suggestions if query is too short
+			if (query.Length < 2)
+			{
+				sender.ItemsSource = null;
+				return;
+			}
+
+			// Simple filter
+			var results = GeoNames.AllGeoNamesLocations
+				.Where(c => c.City.StartsWith(query, StringComparison.InvariantCultureIgnoreCase))
+				.Take(10)
+				.Select(c => $"{c.City}, {c.Country}")
+				.ToList();
+
+			sender.ItemsSource = results;
 		}
 
 		private void LocationAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
 		{
+			Debug.WriteLine("Suggestion chosen: " + args.SelectedItem);
+
 			// TODO
 			//Data.SetLocation(...);
 			//Data.UpdateFromNetworkDataProvider();
