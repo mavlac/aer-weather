@@ -35,6 +35,8 @@ namespace Aer
 		public App()
 		{
 			InitializeComponent();
+			
+			Data.Initialize();
 		}
 
 		/// <summary>

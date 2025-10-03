@@ -14,6 +14,8 @@ namespace Aer
 		public HomePage()
 		{
 			InitializeComponent();
+
+			SubHeaderText.Text = Data.LocationName;
 		}
 	}
 }

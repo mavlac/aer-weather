@@ -25,7 +25,7 @@
 				x:Name="SubHeaderText"
 				Style="{StaticResource BaseTextBlockStyle}"
 				Padding="0,16,0,0"
-				Text="Prague, 50.08804 14.42076" />
+				Text="Location" />
 			<TextBlock
 				x:Name="LastUpdateTimeText"
 				Style="{StaticResource CaptionTextBlockStyle}"
