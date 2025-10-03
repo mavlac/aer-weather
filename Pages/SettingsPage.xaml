@@ -41,15 +41,23 @@
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="Location" />
-					
-					<controls:SettingsCard Header="No Settings yet." FontStyle="Italic"/>
+
+					<controls:SettingsCard x:Name="LocationSettingsCard"
+										   Header="LocationSettingsCard.Header"
+										   Description="LocationSettingsCard.Description">
+						<AutoSuggestBox PlaceholderText="Type a location"
+										TextChanged="LocationAutoSuggestBox_TextChanged"
+										SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
+										Width="300"/>
+					</controls:SettingsCard>
+
 
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="About" />
 
 					<controls:SettingsExpander Description="© 2025. All rights reserved."
 											   Header="Āēr Weather App"
-											   IsExpanded="True">
+											   IsExpanded="False">
 						<controls:SettingsExpander.HeaderIcon>
 							<BitmapIcon ShowAsMonochrome="False"
 										UriSource="ms-appx:///Assets/StoreLogo.png" />

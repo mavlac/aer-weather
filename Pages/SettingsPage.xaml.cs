@@ -20,18 +20,11 @@ namespace Aer
 		public SettingsPage()
 		{
 			InitializeComponent();
+			
+			UpdateLocationSectionFromData();
 		}
 
-		public string? WindowSizeInfoText()
-		{
-			if (App.MainWindow == null) return null;
-
-			var appWindow = WindowUtils.GetAppWindow(App.MainWindow);
-			if (appWindow == null) return null;
-
-			return "Window size: " + appWindow.Size.Width + ", " + appWindow.Size.Height;
-		}
-
+		// Generic handler for all HyperlinkButton clicks
 		private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (sender is HyperlinkButton button && button.Content is TextBlock textBlock)
@@ -45,6 +38,37 @@ namespace Aer
 			}
 		}
 
+
+		#region Location Section
+		private void UpdateLocationSectionFromData()
+		{
+			// Fallback should never be needed, default location and coordinates are used if nothing else is set
+			LocationSettingsCard.Header = Data.LocationName ?? "Unknown location";
+			LocationSettingsCard.Description = Data.LocationCoordinates ?? "No coordinates";
+		}
+
+		private void LocationAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+		{
+			// TODO
+		}
+
+		private void LocationAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+		{
+			// TODO
+		}
+		#endregion
+
+		#region About Section
+		public string? WindowSizeInfoText()
+		{
+			if (App.MainWindow == null) return null;
+
+			var appWindow = WindowUtils.GetAppWindow(App.MainWindow);
+			if (appWindow == null) return null;
+
+			return "Window size: " + appWindow.Size.Width + ", " + appWindow.Size.Height;
+		}
+
 		private void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs e)
 		{
 			Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -55,5 +79,6 @@ namespace Aer
 				localSettings.DeleteContainer(key);
 			}
 		}
+		#endregion
 	}
 }
