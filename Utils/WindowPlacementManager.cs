@@ -1,12 +1,11 @@
-﻿using Aer.Utils;
-using Microsoft.UI;
+﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
 using Windows.Storage;
 using WinRT.Interop;
 
-namespace Aer
+namespace Aer.Utils
 {
 	public static class WindowPlacementManager
 	{

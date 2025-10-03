@@ -14,9 +14,6 @@
 	<Page.Resources>
 		<!--  These styles can be referenced to create a consistent SettingsPage layout  -->
 
-		<!--  Spacing between cards  -->
-		<x:Double x:Key="SettingsCardSpacing">4</x:Double>
-
 		<!--  Style (inc. the correct spacing) of a section header  -->
 		<Style x:Key="SettingsSectionHeaderTextBlockStyle"
 			   BasedOn="{StaticResource BodyStrongTextBlockStyle}"
@@ -46,7 +43,6 @@
 					</VisualState.StateTriggers>
 					<VisualState.Setters />
 				</VisualState>
-
 				<VisualState x:Name="LeftMinimal">
 					<VisualState.StateTriggers>
 						<AdaptiveTrigger MinWindowWidth="0" />
@@ -66,8 +62,7 @@
 					  Grid.Row="1"
 					  Padding="36,0,36,0">
 			<Grid>
-				<StackPanel HorizontalAlignment="Stretch"
-							Spacing="{StaticResource SettingsCardSpacing}">
+				<StackPanel HorizontalAlignment="Stretch">
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="Location" />

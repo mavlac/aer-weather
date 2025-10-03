@@ -8,8 +8,55 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-	<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-		<TextBlock Text="Welcome to Main Page!" FontSize="24" Margin="0,0,0,20"/>
-		<Button Content="Click Me" Click="Button_Click"/>
-	</StackPanel>
+	<Page.Resources>
+		<!--  These styles can be referenced to create a consistent SettingsPage layout  -->
+
+		<!--  Style (inc. the correct spacing) of a section header  -->
+		<Style x:Key="SettingsSectionHeaderTextBlockStyle"
+			   BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+			   TargetType="TextBlock">
+			<Style.Setters>
+				<Setter Property="Margin" Value="1,30,0,6" />
+			</Style.Setters>
+		</Style>
+	</Page.Resources>
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState x:Name="LeftMedium">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="{StaticResource Breakpoint1008Plus}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters />
+				</VisualState>
+				<VisualState x:Name="LeftCompact">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="{StaticResource Breakpoint641Plus}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters />
+				</VisualState>
+				<VisualState x:Name="LeftMinimal">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="0" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="Scroller.Padding" Value="16,0,16,0" />
+						<Setter Target="HeaderText.Margin" Value="16,8,16,0" />
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+		<TextBlock x:Name="HeaderText"
+				   Margin="36,24,36,0"
+				   Style="{StaticResource TitleTextBlockStyle}"
+				   Text="Prague" />
+		<Grid>
+			<!-- Content goes here -->
+		</Grid>
+	</Grid>
 </Page>

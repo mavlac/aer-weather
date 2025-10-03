@@ -6,7 +6,7 @@ using Windows.Graphics;
 using Windows.Storage;
 using WinRT.Interop;
 
-namespace Aer
+namespace Aer.Utils
 {
 	class NavigationViewStateManager
 	{
