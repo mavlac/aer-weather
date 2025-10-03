@@ -17,6 +17,8 @@ namespace Aer
 		{
 			InitializeComponent();
 
+			WindowUtils.InitializeTitleBar(this);
+
 			// Subscribe to Window size changes
 			this.SizeChanged += MainWindow_SizeChanged;
 

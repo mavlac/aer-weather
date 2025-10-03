@@ -1,12 +1,8 @@
 ﻿using Microsoft.UI;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WinRT.Interop;
+using Microsoft.UI.Windowing;
 
 namespace Aer.Utils
 {
@@ -17,6 +13,19 @@ namespace Aer.Utils
 			var hwnd = WindowNative.GetWindowHandle(window);
 			var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
 			return AppWindow.GetFromWindowId(windowId);
+		}
+
+
+		public static void InitializeTitleBar(Window window)
+		{
+			// Get the AppWindow
+			var appWindow = GetAppWindow(window);
+			if (appWindow == null) return;
+
+			appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
+			// Set transparent button backgrounds
+			appWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
+			appWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 		}
 	}
 }
