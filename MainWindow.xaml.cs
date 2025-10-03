@@ -16,6 +16,9 @@ namespace Aer
 		{
 			InitializeComponent();
 
+			// Subscribe to Window size changes
+			this.SizeChanged += MainWindow_SizeChanged;
+
 			// Saving and restoring window size and position
 			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight);
 			this.Closed += (s, e) => WindowPlacementManager.Save(this);
@@ -26,7 +29,20 @@ namespace Aer
 
 			// Update back button and nav highlight when navigation happens
 			ContentFrame.Navigated += ContentFrame_Navigated;
-			ContentFrame.Navigate(typeof(MainPage));
+			ContentFrame.Navigate(typeof(HomePage));
+		}
+
+		// Nav pane width responsivity
+		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
+		{
+			if (e.Size.Width < (double)Application.Current.Resources["Breakpoint840Plus"])
+			{
+				NavView.OpenPaneLength = 160;
+			}
+			else
+			{
+				NavView.ClearValue(NavigationView.OpenPaneLengthProperty); // restore default (320)
+			}
 		}
 
 		private void ContentFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
@@ -35,11 +51,11 @@ namespace Aer
 			NavView.IsBackEnabled = ContentFrame.CanGoBack;
 
 			// Highlight the correct menu item
-			if (e.SourcePageType == typeof(MainPage))
+			if (e.SourcePageType == typeof(HomePage))
 			{
 				NavView.SelectedItem = NavView.MenuItems
 					.OfType<NavigationViewItem>()
-					.FirstOrDefault(x => (string)x.Tag == MainPage.NavigationViewItemTag);
+					.FirstOrDefault(x => (string)x.Tag == HomePage.NavigationViewItemTag);
 			}
 			else
 			{
@@ -60,8 +76,8 @@ namespace Aer
 				{
 					switch (selectedItem.Tag)
 					{
-						case MainPage.NavigationViewItemTag:
-							ContentFrame.Navigate(typeof(MainPage));
+						case HomePage.NavigationViewItemTag:
+							ContentFrame.Navigate(typeof(HomePage));
 							break;
 					}
 				}

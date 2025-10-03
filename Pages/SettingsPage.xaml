@@ -78,7 +78,7 @@
 							   Text="About" />
 
 					<controls:SettingsExpander Description="© 2025. All rights reserved."
-											   Header="Aer"
+											   Header="Āēr Weather App"
 											   IsExpanded="True">
 						<controls:SettingsExpander.HeaderIcon>
 							<BitmapIcon ShowAsMonochrome="False"

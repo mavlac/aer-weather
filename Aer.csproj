@@ -46,12 +46,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="MainPage.xaml">
+    <Page Update="HomePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pages\" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Buttons.xaml">
