@@ -1,10 +1,13 @@
 using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Hosting;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 
@@ -45,11 +48,30 @@ namespace Aer
 
 
 		#region Location Section
-		private void UpdateLocationSectionFromData()
+		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
 		{
 			// Fallbacks should never be needed, default location and coordinates are used if nothing else is set
 			LocationSettingsCard.Header = Data.LocationLabel ?? "Unknown location";
 			LocationSettingsCard.Description = Data.LocationCoordinates ?? "No coordinates";
+
+			if (acknowlidgeAChange)
+				AnimatePop(FindHeaderTextBlock(LocationSettingsCard));
+
+			TextBlock FindHeaderTextBlock(DependencyObject parent)
+			{
+				int count = VisualTreeHelper.GetChildrenCount(parent);
+				for (int i = 0; i < count; i++)
+				{
+					var child = VisualTreeHelper.GetChild(parent, i);
+					if (child is TextBlock tb)
+						return tb;
+
+					var result = FindHeaderTextBlock(child);
+					if (result != null)
+						return result;
+				}
+				return null;
+			}
 		}
 
 		private void LocationAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -106,9 +128,8 @@ namespace Aer
 				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
 
 				Data.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
-				UpdateLocationSectionFromData();
+				UpdateLocationSectionFromData(true);
 				sender.SetValue(AutoSuggestBox.TextProperty, ""); // Clear text
-				// TODO: Highlighting effect
 
 				// TODO
 				//Data.UpdateWeatherDataFromNetwork();
@@ -136,6 +157,23 @@ namespace Aer
 			{
 				localSettings.DeleteContainer(key);
 			}
+		}
+		#endregion
+
+		#region Effects
+		private static void AnimatePop(FrameworkElement element)
+		{
+			var visual = ElementCompositionPreview.GetElementVisual(element);
+			var compositor = visual.Compositor;
+
+			var animation = compositor.CreateVector3KeyFrameAnimation();
+			animation.InsertKeyFrame(0f, new Vector3(1f));
+			animation.InsertKeyFrame(0.2f, new Vector3(1.05f));
+			animation.InsertKeyFrame(1f, new Vector3(1f));
+			animation.Duration = TimeSpan.FromSeconds(0.4);
+
+			visual.CenterPoint = new Vector3((float)element.ActualWidth / 2, (float)element.ActualHeight / 2, 0);
+			visual.StartAnimation("Scale", animation);
 		}
 		#endregion
 	}
