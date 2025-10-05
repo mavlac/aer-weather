@@ -48,7 +48,7 @@ namespace Aer
 		private void UpdateLocationSectionFromData()
 		{
 			// Fallbacks should never be needed, default location and coordinates are used if nothing else is set
-			LocationSettingsCard.Header = Data.LocationName ?? "Unknown location";
+			LocationSettingsCard.Header = Data.LocationLabel ?? "Unknown location";
 			LocationSettingsCard.Description = Data.LocationCoordinates ?? "No coordinates";
 		}
 
@@ -105,9 +105,13 @@ namespace Aer
 			{
 				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
 
+				Data.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
+				UpdateLocationSectionFromData();
+				sender.SetValue(AutoSuggestBox.TextProperty, ""); // Clear text
+				// TODO: Highlighting effect
+
 				// TODO
-				//Data.SetLocation(location.Name, location.Latitude, location.Longitude);
-				//Data.UpdateFromNetworkDataProvider();
+				//Data.UpdateWeatherDataFromNetwork();
 			}
 		}
 		#endregion

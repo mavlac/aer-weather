@@ -11,19 +11,19 @@ namespace Aer
 {
 	public static class Data
 	{
-		private const string LocationNameFormat = "{0}, {1}";
+		private const string LocationLabelFormat = "{0}, {1}";
 		private const double DefaultLocationLatitude = 50.08804;
 		private const double DefaultLocationLongitude = 14.42076;
 		private const string DefaultLastUpdateTime = "—";
 
-		private static string DefaultLocationName => string.Format(LocationNameFormat, "Prague", "CZ");
+		private static string DefaultLocationLabel => string.Format(LocationLabelFormat, "Prague", "CZ");
 
 		private static string SettingsPrefix => nameof(Data);
 
 		public static bool IsWeatherDataValid { get; private set; }
 		public static string? Condition { get; private set; }
 		public static string? Temperature { get; private set; }
-		public static string? LocationName { get; private set; }
+		public static string? LocationLabel { get; private set; }
 		public static double? LocationLatitude { get; private set; }
 		public static double? LocationLongitude { get; private set; }
 		public static string? LastUpdateTime { get; private set; }
@@ -40,17 +40,31 @@ namespace Aer
 			// Will load from cached data if available
 
 			var settings = ApplicationData.Current.LocalSettings;
+			var isSavedLocationLoadSuccessful = false;
 
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationName)}", out var locationNameObj) &&
+			// Loading the saved location
+			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLabel)}", out var locationLabelObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLatitude)}", out var locationLatitudeObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLongitude)}", out var locationLongitudeObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLongitude)}", out var locationLongitudeObj))
+			{
+				LocationLabel = (string)locationLabelObj;
+				LocationLatitude = (double)locationLatitudeObj;
+				LocationLongitude = (double)locationLongitudeObj;
+				isSavedLocationLoadSuccessful = true;
+			}
+			else
+			{
+				LocationLabel = DefaultLocationLabel;
+				LocationLatitude = DefaultLocationLatitude;
+				LocationLongitude = DefaultLocationLongitude;
+			}
+
+			// Loading the saved weather data, only if the location was loaded successfully
+			if (isSavedLocationLoadSuccessful &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Condition)}", out var conditionNameObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Temperature)}", out var temperatureNameObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LastUpdateTime)}", out var lastUpdateTimeObj))
 			{
-				LocationName = (string)locationNameObj;
-				LocationLatitude = (double)locationLatitudeObj;
-				LocationLongitude = (double)locationLongitudeObj;
 				Condition = (string)conditionNameObj;
 				Temperature = (string)temperatureNameObj;
 				LastUpdateTime = (string)lastUpdateTimeObj;
@@ -58,30 +72,27 @@ namespace Aer
 			}
 			else
 			{
-				LocationName = DefaultLocationName;
-				LocationLatitude = DefaultLocationLatitude;
-				LocationLongitude = DefaultLocationLongitude;
 				LastUpdateTime = DefaultLastUpdateTime;
 				IsWeatherDataValid = false;
 			}
 		}
 
-		public static void SetLocation(string newLocationCity, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
+		public static void SetLocation(string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
 		{
-			LocationName = string.Format(LocationNameFormat, newLocationCity, newLocationCountry);
+			LocationLabel = string.Format(LocationLabelFormat, newLocationName, newLocationCountry);
 			LocationLatitude = newLocationLatitude;
 			LocationLongitude = newLocationLongitude;
 
 			var settings = ApplicationData.Current.LocalSettings;
 
-			settings.Values[$"{SettingsPrefix}_{nameof(LocationName)}"] = LocationName;
+			settings.Values[$"{SettingsPrefix}_{nameof(LocationLabel)}"] = LocationLabel;
 			settings.Values[$"{SettingsPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
 			settings.Values[$"{SettingsPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
 
 			IsWeatherDataValid = false; // New data must be loaded
 		}
 
-		public static void UpdateFromNetworkDataProvider()
+		public static void UpdateWeatherDataFromNetwork()
 		{
 			// TODO: implement loading from data provider
 
@@ -89,10 +100,10 @@ namespace Aer
 			//IsWeatherDataValid = true;
 			//Updated?.Invoke();
 
-			//Save();
+			//SaveWeatherData();
 		}
 
-		public static void Save()
+		private static void SaveWeatherData()
 		{
 			if (!IsWeatherDataValid) throw new InvalidOperationException("Data must be loaded before it can be saved.");
 

@@ -33,7 +33,7 @@ namespace Aer
 			if (Data.IsWeatherDataValid)
 			{
 				HeaderText.Text = string.Format(HeaderFormat, Data.Condition, Data.Temperature);
-				SubHeaderText.Text = Data.LocationName;
+				SubHeaderText.Text = Data.LocationLabel;
 				LastUpdateTimeText.Text = string.Format(LastUpdateTimeFormat, Data.LastUpdateTime);
 				
 				// TODO: Draw the chart

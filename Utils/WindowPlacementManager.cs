@@ -26,7 +26,7 @@ namespace Aer.Utils
 			settings.Values[$"{SettingsPrefix}_W"] = size.Width;
 			settings.Values[$"{SettingsPrefix}_H"] = size.Height;
 
-			// Save maximized state (ignore minimized)
+			// SaveWeatherData maximized state (ignore minimized)
 			settings.Values[$"{SettingsPrefix}_IsMaximized"] =
 				appWindow.Presenter is OverlappedPresenter o &&
 				o.State == OverlappedPresenterState.Maximized;

@@ -38,7 +38,9 @@ namespace Aer
 			InitializeComponent();
 
 			Data.LoadLastSavedValues();
-			Data.UpdateFromNetworkDataProvider();
+
+			// TODO: Update only if cached data is too old
+			Data.UpdateWeatherDataFromNetwork();
 		}
 
 		/// <summary>
