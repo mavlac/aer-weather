@@ -18,6 +18,8 @@ namespace Aer
 	/// </summary>
 	public sealed partial class SettingsPage : Page
 	{
+		private Dictionary<string, GeoNames.GeoNamesLocation> locationSuggestionsMap = new();
+
 		public string AppVersion => $"Version {Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
 
 		public SettingsPage()
@@ -72,33 +74,41 @@ namespace Aer
 				return;
 			}
 
-			// Simple filter
-			var results = GeoNames.AllGeoNamesLocations
+			// Build suggestions
+
+			// Find locations where name or any alternate name starts with the query (case insensitive)
+			var filteredGeoNames = GeoNames.AllGeoNamesLocations
 				.Where(c =>
 					c.NameASCII.StartsWith(query, StringComparison.InvariantCultureIgnoreCase)
 					|| (c.AlternateNames?.Split(',').Any(a => a.Trim().StartsWith(query, StringComparison.InvariantCultureIgnoreCase)) ?? false))
-				.OrderByDescending(c => c.Population) // sort by population first
+				.OrderByDescending(c => c.Population)
 				.Take(15)
-				.Select(c =>
-				{
-					// If Admin1Code is numeric, skip it
-					string admin = string.IsNullOrWhiteSpace(c.Admin1Code) || double.TryParse(c.Admin1Code, out _)
-						? string.Empty
-						: $", {c.Admin1Code}";
-					return $"{c.Name}, {c.Country}{admin}";
-				})
 				.ToList();
 
-			sender.ItemsSource = results;
+			// Dictionary of labels and location objects for easy lookup when suggestion is chosen
+			locationSuggestionsMap = filteredGeoNames.ToDictionary(
+				c =>
+				{
+					string adminCode = string.IsNullOrWhiteSpace(c.Admin1Code) || double.TryParse(c.Admin1Code, out _)
+						? ""
+						: $", {c.Admin1Code}";
+					return $"{c.Name}, {c.Country}{adminCode}";
+				}
+			);
+
+			sender.ItemsSource = locationSuggestionsMap.Keys.ToList();
 		}
 
 		private void LocationAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
 		{
-			Debug.WriteLine("Suggestion chosen: " + args.SelectedItem);
+			if (args.SelectedItem is string text && locationSuggestionsMap.TryGetValue(text, out var location))
+			{
+				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
 
-			// TODO
-			//Data.SetLocation(...);
-			//Data.UpdateFromNetworkDataProvider();
+				// TODO
+				//Data.SetLocation(location.Name, location.Latitude, location.Longitude);
+				//Data.UpdateFromNetworkDataProvider();
+			}
 		}
 		#endregion
 
