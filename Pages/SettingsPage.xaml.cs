@@ -57,7 +57,10 @@ namespace Aer
 
 			if (!GeoNames.IsLoaded)
 			{
-				Task.Run(GeoNames.Load);
+				if (!GeoNames.IsLoading)
+					Task.Run(GeoNames.Load);
+				
+				return;
 			}
 
 			string query = sender.Text;
@@ -71,9 +74,19 @@ namespace Aer
 
 			// Simple filter
 			var results = GeoNames.AllGeoNamesLocations
-				.Where(c => c.City.StartsWith(query, StringComparison.InvariantCultureIgnoreCase))
-				.Take(10)
-				.Select(c => $"{c.City}, {c.Country}")
+				.Where(c =>
+					c.NameASCII.StartsWith(query, StringComparison.InvariantCultureIgnoreCase)
+					|| (c.AlternateNames?.Split(',').Any(a => a.Trim().StartsWith(query, StringComparison.InvariantCultureIgnoreCase)) ?? false))
+				.OrderByDescending(c => c.Population) // sort by population first
+				.Take(15)
+				.Select(c =>
+				{
+					// If Admin1Code is numeric, skip it
+					string admin = string.IsNullOrWhiteSpace(c.Admin1Code) || double.TryParse(c.Admin1Code, out _)
+						? string.Empty
+						: $", {c.Admin1Code}";
+					return $"{c.Name}, {c.Country}{admin}";
+				})
 				.ToList();
 
 			sender.ItemsSource = results;
