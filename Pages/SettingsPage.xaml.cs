@@ -10,6 +10,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -150,13 +151,23 @@ namespace Aer
 
 		private void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs e)
 		{
-			Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-			var containersToRemove = new List<string>(localSettings.Containers.Keys); // Create a list of keys to avoid modifying while iterating
+			var settings = ApplicationData.Current.LocalSettings;
 
-			foreach (var key in containersToRemove)
+			// 1. Clear all root-level key/value pairs
+			settings.Values.Clear();
+
+			// 2. Delete all sub-containers, if any
+			var containersToRemove = settings.Containers.Keys.ToList(); // copy keys to avoid modifying collection while iterating
+			foreach (var containerName in containersToRemove)
 			{
-				localSettings.DeleteContainer(key);
+				settings.DeleteContainer(containerName);
 			}
+
+			// 3. Reload default values into your data model
+			Data.LoadLastSavedValues();
+
+			// 4. Refresh UI with default values
+			UpdateLocationSectionFromData(true);
 		}
 		#endregion
 

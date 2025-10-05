@@ -49,7 +49,7 @@
 										TextChanged="LocationAutoSuggestBox_TextChanged"
 										SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
 										PlaceholderText="Type a location"
-										Width="300"/>
+										Width="200"/>
 					</controls:SettingsCard>
 
 
@@ -86,9 +86,9 @@
 								<StackPanel Margin="-12,0,0,0"
 											Orientation="Vertical">
 									<HyperlinkButton Click="HyperlinkButton_Click">
-										<TextBlock Text="WindowsAppSDK"
+										<TextBlock Text="GeoNames Geographical Database"
 												   TextDecorations="Underline"
-												   DataContext="https://github.com/microsoft/WindowsAppSDK"/>
+												   DataContext="https://www.geonames.org/"/>
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click">
 										<TextBlock Text="Windows Community Toolkit"
@@ -96,9 +96,9 @@
 												   DataContext="https://github.com/CommunityToolkit/Windows"/>
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click">
-										<TextBlock Text="GeoNames"
+										<TextBlock Text="Windows App SDK"
 												   TextDecorations="Underline"
-												   DataContext="https://www.geonames.org/"/>
+												   DataContext="https://github.com/microsoft/WindowsAppSDK"/>
 									</HyperlinkButton>
 								</StackPanel>
 							</controls:SettingsCard>

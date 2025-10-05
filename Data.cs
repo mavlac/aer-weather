@@ -37,7 +37,8 @@ namespace Aer
 
 		public static void LoadLastSavedValues()
 		{
-			// Will load from cached data if available
+			// Will load location and if valid, will load cached data
+			// If location is not valid, will load default location and invalidate cached data
 
 			var settings = ApplicationData.Current.LocalSettings;
 			var isSavedLocationLoadSuccessful = false;
