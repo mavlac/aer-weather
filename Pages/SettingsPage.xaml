@@ -36,7 +36,7 @@
 		<ScrollViewer x:Name="Scroller"
 					  Grid.Row="1"
 					  Padding="24,0,24,0">
-			<Grid>
+			<Grid Padding="0,0,0,12">
 				<StackPanel HorizontalAlignment="Stretch">
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
@@ -56,8 +56,8 @@
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="About" />
 
-					<controls:SettingsExpander Description="© 2025. All rights reserved."
-											   Header="Āēr Weather App"
+					<controls:SettingsExpander Description="{x:Bind Copyright}"
+											   Header="{x:Bind AppName}"
 											   IsExpanded="False">
 						<controls:SettingsExpander.HeaderIcon>
 							<BitmapIcon ShowAsMonochrome="False"
@@ -67,19 +67,6 @@
 								   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 								   Text="{x:Bind AppVersion}" />
 						<controls:SettingsExpander.Items>
-							<controls:SettingsCard HorizontalContentAlignment="Left"
-												   ContentAlignment="Vertical"
-												   Header="Debug Info">
-								<StackPanel Margin="-12,0,0,0"
-											Orientation="Vertical">
-									<TextBlock win:IsTextSelectionEnabled="True"
-										Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-										Text="{x:Bind WindowSizeInfoText()}"
-										Padding="12,8,0,8"/>
-									<HyperlinkButton Content="Clear local data and settings"
-										Click="ClearLocalSettingsButton_Click" />
-								</StackPanel>
-							</controls:SettingsCard>
 							<controls:SettingsCard HorizontalContentAlignment="Left"
 												   ContentAlignment="Vertical"
 												   Header="Dependencies &amp; References">
@@ -100,6 +87,19 @@
 												   TextDecorations="Underline"
 												   DataContext="https://github.com/microsoft/WindowsAppSDK"/>
 									</HyperlinkButton>
+								</StackPanel>
+							</controls:SettingsCard>
+							<controls:SettingsCard HorizontalContentAlignment="Left"
+												   ContentAlignment="Vertical"
+												   Header="Debug info">
+								<StackPanel Margin="-12,0,0,0"
+											Orientation="Vertical">
+									<TextBlock win:IsTextSelectionEnabled="True"
+										Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+										Text="{x:Bind WindowSizeInfoText()}"
+										Padding="12,8,0,8"/>
+									<HyperlinkButton Content="Clear local data and settings"
+										Click="ClearLocalSettingsButton_Click" />
 								</StackPanel>
 							</controls:SettingsCard>
 						</controls:SettingsExpander.Items>

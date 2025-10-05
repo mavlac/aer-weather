@@ -1,13 +1,11 @@
-﻿using Microsoft.UI;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Windows.Graphics;
+﻿using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
-using WinRT.Interop;
 
 namespace Aer.Utils
 {
+	/// <summary>
+	/// Saves the Nav Pane state, open or closed
+	/// </summary>
 	class NavigationViewStateManager
 	{
 		private static string SettingsPrefix => nameof(NavigationViewStateManager);

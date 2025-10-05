@@ -1,10 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace Aer
@@ -20,12 +15,13 @@ namespace Aer
 
 		private static string SettingsPrefix => nameof(Data);
 
-		public static bool IsWeatherDataValid { get; private set; }
-		public static string? Condition { get; private set; }
-		public static string? Temperature { get; private set; }
 		public static string? LocationLabel { get; private set; }
 		public static double? LocationLatitude { get; private set; }
 		public static double? LocationLongitude { get; private set; }
+
+		public static bool IsWeatherDataValid { get; private set; }
+		public static string? Condition { get; private set; }
+		public static string? Temperature { get; private set; }
 		public static string? LastUpdateTime { get; private set; }
 
 		/// <summary>

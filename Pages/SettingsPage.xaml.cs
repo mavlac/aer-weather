@@ -12,18 +12,14 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace Aer
 {
-	/// <summary>
-	/// An empty page that can be used on its own or navigated to within a Frame.
-	/// </summary>
 	public sealed partial class SettingsPage : Page
 	{
 		private Dictionary<string, GeoNames.GeoNamesLocation> locationSuggestionsMap = new();
 
+		public string AppName => Package.Current.DisplayName;
+		public string Copyright => $"© {DateTime.Now.Year} {Package.Current.PublisherDisplayName}. All rights reserved.";
 		public string AppVersion => $"Version {Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
 
 		public SettingsPage()
@@ -46,7 +42,6 @@ namespace Aer
 				}
 			}
 		}
-
 
 		#region Location Section
 		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
@@ -146,7 +141,7 @@ namespace Aer
 			var appWindow = WindowUtils.GetAppWindow(App.MainWindow);
 			if (appWindow == null) return null;
 
-			return "Window size: " + appWindow.Size.Width + ", " + appWindow.Size.Height;
+			return "Window size: " + appWindow.Size.Width + " × " + appWindow.Size.Height;
 		}
 
 		private void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs e)

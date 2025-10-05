@@ -1,8 +1,7 @@
 ﻿using Microsoft.UI;
-using Microsoft.UI.Xaml;
-using System;
-using WinRT.Interop;
 using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
+using WinRT.Interop;
 
 namespace Aer.Utils
 {
@@ -14,7 +13,6 @@ namespace Aer.Utils
 			var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
 			return AppWindow.GetFromWindowId(windowId);
 		}
-
 
 		public static void InitializeTitleBar(Window window)
 		{

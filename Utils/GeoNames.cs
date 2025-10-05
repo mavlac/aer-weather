@@ -31,7 +31,7 @@ namespace Aer.Utils
 
 				string name = parts[1]; // name of geographical point (utf8)
 				string nameASCII = parts[2]; // name of geographical point in plain ascii characters, varchar(200)
-				string alternatenames = parts[3]; // alternatenames, comma separated, ascii names automatically transliterated
+				string alternatenames = parts[3]; // alternate names, comma separated, ascii names automatically transliterated
 				string country = parts[8]; // country code - ISO-3166 2-letter country code, 2 characters
 				string admin1Code = parts[10]; // fipscode (subject to change to iso code)
 				double latitude = double.Parse(parts[4], CultureInfo.InvariantCulture);
