@@ -1,4 +1,5 @@
 using Aer.Utils;
+using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -49,22 +50,13 @@ namespace Aer
 			LocationSettingsCard.Description = Data.LocationCoordinates ?? "No coordinates";
 
 			if (acknowlidgeAChange)
-				CompositorAnimations.AnimatePop(FindFirstChildTextBlock(LocationSettingsCard));
-			// Will pop the Icon, because it is a TextBlock as well, but that's acceptable
-			TextBlock FindFirstChildTextBlock(DependencyObject parent)
 			{
-				int count = VisualTreeHelper.GetChildrenCount(parent);
-				for (int i = 0; i < count; i++)
-				{
-					var child = VisualTreeHelper.GetChild(parent, i);
-					if (child is TextBlock tb)
-						return tb;
-
-					var result = FindFirstChildTextBlock(child);
-					if (result != null)
-						return result;
-				}
-				return null;
+				var iconPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderIconPresenter");
+				if (iconPresenter != null) CompositorAnimations.AnimatePop(iconPresenter, 0.5);
+				var headerPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderPresenter");
+				if (headerPresenter != null) CompositorAnimations.AnimateFadeIn(headerPresenter, 0.5);
+				var descriptionPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_DescriptionPresenter");
+				if (descriptionPresenter != null) CompositorAnimations.AnimateFadeIn(descriptionPresenter, 0.5);
 			}
 		}
 
