@@ -1,13 +1,11 @@
 using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
@@ -51,9 +49,9 @@ namespace Aer
 			LocationSettingsCard.Description = Data.LocationCoordinates ?? "No coordinates";
 
 			if (acknowlidgeAChange)
-				AnimatePop(FindHeaderTextBlock(LocationSettingsCard));
-
-			TextBlock FindHeaderTextBlock(DependencyObject parent)
+				CompositorAnimations.AnimatePop(FindFirstChildTextBlock(LocationSettingsCard));
+			// Will pop the Icon, because it is a TextBlock as well, but that's acceptable
+			TextBlock FindFirstChildTextBlock(DependencyObject parent)
 			{
 				int count = VisualTreeHelper.GetChildrenCount(parent);
 				for (int i = 0; i < count; i++)
@@ -62,7 +60,7 @@ namespace Aer
 					if (child is TextBlock tb)
 						return tb;
 
-					var result = FindHeaderTextBlock(child);
+					var result = FindFirstChildTextBlock(child);
 					if (result != null)
 						return result;
 				}
@@ -163,23 +161,6 @@ namespace Aer
 
 			// 4. Refresh UI with default values
 			UpdateLocationSectionFromData(true);
-		}
-		#endregion
-
-		#region Effects
-		private static void AnimatePop(FrameworkElement element)
-		{
-			var visual = ElementCompositionPreview.GetElementVisual(element);
-			var compositor = visual.Compositor;
-
-			var animation = compositor.CreateVector3KeyFrameAnimation();
-			animation.InsertKeyFrame(0f, new Vector3(1f));
-			animation.InsertKeyFrame(0.2f, new Vector3(1.05f));
-			animation.InsertKeyFrame(1f, new Vector3(1f));
-			animation.Duration = TimeSpan.FromSeconds(0.4);
-
-			visual.CenterPoint = new Vector3((float)element.ActualWidth / 2, (float)element.ActualHeight / 2, 0);
-			visual.StartAnimation("Scale", animation);
 		}
 		#endregion
 	}
