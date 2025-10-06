@@ -91,11 +91,6 @@
 												   DataContext="https://www.geonames.org/"/>
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click">
-										<TextBlock Text="Fluent UI System Icons"
-												   TextDecorations="Underline"
-												   DataContext="https://github.com/microsoft/fluentui-system-icons"/>
-									</HyperlinkButton>
-									<HyperlinkButton Click="HyperlinkButton_Click">
 										<TextBlock Text="Windows Community Toolkit"
 												   TextDecorations="Underline"
 												   DataContext="https://github.com/CommunityToolkit/Windows"/>

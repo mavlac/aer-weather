@@ -126,7 +126,7 @@ namespace Aer
 		}
 		#endregion
 
-		#region About Section
+		#region About and Debug Section
 		public string? WindowSizeInfoText()
 		{
 			if (App.MainWindow == null) return null;
@@ -134,7 +134,7 @@ namespace Aer
 			var appWindow = WindowUtils.GetAppWindow(App.MainWindow);
 			if (appWindow == null) return null;
 
-			return "Window size: " + appWindow.Size.Width + " × " + appWindow.Size.Height;
+			return "Window size: " + appWindow.Size.Width + "×" + appWindow.Size.Height;
 		}
 
 		private void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs e)
