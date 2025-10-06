@@ -2,6 +2,7 @@ using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Linq;
+using Windows.ApplicationModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -12,6 +13,8 @@ namespace Aer
 	{
 		private const int DefaultWindowWidth = 1600;
 		private const int DefaultWindowHeight = 1024;
+
+		public string WindowTitle => Package.Current.DisplayName;
 
 		public MainWindow()
 		{

@@ -7,14 +7,14 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
-	Title="Aer">
+	Title="{x:Bind WindowTitle}">
 
 	<Window.SystemBackdrop>
 		<MicaBackdrop />
 	</Window.SystemBackdrop>
 
 	<NavigationView x:Name="NavView"
-	IsBackButtonVisible="Visible"
+	IsBackButtonVisible="Collapsed"
 	IsSettingsVisible="True"
 	PaneDisplayMode="Left"
 	BackRequested="NavView_BackRequested"
