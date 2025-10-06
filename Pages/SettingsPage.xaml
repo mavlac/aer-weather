@@ -37,10 +37,10 @@
 					  Grid.Row="1"
 					  Padding="24,0,24,0">
 			<Grid Padding="0,0,0,12">
-				<StackPanel HorizontalAlignment="Stretch">
+				<StackPanel HorizontalAlignment="Stretch" Spacing="4">
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-							   Text="Location" />
+							   Text="Location &amp; Preferences" />
 
 					<controls:SettingsCard x:Name="LocationSettingsCard"
 										   Header="LocationSettingsCard.Header"
@@ -51,6 +51,18 @@
 										SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
 										PlaceholderText="Type a location"
 										Width="200"/>
+					</controls:SettingsCard>
+					
+					<controls:SettingsCard Header="Units"
+										   Description="Show measurements in"
+										   HeaderIcon="Globe">
+						<controls:Segmented HorizontalAlignment="Stretch"
+											SelectedIndex="0"
+											SelectionMode="Single"
+											Width="200">
+							<controls:SegmentedItem Content="Celsius" />
+							<controls:SegmentedItem Content="Fahrenheit" />
+						</controls:Segmented>
 					</controls:SettingsCard>
 
 
@@ -77,6 +89,11 @@
 										<TextBlock Text="GeoNames Geographical Database"
 												   TextDecorations="Underline"
 												   DataContext="https://www.geonames.org/"/>
+									</HyperlinkButton>
+									<HyperlinkButton Click="HyperlinkButton_Click">
+										<TextBlock Text="Fluent UI System Icons"
+												   TextDecorations="Underline"
+												   DataContext="https://github.com/microsoft/fluentui-system-icons"/>
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click">
 										<TextBlock Text="Windows Community Toolkit"
