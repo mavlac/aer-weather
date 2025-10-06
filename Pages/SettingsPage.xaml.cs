@@ -94,15 +94,18 @@ namespace Aer
 				.ToList();
 
 			// Dictionary of labels and location objects for easy lookup when suggestion is chosen
-			locationSuggestionsMap = filteredGeoNames.ToDictionary(
-				c =>
-				{
-					string adminCode = string.IsNullOrWhiteSpace(c.Admin1Code) || double.TryParse(c.Admin1Code, out _)
-						? ""
-						: $", {c.Admin1Code}";
-					return $"{c.Name}, {c.Country}{adminCode}";
-				}
-			);
+			locationSuggestionsMap = new Dictionary<string, GeoNames.GeoNamesLocation>();
+			foreach (var c in filteredGeoNames)
+			{
+				string adminCode = string.IsNullOrWhiteSpace(c.Admin1Code) || double.TryParse(c.Admin1Code, out _)
+					? ""
+					: $", {c.Admin1Code}";
+				string key = $"{c.Name}, {c.Country}{adminCode}";
+
+				// Only add if not present (or replace if population is higher)
+				if (!locationSuggestionsMap.TryGetValue(key, out var existing) || c.Population > existing.Population)
+					locationSuggestionsMap[key] = c;
+			}
 
 			sender.ItemsSource = locationSuggestionsMap.Keys.ToList();
 		}
