@@ -26,6 +26,7 @@ namespace Aer
 			InitializeComponent();
 			
 			UpdateLocationSectionFromData();
+			UpdatePreferences();
 		}
 
 		// Generic handler for all HyperlinkButton clicks
@@ -51,6 +52,7 @@ namespace Aer
 
 			if (acknowlidgeAChange)
 			{
+				// Highlight changes in LocationSettingsCard
 				var iconPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderIconPresenter");
 				if (iconPresenter != null) CompositorAnimations.AnimatePop(iconPresenter, 0.5);
 				var headerPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderPresenter");
@@ -118,11 +120,33 @@ namespace Aer
 
 				Data.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
-				sender.SetValue(AutoSuggestBox.TextProperty, ""); // Clear text
+				//sender.SetValue(AutoSuggestBox.TextProperty, "");
 
 				// TODO
 				//Data.UpdateWeatherDataFromNetwork();
 			}
+		}
+
+		private void TempUnitSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			Preferences.SetTemperatureUnits(
+				(SegmentedItem)TempUnitSelector.SelectedItem == TempUnitCelsius
+				? Preferences.TemperatureUnit.Celsius
+				: Preferences.TemperatureUnit.Fahrenheit);
+		}
+
+		private void UpdatePreferences()
+		{
+			// Just update the labels, in XAML there are placeholders
+			TempUnitCelsius.Content = Preferences.TemperatureUnit.Celsius.ToString();
+			TempUnitFahrenheit.Content = Preferences.TemperatureUnit.Fahrenheit.ToString();
+
+			TempUnitSelector.SelectedItem = Preferences.TemperatureUnits switch
+			{
+				Preferences.TemperatureUnit.Celsius => TempUnitCelsius,
+				Preferences.TemperatureUnit.Fahrenheit => TempUnitFahrenheit,
+				_ => null
+			};
 		}
 		#endregion
 
@@ -151,11 +175,13 @@ namespace Aer
 				settings.DeleteContainer(containerName);
 			}
 
-			// 3. Reload default values into your data model
+			// 3. Reload default values into data model and preferences
 			Data.LoadLastSavedValues();
+			Preferences.Load();
 
 			// 4. Refresh UI with default values
 			UpdateLocationSectionFromData(true);
+			UpdatePreferences();
 		}
 		#endregion
 	}

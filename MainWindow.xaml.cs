@@ -22,20 +22,28 @@ namespace Aer
 
 			WindowUtils.InitializeTitleBar(this);
 
-			// Subscribe to Window size changes
+			this.Closed += Window_Closed;
 			this.SizeChanged += MainWindow_SizeChanged;
 
-			// Saving and restoring window size and position
 			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight);
-			this.Closed += (s, e) => WindowPlacementManager.Save(this);
-
-			// Saving and restoring the nav pane
 			NavigationViewStateManager.Restore(NavView, false);
-			this.Closed += (s, e) => NavigationViewStateManager.Save(NavView);
+
+			Preferences.Load();
 
 			// UpdateWeatherDataFromNetwork back button and nav highlight when navigation happens
 			ContentFrame.Navigated += ContentFrame_Navigated;
 			ContentFrame.Navigate(typeof(HomePage));
+		}
+
+		private void Window_Closed(object sender, WindowEventArgs args)
+		{
+			// Unsubscribe from events to allow proper cleanup
+			this.SizeChanged -= MainWindow_SizeChanged;
+			ContentFrame.Navigated -= ContentFrame_Navigated;
+
+			WindowPlacementManager.Save(this);
+			NavigationViewStateManager.Save(NavView);
+			Preferences.Save();
 		}
 
 		// Responsivity

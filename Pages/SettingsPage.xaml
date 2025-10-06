@@ -50,18 +50,19 @@
 										TextChanged="LocationAutoSuggestBox_TextChanged"
 										SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
 										PlaceholderText="Type a location"
-										Width="200"/>
+										Width="320"/>
 					</controls:SettingsCard>
 					
 					<controls:SettingsCard Header="Units"
 										   Description="Show temperature measurements in"
 										   HeaderIcon="Globe">
-						<controls:Segmented HorizontalAlignment="Stretch"
-											SelectedIndex="0"
+						<controls:Segmented Name="TempUnitSelector"
+											SelectionChanged="TempUnitSelector_SelectionChanged"
+											HorizontalAlignment="Stretch"
 											SelectionMode="Single"
-											Width="200">
-							<controls:SegmentedItem Content="Celsius" />
-							<controls:SegmentedItem Content="Fahrenheit" />
+											Width="320">
+							<controls:SegmentedItem Name="TempUnitCelsius" Content="Option 0" />
+							<controls:SegmentedItem Name="TempUnitFahrenheit" Content="Option 1" />
 						</controls:Segmented>
 					</controls:SettingsCard>
 
