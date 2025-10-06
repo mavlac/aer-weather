@@ -54,7 +54,7 @@
 					</controls:SettingsCard>
 					
 					<controls:SettingsCard Header="Units"
-										   Description="Show measurements in"
+										   Description="Show temperature measurements in"
 										   HeaderIcon="Globe">
 						<controls:Segmented HorizontalAlignment="Stretch"
 											SelectedIndex="0"

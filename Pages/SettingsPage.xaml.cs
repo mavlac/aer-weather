@@ -42,7 +42,7 @@ namespace Aer
 			}
 		}
 
-		#region Location Section
+		#region Location and Preferences Section
 		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
 		{
 			// Fallbacks should never be needed, default location and coordinates are used if nothing else is set
