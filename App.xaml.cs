@@ -36,7 +36,6 @@ namespace Aer
 			Preferences.Load();
 
 			MainWindow = new MainWindow();
-			WindowUtils.ApplyAppTheme(MainWindow);
 			MainWindow.Activate();
 		}
 	}
