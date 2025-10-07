@@ -68,7 +68,7 @@
 					</controls:SettingsCard>
 					<controls:SettingsCard Description="Select which app theme to display" Header="App theme">
 						<controls:SettingsCard.HeaderIcon>
-							<FontIcon Glyph="&#xE790;" /><!-- Palette icon -->
+							<FontIcon Glyph="&#xE790;" FontFamily="Segoe MDL2 Assets"/><!-- Color (Palette) Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<ComboBox
                             x:Name="themeMode"
