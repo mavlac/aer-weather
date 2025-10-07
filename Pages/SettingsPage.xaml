@@ -61,22 +61,21 @@
 											SelectionChanged="TempUnitSelector_SelectionChanged"
 											HorizontalAlignment="Stretch"
 											SelectionMode="Single"
-											Width="320">
-							<controls:SegmentedItem Name="TempUnitCelsius" Content="Option 0" />
-							<controls:SegmentedItem Name="TempUnitFahrenheit" Content="Option 1" />
+											Width="200">
+							<controls:SegmentedItem Name="TempUnitCelsius" Content="Celsius" />
+							<controls:SegmentedItem Name="TempUnitFahrenheit" Content="Fahrenheit" />
 						</controls:Segmented>
 					</controls:SettingsCard>
 					<controls:SettingsCard Description="Select which app theme to display" Header="App theme">
 						<controls:SettingsCard.HeaderIcon>
 							<FontIcon Glyph="&#xE790;" FontFamily="Segoe MDL2 Assets"/><!-- Color (Palette) Icon -->
 						</controls:SettingsCard.HeaderIcon>
-						<ComboBox
-                            x:Name="themeMode"
-                            AutomationProperties.AutomationId="themeModeComboBox">
-							<!--<SelectionChanged="themeMode_SelectionChanged">-->
-							<ComboBoxItem Content="Light" Tag="Light" />
-							<ComboBoxItem Content="Dark" Tag="Dark" />
-							<ComboBoxItem Content="Use system setting" Tag="Default" />
+						<ComboBox x:Name="AppThemeSelector"
+								  SelectionChanged="AppThemeSelector_SelectionChanged"
+								  Width="200">
+							<ComboBoxItem Name="AppThemeLight" Content="Light" Tag="Light" />
+							<ComboBoxItem Name="AppThemeDark" Content="Dark" Tag="Dark" />
+							<ComboBoxItem Name="AppThemeDefault" Content="Use system setting" Tag="Default" />
 						</ComboBox>
 					</controls:SettingsCard>
 

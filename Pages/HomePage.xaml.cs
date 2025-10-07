@@ -1,4 +1,6 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 
 namespace Aer
 {
@@ -11,6 +13,11 @@ namespace Aer
 		{
 			InitializeComponent();
 
+			Loaded += HomePage_Loaded;
+		}
+
+		private void HomePage_Loaded(object sender, RoutedEventArgs e)
+		{
 			UpdatePageDataContent();
 			Data.Updated += Data_Updated;
 		}

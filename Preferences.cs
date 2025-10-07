@@ -1,4 +1,6 @@
 ﻿using Aer.Utils;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,6 +22,7 @@ namespace Aer
 		private static string SettingsPrefix => nameof(Preferences);
 
 		public static TemperatureUnit TemperatureUnits { get; private set; } = TemperatureUnit.Celsius;
+		public static ElementTheme AppTheme { get; private set; } = ElementTheme.Default;
 
 		public static void Load()
 		{
@@ -33,6 +36,15 @@ namespace Aer
 			{
 				TemperatureUnits = LocalizationUtils.GetPreferredTemperatureUnit();
 			}
+
+			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(AppTheme)}", out var appThemeObj) && appThemeObj is int appThemeIntValue)
+			{
+				AppTheme = (ElementTheme)appThemeIntValue;
+			}
+			else
+			{
+				AppTheme = ElementTheme.Default;
+			}
 		}
 
 		public static void Save()
@@ -40,12 +52,19 @@ namespace Aer
 			var settings = ApplicationData.Current.LocalSettings;
 
 			settings.Values[$"{SettingsPrefix}_{nameof(TemperatureUnits)}"] = (int)TemperatureUnits;
+			settings.Values[$"{SettingsPrefix}_{nameof(AppTheme)}"] = (int)AppTheme;
 		}
 
 		public static void SetTemperatureUnits(TemperatureUnit unit)
 		{
 			Debug.WriteLine($"Preferences: Setting temperature units to {unit}");
 			TemperatureUnits = unit;
+			Save();
+		}
+
+		public static void SetAppTheme(ElementTheme newTheme)
+		{
+			AppTheme = newTheme;
 			Save();
 		}
 	}

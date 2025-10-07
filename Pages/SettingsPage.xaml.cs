@@ -25,6 +25,11 @@ namespace Aer
 		{
 			InitializeComponent();
 			
+			Loaded += SettingsPage_Loaded;
+		}
+
+		private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
+		{
 			UpdateLocationSectionFromData();
 			UpdatePreferences();
 		}
@@ -43,7 +48,7 @@ namespace Aer
 			}
 		}
 
-		#region Location and Preferences Section
+		#region Location
 		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
 		{
 			// Fallbacks should never be needed, default location and coordinates are used if nothing else is set
@@ -126,7 +131,9 @@ namespace Aer
 				//Data.UpdateWeatherDataFromNetwork();
 			}
 		}
+		#endregion
 
+		#region Preferences Section
 		private void TempUnitSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			Preferences.SetTemperatureUnits(
@@ -135,16 +142,31 @@ namespace Aer
 				: Preferences.TemperatureUnit.Fahrenheit);
 		}
 
+		private void AppThemeSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (((ComboBox)sender).SelectedItem is ComboBoxItem selectedItem)
+			{
+				if (Enum.TryParse((string)selectedItem.Tag, out ElementTheme selectedTheme))
+				{
+					Preferences.SetAppTheme(selectedTheme);
+					WindowUtils.ApplyAppTheme(App.MainWindow);
+				}
+			}
+		}
+
 		private void UpdatePreferences()
 		{
-			// Just update the labels, in XAML there are placeholders
-			TempUnitCelsius.Content = Preferences.TemperatureUnit.Celsius.ToString();
-			TempUnitFahrenheit.Content = Preferences.TemperatureUnit.Fahrenheit.ToString();
-
 			TempUnitSelector.SelectedItem = Preferences.TemperatureUnits switch
 			{
 				Preferences.TemperatureUnit.Celsius => TempUnitCelsius,
 				Preferences.TemperatureUnit.Fahrenheit => TempUnitFahrenheit,
+				_ => null
+			};
+			AppThemeSelector.SelectedItem = Preferences.AppTheme switch
+			{
+				ElementTheme.Light => AppThemeLight,
+				ElementTheme.Dark => AppThemeDark,
+				ElementTheme.Default => AppThemeDefault,
 				_ => null
 			};
 		}
@@ -184,5 +206,5 @@ namespace Aer
 			UpdatePreferences();
 		}
 		#endregion
-	}
+    }
 }

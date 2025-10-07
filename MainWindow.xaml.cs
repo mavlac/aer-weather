@@ -1,6 +1,7 @@
 using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Linq;
 using Windows.ApplicationModel;
 
@@ -20,19 +21,20 @@ namespace Aer
 		{
 			InitializeComponent();
 
-			WindowUtils.InitializeTitleBar(this);
-
+			this.Activated += Window_Activated;
 			this.Closed += Window_Closed;
 			this.SizeChanged += MainWindow_SizeChanged;
 
 			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight);
 			NavigationViewStateManager.Restore(NavView, false);
 
-			Preferences.Load();
-
-			// UpdateWeatherDataFromNetwork back button and nav highlight when navigation happens
 			ContentFrame.Navigated += ContentFrame_Navigated;
 			ContentFrame.Navigate(typeof(HomePage));
+		}
+
+		private void Window_Activated(object sender, WindowActivatedEventArgs args)
+		{
+			WindowUtils.InitializeTitleBar(this);
 		}
 
 		private void Window_Closed(object sender, WindowEventArgs args)
