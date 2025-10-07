@@ -36,7 +36,7 @@ namespace Aer
 
 		private void Window_Activated(object sender, WindowActivatedEventArgs args)
 		{
-			WindowUtils.InitializeTitleBar(this);
+			//WindowUtils.InitializeTitleBar(this);
 		}
 
 		private void Window_Closed(object sender, WindowEventArgs args)

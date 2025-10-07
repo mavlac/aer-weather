@@ -133,7 +133,7 @@ namespace Aer
 		}
 		#endregion
 
-		#region Preferences Section
+		#region Preferences
 		private void TempUnitSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			Preferences.SetTemperatureUnits(
@@ -172,7 +172,7 @@ namespace Aer
 		}
 		#endregion
 
-		#region About and Debug Section
+		#region About and Debug
 		public string? WindowSizeInfoText()
 		{
 			if (App.MainWindow == null) return null;

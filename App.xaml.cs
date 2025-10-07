@@ -9,7 +9,7 @@ namespace Aer
 	/// </summary>
 	public partial class App : Application
 	{
-		public static Window? MainWindow { get; private set; }
+		internal static MainWindow MainWindow { get; private set; } = null!;
 
 		/// <summary>
 		/// Initializes the singleton application object.  This is the first line of authored code
@@ -36,6 +36,11 @@ namespace Aer
 			Preferences.Load();
 
 			MainWindow = new MainWindow();
+
+			WindowUtils.ApplyAppTheme(MainWindow);
+			WindowUtils.InitializeTitleBar(MainWindow);
+
+			// Activate the startup window.
 			MainWindow.Activate();
 		}
 	}
