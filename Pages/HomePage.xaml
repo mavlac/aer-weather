@@ -9,45 +9,44 @@
     mc:Ignorable="d">
 
 	<Grid>
-		<Grid>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
-			<StackPanel x:Name="HeaderPanel"
-				Orientation="Vertical"
-				Padding="24,18,24,0">
-				<TextBlock x:Name="HeaderText"
-					Style="{StaticResource HeaderTextBlockStyle}"
-					HorizontalAlignment="Left"
-					Grid.Column="0"
-					Text="HeaderText" />
-				<TextBlock
-					x:Name="SubHeaderText"
-					Style="{StaticResource BaseTextBlockStyle}"
-					Padding="0,16,0,0"
-					Text="SubHeaderText" />
-			</StackPanel>
-			<ScrollViewer x:Name="Scroller"
-				  Grid.Row="1"
-				  Padding="36,10,36,0">
-				<Grid>
-					<StackPanel HorizontalAlignment="Stretch">
-						<!-- Content -->
-					</StackPanel>
-				</Grid>
-			</ScrollViewer>
-		</Grid>
-
-		<RelativePanel>
-			<!-- Overlayed footer text -->
-			<TextBlock x:Name="LastUpdateTimeText"
-				   Style="{StaticResource CaptionTextBlockStyle}"
-				   RelativePanel.AlignRightWithPanel="True"
-				   RelativePanel.AlignBottomWithPanel="True"
-				   Text="LastUpdateTimeText"
-				   Padding="0,0,24,16"
-				   IsHitTestVisible="False"/>
-		</RelativePanel>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" /><!-- Header -->
+			<RowDefinition Height="*" /><!-- Scrollable content -->
+			<RowDefinition Height="Auto" /><!-- Footer -->
+		</Grid.RowDefinitions>
+		<StackPanel x:Name="HeaderPanel"
+			Grid.Row="0"
+			Orientation="Vertical"
+			Padding="24,18,24,0">
+			<TextBlock x:Name="HeaderText"
+				Style="{StaticResource HeaderTextBlockStyle}"
+				HorizontalAlignment="Left"
+				Grid.Column="0"
+				Text="HeaderText" />
+			<TextBlock
+				x:Name="SubHeaderText"
+				Style="{StaticResource BaseTextBlockStyle}"
+				Padding="0,16,0,0"
+				Text="SubHeaderText" />
+		</StackPanel>
+		
+		<ScrollViewer x:Name="Scroller"
+				Grid.Row="1"
+				Padding="36,10,36,0">
+			<Grid>
+				<StackPanel HorizontalAlignment="Stretch">
+					<!-- Content -->
+				</StackPanel>
+			</Grid>
+		</ScrollViewer>
+		
+		<TextBlock x:Name="LastUpdateTimeText"
+				Grid.Row="2"
+				Text="Hello Footer"
+				Style="{StaticResource CaptionTextBlockStyle}"
+				VerticalAlignment="Bottom"
+				HorizontalAlignment="Right"
+				HorizontalTextAlignment="Right"
+				Padding="0,0,24,16"/>
 	</Grid>
 </Page>
