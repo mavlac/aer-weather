@@ -197,7 +197,7 @@ namespace Aer
 				settings.DeleteContainer(containerName);
 			}
 
-			// 3. Reload default values into data model and preferences
+			// 3. Reload default values into data and preferences
 			Data.LoadLastSavedValues();
 			Preferences.Load();
 

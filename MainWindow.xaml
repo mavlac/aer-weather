@@ -14,13 +14,13 @@
 	</Window.SystemBackdrop>
 
 	<NavigationView x:Name="NavView"
-	IsBackButtonVisible="Collapsed"
-	IsSettingsVisible="True"
-	PaneDisplayMode="Left"
-	BackRequested="NavView_BackRequested"
-	SelectionChanged="NavView_SelectionChanged">
+					IsBackButtonVisible="Collapsed"
+					IsSettingsVisible="True"
+					PaneDisplayMode="Left"
+					BackRequested="NavView_BackRequested"
+					SelectionChanged="NavView_SelectionChanged">
 
-		<!-- Navigation items -->
+		<!-- Navigation -->
 		<NavigationView.MenuItems>
 			<NavigationViewItem Content="Home" Icon="Home" Tag="{StaticResource HomePageNavigationTag}"/>
 		</NavigationView.MenuItems>

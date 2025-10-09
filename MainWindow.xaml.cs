@@ -23,9 +23,8 @@ namespace Aer
 
 			WindowUtils.ApplyAppTheme(this);
 
-			this.Activated += Window_Activated;
-			this.Closed += Window_Closed;
 			this.SizeChanged += MainWindow_SizeChanged;
+			this.Closed += Window_Closed;
 
 			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight);
 			NavigationViewStateManager.Restore(NavView, false);
@@ -34,9 +33,17 @@ namespace Aer
 			ContentFrame.Navigate(typeof(HomePage));
 		}
 
-		private void Window_Activated(object sender, WindowActivatedEventArgs args)
+		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
 		{
-			//WindowUtils.InitializeTitleBar(this);
+			// Nav Pane Responsivity
+			if (e.Size.Width < (double)Application.Current.Resources["Breakpoint840Plus"])
+			{
+				NavView.OpenPaneLength = (double)Application.Current.Resources["NavPaneNarrowWidth"];
+			}
+			else
+			{
+				NavView.ClearValue(NavigationView.OpenPaneLengthProperty); // restore default (320)
+			}
 		}
 
 		private void Window_Closed(object sender, WindowEventArgs args)
@@ -50,16 +57,22 @@ namespace Aer
 			Preferences.Save();
 		}
 
-		// Responsivity
-		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
+		// Handle Nav selection
+		private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
 		{
-			if (e.Size.Width < (double)Application.Current.Resources["Breakpoint840Plus"])
+			if (args.IsSettingsSelected)
 			{
-				NavView.OpenPaneLength = (double)Application.Current.Resources["NavPaneNarrowWidth"];
+				ContentFrame.Navigate(typeof(SettingsPage));
 			}
 			else
 			{
-				NavView.ClearValue(NavigationView.OpenPaneLengthProperty); // restore default (320)
+				if (args.SelectedItem is NavigationViewItem selectedItem)
+				{
+					if ((string)selectedItem.Tag == (string)Application.Current.Resources["HomePageNavigationTag"])
+					{
+						ContentFrame.Navigate(typeof(HomePage));
+					}
+				}
 			}
 		}
 
@@ -81,26 +94,7 @@ namespace Aer
 			}
 		}
 
-		// Handle menu item selection
-		private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
-		{
-			if (args.IsSettingsSelected)
-			{
-				ContentFrame.Navigate(typeof(SettingsPage));
-			}
-			else
-			{
-				if (args.SelectedItem is NavigationViewItem selectedItem)
-				{
-					if ((string)selectedItem.Tag == (string)Application.Current.Resources["HomePageNavigationTag"])
-					{
-						ContentFrame.Navigate(typeof(HomePage));
-					}
-				}
-			}
-		}
-
-		// Handle Back button
+		// Handle Back button (Now hidden)
 		private void NavView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
 		{
 			if (ContentFrame.CanGoBack)

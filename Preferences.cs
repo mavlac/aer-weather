@@ -61,5 +61,17 @@ namespace Aer
 			AppTheme = newTheme;
 			Save();
 		}
+
+
+
+		public static string ToUnitString(this TemperatureUnit unit)
+		{
+			return unit switch
+			{
+				TemperatureUnit.Celsius => "°C",
+				TemperatureUnit.Fahrenheit => "°F",
+				_ => throw new System.NotImplementedException()
+			};
+		}
 	}
 }

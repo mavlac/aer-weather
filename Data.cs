@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace Aer
@@ -9,7 +10,6 @@ namespace Aer
 		private const string LocationLabelFormat = "{0}, {1}";
 		private const double DefaultLocationLatitude = 50.08804;
 		private const double DefaultLocationLongitude = 14.42076;
-		private const string DefaultLastUpdateTime = "—";
 
 		private static string DefaultLocationLabel => string.Format(LocationLabelFormat, "Prague", "CZ");
 
@@ -19,17 +19,18 @@ namespace Aer
 		public static double? LocationLatitude { get; private set; }
 		public static double? LocationLongitude { get; private set; }
 
-		public static bool IsWeatherDataValid { get; private set; }
+		public static bool IsWeatherDataLoaded { get; private set; }
 		public static string? Condition { get; private set; }
 		public static string? Temperature { get; private set; }
-		public static string? LastUpdateTime { get; private set; }
+		public static DateTime? LastUpdateTime { get; private set; }
 
 		/// <summary>
 		/// Readable Latitude and Longitude. Both values are stored separately.
 		/// </summary>
 		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString(CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString(CultureInfo.InvariantCulture)}";
+		public static bool IsUpdatingFromNetwork { get; private set; }
 
-		public static event Action? Updated;
+		public static event Action? UpdatedFromNetwork;
 
 		public static void LoadLastSavedValues()
 		{
@@ -60,17 +61,17 @@ namespace Aer
 			if (isSavedLocationLoadSuccessful &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Condition)}", out var conditionNameObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Temperature)}", out var temperatureNameObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LastUpdateTime)}", out var lastUpdateTimeObj))
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LastUpdateTime)}", out var lastUpdateTimeObj) && DateTime.TryParse(lastUpdateTimeObj as string, null, DateTimeStyles.RoundtripKind, out DateTime lastUpdateDateTime))
 			{
 				Condition = (string)conditionNameObj;
 				Temperature = (string)temperatureNameObj;
-				LastUpdateTime = (string)lastUpdateTimeObj;
-				IsWeatherDataValid = true;
+				LastUpdateTime = lastUpdateDateTime;
+				IsWeatherDataLoaded = true;
 			}
 			else
 			{
-				LastUpdateTime = DefaultLastUpdateTime;
-				IsWeatherDataValid = false;
+				LastUpdateTime = null;
+				IsWeatherDataLoaded = false;
 			}
 		}
 
@@ -86,29 +87,48 @@ namespace Aer
 			settings.Values[$"{SettingsPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
 			settings.Values[$"{SettingsPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
 
-			IsWeatherDataValid = false; // New data must be loaded
+			IsWeatherDataLoaded = false; // New data must be loaded
 		}
 
-		public static void UpdateWeatherDataFromNetwork()
+		public async static Task<bool> UpdateWeatherDataFromNetwork()
 		{
+			if (IsCacheValid())
+			{
+				return false; // means: no network update performed
+			}
+
+			IsUpdatingFromNetwork = true;
+
 			// TODO: implement loading from data provider
 
-			// TODO: On Success
-			//IsWeatherDataValid = true;
-			//Updated?.Invoke();
+			await Task.Delay(1000); // Simulate network delay
 
-			//SaveWeatherData();
+			// On success
+			LastUpdateTime = DateTime.Now;
+			IsWeatherDataLoaded = true;
+			IsUpdatingFromNetwork = false;
+			// TODO: SaveWeatherData();
+			UpdatedFromNetwork?.Invoke();
+			return true; // means: data was updated from network
+		}
+
+		private static bool IsCacheValid()
+		{
+			// TODO: Replace with your own cache validity logic
+			// e.g., compare timestamp, last update time, etc.
+			return false;
 		}
 
 		private static void SaveWeatherData()
 		{
-			if (!IsWeatherDataValid) throw new InvalidOperationException("Data must be loaded before it can be saved.");
+			if (!IsWeatherDataLoaded || IsUpdatingFromNetwork)
+				throw new InvalidOperationException("Data must be loaded and no update should be running, before data can be saved.");
 
 			var settings = ApplicationData.Current.LocalSettings;
 
 			settings.Values[$"{SettingsPrefix}_{nameof(Condition)}"] = Condition;
 			settings.Values[$"{SettingsPrefix}_{nameof(Temperature)}"] = Temperature;
-			settings.Values[$"{SettingsPrefix}_{nameof(LastUpdateTime)}"] = LastUpdateTime;
+			settings.Values[$"{SettingsPrefix}_{nameof(LastUpdateTime)}"] = LastUpdateTime?.ToString("o");
 		}
 	}
 }

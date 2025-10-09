@@ -18,11 +18,6 @@ namespace Aer
 		public App()
 		{
 			InitializeComponent();
-
-			Data.LoadLastSavedValues();
-
-			// TODO: Update only if cached data is too old
-			Data.UpdateWeatherDataFromNetwork();
 		}
 
 		/// <summary>

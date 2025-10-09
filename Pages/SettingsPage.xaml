@@ -49,7 +49,7 @@
 										TextChanged="LocationAutoSuggestBox_TextChanged"
 										SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
 										PlaceholderText="Type a location"
-										Width="320"/>
+										Width="280"/>
 					</controls:SettingsCard>
 
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
