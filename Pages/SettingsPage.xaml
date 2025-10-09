@@ -55,8 +55,10 @@
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="Appearance &amp; behavior" />
 					<controls:SettingsCard Header="Units"
-										   Description="Show temperature measurements in"
-										   HeaderIcon="Globe">
+										   Description="Show temperature measurements in">
+						<controls:SettingsCard.HeaderIcon>
+							<FontIcon Glyph="&#xECC6;" FontFamily="Segoe MDL2 Assets"/><!-- Unit (Ruler) Icon -->
+						</controls:SettingsCard.HeaderIcon>
 						<controls:Segmented Name="TempUnitSelector"
 											SelectionChanged="TempUnitSelector_SelectionChanged"
 											HorizontalAlignment="Stretch"
