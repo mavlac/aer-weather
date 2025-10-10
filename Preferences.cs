@@ -1,4 +1,5 @@
 ﻿using Aer.Utils;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using System.Diagnostics;
 using Windows.Storage;
@@ -17,6 +18,7 @@ namespace Aer
 
 		public static TemperatureUnit TemperatureUnits { get; private set; } = TemperatureUnit.Celsius;
 		public static ElementTheme AppTheme { get; private set; } = ElementTheme.Default;
+		public static bool WasWelcomeShown { get; private set; } = false;
 
 		public static void Load()
 		{
@@ -39,6 +41,15 @@ namespace Aer
 			{
 				AppTheme = ElementTheme.Default;
 			}
+
+			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(WasWelcomeShown)}", out var wasWelcomeShownObj) && wasWelcomeShownObj is bool wasWelcomeShown)
+			{
+				WasWelcomeShown = wasWelcomeShown;
+			}
+			else
+			{
+				WasWelcomeShown = false;
+			}
 		}
 
 		public static void Save()
@@ -47,6 +58,7 @@ namespace Aer
 
 			settings.Values[$"{SettingsPrefix}_{nameof(TemperatureUnits)}"] = (int)TemperatureUnits;
 			settings.Values[$"{SettingsPrefix}_{nameof(AppTheme)}"] = (int)AppTheme;
+			settings.Values[$"{SettingsPrefix}_{nameof(WasWelcomeShown)}"] = WasWelcomeShown;
 		}
 
 		public static void SetTemperatureUnits(TemperatureUnit unit)
@@ -59,6 +71,12 @@ namespace Aer
 		public static void SetAppTheme(ElementTheme newTheme)
 		{
 			AppTheme = newTheme;
+			Save();
+		}
+
+		public static void SetWelcomeShown(bool shown)
+		{
+			WasWelcomeShown = shown;
 			Save();
 		}
 

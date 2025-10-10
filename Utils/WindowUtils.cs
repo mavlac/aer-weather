@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using System;
 using System.Diagnostics;
 using Windows.Graphics;
 using Windows.Graphics.Display;
@@ -28,36 +29,43 @@ namespace Aer.Utils
 
 		public static void UpdateTitleBarDraggableArea(Window window)
 		{
-			var appWindow = GetAppWindow(window);
-			if (appWindow == null) return;
-
-			const int LeftOffsetLogical = 48; // logical units like in XAML
-			const int DragHeightLogical = 32;
-
-			// Use XamlRoot.RasterizationScale for DPI scaling
-			if (window?.Content is not FrameworkElement root || root.XamlRoot is null)
+			try
 			{
-				Debug.WriteLine("UpdateTitleBarDraggableArea: Unable to set: no current window or XamlRoot");
-				return;
+				var appWindow = GetAppWindow(window);
+				if (appWindow == null) return;
+
+				const int LeftOffsetLogical = 48; // logical units like in XAML
+				const int DragHeightLogical = 32;
+
+				// Use XamlRoot.RasterizationScale for DPI scaling
+				if (window?.Content is not FrameworkElement root || root.XamlRoot is null)
+				{
+					Debug.WriteLine("UpdateTitleBarDraggableArea: Unable to set: no current window or XamlRoot");
+					return;
+				}
+				double scale = root.XamlRoot.RasterizationScale;
+
+				int leftOffset = (int)(LeftOffsetLogical * scale);
+				int dragHeight = (int)(DragHeightLogical * scale);
+
+				int windowWidth = appWindow.Size.Width; // raw pixels
+
+				if (windowWidth <= leftOffset) return;
+
+				var dragRect = new RectInt32
+				{
+					X = leftOffset,
+					Y = 0,
+					Width = windowWidth - leftOffset,
+					Height = dragHeight
+				};
+
+				appWindow.TitleBar.SetDragRectangles(new[] { dragRect });
 			}
-			double scale = root.XamlRoot.RasterizationScale;
-
-			int leftOffset = (int)(LeftOffsetLogical * scale);
-			int dragHeight = (int)(DragHeightLogical * scale);
-
-			int windowWidth = appWindow.Size.Width; // raw pixels
-
-			if (windowWidth <= leftOffset) return;
-
-			var dragRect = new RectInt32
+			catch (Exception ex)
 			{
-				X = leftOffset,
-				Y = 0,
-				Width = windowWidth - leftOffset,
-				Height = dragHeight
-			};
-
-			appWindow.TitleBar.SetDragRectangles(new[] { dragRect });
+				Debug.WriteLine($"UpdateTitleBarDraggableArea: Exception — {ex.Message}");
+			}
 		}
 
 		internal static void ApplyAppTheme(Window window)

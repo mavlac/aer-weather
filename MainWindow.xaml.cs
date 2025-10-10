@@ -25,7 +25,6 @@ namespace Aer
 
 			WindowUtils.ApplyAppTheme(this);
 
-			this.Activated += MainWindow_Activated;
 			this.SizeChanged += MainWindow_SizeChanged;
 			this.Closed += Window_Closed;
 
@@ -38,23 +37,22 @@ namespace Aer
 			ContentFrame.Navigate(typeof(HomePage));
 		}
 
-		private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
-		{
-			WindowUtils.UpdateTitleBarDraggableArea(this);
-		}
-
 		private async void ContentFrame_Loaded(object sender, RoutedEventArgs e)
 		{
-			// TODO: Welcome condition
-			bool goToSettings = await MessageBoxEx.ShowAsync(
-				$"Welcome to {Package.Current.DisplayName}!",
-				"Thank you for using my weather app.\r\n\r\nThe default location is shown for now. Set your preferred location in Settings.",
-				primaryButtonText: "Take me there");
-
-			if (goToSettings)
+			if (!Preferences.WasWelcomeShown)
 			{
-				// Navigate to Settings page
-				ContentFrame.Navigate(typeof(SettingsPage));
+				Preferences.SetWelcomeShown(true);
+
+				bool goToSettings = await MessageBoxEx.ShowAsync(
+					$"Welcome to {Package.Current.DisplayName}!",
+					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now. Set your preferred location in Settings.",
+					primaryButtonText: "Take me there");
+
+				if (goToSettings)
+				{
+					// Navigate to Settings page
+					ContentFrame.Navigate(typeof(SettingsPage));
+				}
 			}
 		}
 
