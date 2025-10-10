@@ -35,7 +35,7 @@ namespace Aer.Utils
 				if (appWindow == null) return;
 
 				const int LeftOffsetLogical = 48; // logical units like in XAML
-				const int DragHeightLogical = 32;
+				const int DragHeightLogical = 48;
 
 				// Use XamlRoot.RasterizationScale for DPI scaling
 				if (window?.Content is not FrameworkElement root || root.XamlRoot is null)
