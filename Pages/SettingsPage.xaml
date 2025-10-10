@@ -41,6 +41,7 @@
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="Location" />
+					
 					<controls:SettingsCard x:Name="LocationSettingsCard"
 										   Header="LocationSettingsCard.Header"
 										   Description="LocationSettingsCard.Description"
@@ -51,9 +52,10 @@
 										PlaceholderText="Type a location"
 										Width="280"/>
 					</controls:SettingsCard>
-
+					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="Appearance &amp; behavior" />
+					
 					<controls:SettingsCard Header="Units"
 										   Description="Show temperature measurements in">
 						<controls:SettingsCard.HeaderIcon>
@@ -68,6 +70,7 @@
 							<controls:SegmentedItem Name="TempUnitFahrenheit" Content="Fahrenheit" />
 						</controls:Segmented>
 					</controls:SettingsCard>
+					
 					<controls:SettingsCard Description="Select which app theme to display" Header="App theme">
 						<controls:SettingsCard.HeaderIcon>
 							<FontIcon Glyph="&#xE790;" FontFamily="Segoe MDL2 Assets"/><!-- Color (Palette) Icon -->
@@ -80,10 +83,10 @@
 							<ComboBoxItem Name="AppThemeDefault" Content="Use system setting" Tag="Default" />
 						</ComboBox>
 					</controls:SettingsCard>
-
+					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="About" />
-
+					
 					<controls:SettingsExpander Description="{x:Bind Copyright}"
 											   Header="{x:Bind AppName}"
 											   IsExpanded="False">
@@ -123,11 +126,11 @@
 								<StackPanel Margin="-12,0,0,0"
 											Orientation="Vertical">
 									<TextBlock win:IsTextSelectionEnabled="True"
-										Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-										Text="{x:Bind WindowSizeInfoText()}"
-										Padding="12,8,0,8"/>
+											   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+											   Text="{x:Bind WindowSizeInfoText()}"
+											   Padding="12,8,0,8"/>
 									<HyperlinkButton Content="Clear local data and settings"
-										Click="ClearLocalSettingsButton_Click" />
+													 Click="ClearLocalSettingsButton_Click" />
 								</StackPanel>
 							</controls:SettingsCard>
 						</controls:SettingsExpander.Items>

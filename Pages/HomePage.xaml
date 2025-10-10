@@ -20,9 +20,9 @@
 			</Grid.RowDefinitions>
 
 			<StackPanel x:Name="HeaderPanel"
-			Grid.Row="0"
-			Orientation="Vertical"
-			Padding="24,18,24,0">
+						Grid.Row="0"
+						Orientation="Vertical"
+						Padding="24,18,24,0">
 				<TextBlock x:Name="HeaderText"
 						   Style="{StaticResource HeaderTextBlockStyle}"
 						   HorizontalAlignment="Left"
