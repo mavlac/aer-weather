@@ -13,7 +13,7 @@ namespace Aer
 			InitializeComponent();
 
 			// This should be immediate, but can contain default location with no weather data
-			Data.LoadLastSavedValues();
+			Data.LoadCacheOrDefaults();
 
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
@@ -46,8 +46,13 @@ namespace Aer
 
 			Data.UpdatedFromNetwork += Data_UpdatedFromNetwork;
 
+			UpdateDataFromNetwork(forceNetworkUpdate: false);
+		}
+
+		private async void UpdateDataFromNetwork(bool forceNetworkUpdate)
+		{
 			// Kick off the network update, but don't await it yet
-			var updateTask = Data.UpdateWeatherDataFromNetwork();
+			var updateTask = Data.UpdateWeatherDataFromNetwork(forceNetworkUpdate);
 
 			// Wait briefly before deciding to show loader
 			await Task.Delay(200);
@@ -63,6 +68,14 @@ namespace Aer
 
 			// If nothing was wasUpdated or it finished, does not matter, hide loader
 			LoadingOverlay.Visibility = Visibility.Collapsed;
+
+			if (!wasUpdated)
+			{
+				await MessageBoxEx.ShowAsync(
+					"Unable to update weather data",
+					"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.",
+					"Oh dear");
+			}
 		}
 
 		private void Data_UpdatedFromNetwork()
@@ -96,6 +109,11 @@ namespace Aer
 				// Last updated - unknown
 				LastUpdateTimeText.Text = "Loading from network…";
 			}
+		}
+
+		private void LastUpdateTimeTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
+		{
+			UpdateDataFromNetwork(forceNetworkUpdate: true);
 		}
 	}
 }

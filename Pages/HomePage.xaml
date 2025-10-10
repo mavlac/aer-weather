@@ -44,14 +44,21 @@
 				</Grid>
 			</ScrollViewer>
 
-			<TextBlock x:Name="LastUpdateTimeText"
-					   Grid.Row="2"
-					   Text="Hello Footer"
+			<TextBlock Grid.Row="2"
 					   Style="{StaticResource CaptionTextBlockStyle}"
 					   VerticalAlignment="Bottom"
 					   HorizontalAlignment="Right"
 					   HorizontalTextAlignment="Right"
-					   Padding="0,0,24,16"/>
+					   Padding="0,0,24,16">
+				<Hyperlink Click="LastUpdateTimeTextHyperlink_Click"
+						   TextDecorations="None"
+						   IsTabStop="False">
+					<Run x:Name="LastUpdateTimeText"
+						 TextDecorations="None">
+						Hello Footer
+					</Run>
+				</Hyperlink>
+			</TextBlock>
 		</Grid>
 		
 		<!-- Loading Overlay -->

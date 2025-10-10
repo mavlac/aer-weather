@@ -8,6 +8,8 @@ namespace Aer
 {
 	public static class Data
 	{
+		private const float CacheValidityMinutes = 30f;
+
 		private const string LocationLabelFormat = "{0}, {1}";
 		private const string DefaultLocationName = "Prague";
 		private const string DefaultLocationCountry = "CZ";
@@ -37,7 +39,7 @@ namespace Aer
 
 		public static event Action? UpdatedFromNetwork;
 
-		public static void LoadLastSavedValues()
+		public static void LoadCacheOrDefaults()
 		{
 			// Will load location, and if valid, will load cached data.
 			// If location is not valid, will load default location and invalidate cached data flag IsWeatherDataLoaded
@@ -94,11 +96,11 @@ namespace Aer
 			IsWeatherDataLoaded = false; // New data must be loaded
 		}
 
-		public async static Task<bool> UpdateWeatherDataFromNetwork()
+		public async static Task<bool> UpdateWeatherDataFromNetwork(bool skipCache)
 		{
 			Debug.Assert(isUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
 
-			if (IsCacheValid())
+			if (IsCacheValid() && !skipCache)
 			{
 				IsWeatherDataLoaded = true;
 				return false; // means: no network update performed
@@ -123,8 +125,12 @@ namespace Aer
 
 		private static bool IsCacheValid()
 		{
-			// TODO: Replace with your own cache validity logic
-			// e.g., compare timestamp, last update time, etc.
+			if (LastUpdateTime is not null)
+			{
+				var timeSinceLastUpdate = DateTime.Now - LastUpdateTime.Value;
+				if (timeSinceLastUpdate.TotalMinutes <= CacheValidityMinutes)
+					return true;
+			}
 			return false;
 		}
 

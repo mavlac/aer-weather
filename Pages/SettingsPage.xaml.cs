@@ -198,7 +198,7 @@ namespace Aer
 			}
 
 			// 3. Reload default values into data and preferences
-			Data.LoadLastSavedValues();
+			Data.LoadCacheOrDefaults();
 			Preferences.Load();
 
 			// 4. Refresh UI with default values

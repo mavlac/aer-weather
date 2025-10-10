@@ -13,11 +13,21 @@ namespace Aer.Utils
 			var ts = now - dateTime.Value;
 
 			if (ts.TotalSeconds < 60)
+			{
 				return "just now";
+			}
+
 			if (ts.TotalMinutes < 60)
-				return $"{(int)ts.TotalMinutes} min(s) ago";
+			{
+				int minutes = (int)ts.TotalMinutes;
+				return $"{minutes} minute{(minutes > 1 ? "s" : string.Empty)} ago";
+			}
+
 			if (ts.TotalHours < 24)
-				return $"{(int)ts.TotalHours} h(s) ago";
+			{
+				int hours = (int)ts.TotalHours;
+				return $"{hours} hour{(hours > 1 ? "s" : string.Empty)} ago";
+			}
 
 			if (ts.TotalDays < 2)
 				return "yesterday";
