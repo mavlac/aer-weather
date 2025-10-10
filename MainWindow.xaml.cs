@@ -25,33 +25,22 @@ namespace Aer
 
 			WindowUtils.ApplyAppTheme(this);
 
-			this.Activated += MainWindow_Activated;
 			this.SizeChanged += MainWindow_SizeChanged;
 			this.Closed += Window_Closed;
 
 			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight);
 			NavigationViewStateManager.Restore(NavView, false);
 
+			ContentFrame.Loaded += ContentFrame_Loaded;
 			ContentFrame.Navigated += ContentFrame_Navigated;
+
 			ContentFrame.Navigate(typeof(HomePage));
 		}
 
-		private async void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+		private async void ContentFrame_Loaded(object sender, RoutedEventArgs e)
 		{
 			// TODO: Welcome
-
-			var element = (FrameworkElement)ContentFrame.Content;
-			ContentDialog testDialog = new ContentDialog
-			{
-				Title = "Title",
-				Content = "Content.",
-				CloseButtonText = "Ok",
-				RequestedTheme = element.ActualTheme
-			};
-			//set the XamlRoot property
-			testDialog.XamlRoot = element.XamlRoot;
-
-			ContentDialogResult result = await testDialog.ShowAsync();
+			await MessageBoxEx.ShowAsync("Hello!", "This is a themed WinUI message box.");
 		}
 
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
