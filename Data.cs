@@ -100,6 +100,7 @@ namespace Aer
 
 			if (IsCacheValid())
 			{
+				IsWeatherDataLoaded = true;
 				return false; // means: no network update performed
 			}
 
@@ -110,10 +111,12 @@ namespace Aer
 			await Task.Delay(1000); // Simulate network delay
 
 			// On success
+			Condition = "Light Showers";
+			Temperature = 10.758431d;
 			LastUpdateTime = DateTime.Now;
 			IsWeatherDataLoaded = true;
 			isUpdatingFromNetwork = false;
-			// TODO: SaveWeatherData();
+			SaveWeatherData();
 			UpdatedFromNetwork?.Invoke();
 			return true; // means: data was updated from network
 		}
