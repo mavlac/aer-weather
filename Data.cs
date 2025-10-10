@@ -9,11 +9,12 @@ namespace Aer
 	public static class Data
 	{
 		private const string LocationLabelFormat = "{0}, {1}";
+		private const string DefaultLocationName = "Prague";
+		private const string DefaultLocationCountry = "CZ";
 		private const double DefaultLocationLatitude = 50.08804;
 		private const double DefaultLocationLongitude = 14.42076;
 
 		private static string SettingsPrefix => nameof(Data);
-		private static string DefaultLocationLabel => string.Format(LocationLabelFormat, "Prague", "CZ");
 
 		private static bool isUpdatingFromNetwork;
 
@@ -38,8 +39,8 @@ namespace Aer
 
 		public static void LoadLastSavedValues()
 		{
-			// Will load location and if valid, will load cached data
-			// If location is not valid, will load default location and invalidate cached data
+			// Will load location, and if valid, will load cached data.
+			// If location is not valid, will load default location and invalidate cached data flag IsWeatherDataLoaded
 
 			var settings = ApplicationData.Current.LocalSettings;
 			var isSavedLocationLoadSuccessful = false;
@@ -56,24 +57,23 @@ namespace Aer
 			}
 			else
 			{
-				LocationLabel = DefaultLocationLabel;
-				LocationLatitude = DefaultLocationLatitude;
-				LocationLongitude = DefaultLocationLongitude;
+				SetLocation(DefaultLocationName, DefaultLocationCountry, DefaultLocationLatitude, DefaultLocationLongitude);
 			}
 
 			// Loading the saved weather data, only if the location was loaded successfully
 			if (isSavedLocationLoadSuccessful &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Condition)}", out var conditionNameObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Temperature)}", out var temperatureNameObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Condition)}", out var conditionObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Temperature)}", out var temperatureObj) && temperatureObj is double temperature &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LastUpdateTime)}", out var lastUpdateTimeObj) && DateTime.TryParse(lastUpdateTimeObj as string, null, DateTimeStyles.RoundtripKind, out DateTime lastUpdateDateTime))
 			{
-				Condition = (string)conditionNameObj;
-				Temperature = (double)temperatureNameObj;
+				Condition = (string)conditionObj;
+				Temperature = temperature;
 				LastUpdateTime = lastUpdateDateTime;
 				IsWeatherDataLoaded = true;
 			}
 			else
 			{
+				// Location set to defaults, or no success loading the cache
 				LastUpdateTime = null;
 				IsWeatherDataLoaded = false;
 			}
@@ -136,7 +136,7 @@ namespace Aer
 			var settings = ApplicationData.Current.LocalSettings;
 
 			settings.Values[$"{SettingsPrefix}_{nameof(Condition)}"] = Condition;
-			settings.Values[$"{SettingsPrefix}_{nameof(Temperature)}"] = Temperature.ToString();
+			settings.Values[$"{SettingsPrefix}_{nameof(Temperature)}"] = Temperature;
 			settings.Values[$"{SettingsPrefix}_{nameof(LastUpdateTime)}"] = LastUpdateTime?.ToString("o");
 		}
 	}
