@@ -27,8 +27,8 @@ namespace Aer
 
 				bool goToSettings = await MessageBoxEx.ShowAsync(
 					$"Welcome to {Package.Current.DisplayName}!",
-					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now. Set your preferred location in Settings.",
-					primaryButtonText: "Take me there");
+					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now.\r\nSet your preferred location in Settings.",
+					primaryButtonText: "Open Settings");
 
 				if (goToSettings)
 				{
