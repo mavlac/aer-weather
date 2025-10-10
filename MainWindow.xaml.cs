@@ -31,29 +31,9 @@ namespace Aer
 			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight);
 			NavigationViewStateManager.Restore(NavView, false);
 
-			ContentFrame.Loaded += ContentFrame_Loaded;
 			ContentFrame.Navigated += ContentFrame_Navigated;
 
 			ContentFrame.Navigate(typeof(HomePage));
-		}
-
-		private async void ContentFrame_Loaded(object sender, RoutedEventArgs e)
-		{
-			if (!Preferences.WasWelcomeShown)
-			{
-				Preferences.SetWelcomeShown(true);
-
-				bool goToSettings = await MessageBoxEx.ShowAsync(
-					$"Welcome to {Package.Current.DisplayName}!",
-					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now. Set your preferred location in Settings.",
-					primaryButtonText: "Take me there");
-
-				if (goToSettings)
-				{
-					// Navigate to Settings page
-					ContentFrame.Navigate(typeof(SettingsPage));
-				}
-			}
 		}
 
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
@@ -87,7 +67,7 @@ namespace Aer
 		{
 			if (args.IsSettingsSelected)
 			{
-				ContentFrame.Navigate(typeof(SettingsPage));
+				NavigateToSettingsPage();
 			}
 			else
 			{
@@ -126,6 +106,11 @@ namespace Aer
 			{
 				ContentFrame.GoBack();
 			}
+		}
+
+		public void NavigateToSettingsPage()
+		{
+			ContentFrame.Navigate(typeof(SettingsPage));
 		}
 	}
 }

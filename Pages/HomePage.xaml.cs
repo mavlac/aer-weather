@@ -2,6 +2,7 @@ using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 
 namespace Aer
 {
@@ -10,11 +11,31 @@ namespace Aer
 		public HomePage()
 		{
 			InitializeComponent();
-			
+
 			// This should be immediate, but can contain default location with no weather data
 			Data.LoadLastSavedValues();
-			
+
+			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
+		}
+
+		private async void HomePage_Loading(FrameworkElement sender, object args)
+		{
+			if (!Preferences.WasWelcomeShown)
+			{
+				Preferences.SetWelcomeShown(true);
+
+				bool goToSettings = await MessageBoxEx.ShowAsync(
+					$"Welcome to {Package.Current.DisplayName}!",
+					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now. Set your preferred location in Settings.",
+					primaryButtonText: "Take me there");
+
+				if (goToSettings)
+				{
+					// Navigate to Settings page
+					App.MainWindow.NavigateToSettingsPage();
+				}
+			}
 		}
 
 		private async void HomePage_Loaded(object sender, RoutedEventArgs e)
@@ -59,7 +80,7 @@ namespace Aer
 				SubHeaderText.Text = Data.LocationLabel;
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.LastUpdateTime));
-				
+
 				// TODO: Draw the chart
 			}
 			else
