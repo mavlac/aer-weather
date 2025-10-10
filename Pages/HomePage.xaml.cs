@@ -1,7 +1,6 @@
 using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
 using System.Threading.Tasks;
 
 namespace Aer
@@ -54,8 +53,8 @@ namespace Aer
 		{
 			if (Data.IsWeatherDataLoaded)
 			{
-				// Condition
-				HeaderText.Text = string.Format("{0}, {1} {2}", Data.Condition, Data.Temperature, Preferences.TemperatureUnits.ToUnitString());
+				// Condition + Temperature
+				HeaderText.Text = string.Format("{0}, {1}", Data.Condition, Data.ReadableTemperature);
 				// Location
 				SubHeaderText.Text = Data.LocationLabel;
 				// Last updated
@@ -67,13 +66,13 @@ namespace Aer
 			{
 				// No data at all
 				// There should always be at least some cache, no matter how valid.
-				// This means that app is started first time ever or settings were cleared.
+				// This means that app is started a first time or settings were cleared.
 
-				// Condition unknown
+				// Condition - unknown
 				HeaderText.Text = "No data";
-				// Location
+				// Location - always known
 				SubHeaderText.Text = Data.LocationLabel;
-				// Last updated unknown
+				// Last updated - unknown
 				LastUpdateTimeText.Text = "Loading from network…";
 			}
 		}

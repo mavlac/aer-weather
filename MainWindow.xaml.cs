@@ -3,7 +3,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Linq;
+using System.Xml.Linq;
 using Windows.ApplicationModel;
+using Windows.Devices.Enumeration;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -23,6 +25,7 @@ namespace Aer
 
 			WindowUtils.ApplyAppTheme(this);
 
+			this.Activated += MainWindow_Activated;
 			this.SizeChanged += MainWindow_SizeChanged;
 			this.Closed += Window_Closed;
 
@@ -31,6 +34,24 @@ namespace Aer
 
 			ContentFrame.Navigated += ContentFrame_Navigated;
 			ContentFrame.Navigate(typeof(HomePage));
+		}
+
+		private async void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+		{
+			// TODO: Welcome
+
+			var element = (FrameworkElement)ContentFrame.Content;
+			ContentDialog testDialog = new ContentDialog
+			{
+				Title = "Title",
+				Content = "Content.",
+				CloseButtonText = "Ok",
+				RequestedTheme = element.ActualTheme
+			};
+			//set the XamlRoot property
+			testDialog.XamlRoot = element.XamlRoot;
+
+			ContentDialogResult result = await testDialog.ShowAsync();
 		}
 
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)

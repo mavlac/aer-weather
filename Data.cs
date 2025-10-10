@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -11,9 +12,10 @@ namespace Aer
 		private const double DefaultLocationLatitude = 50.08804;
 		private const double DefaultLocationLongitude = 14.42076;
 
+		private static string SettingsPrefix => nameof(Data);
 		private static string DefaultLocationLabel => string.Format(LocationLabelFormat, "Prague", "CZ");
 
-		private static string SettingsPrefix => nameof(Data);
+		private static bool isUpdatingFromNetwork;
 
 		public static string? LocationLabel { get; private set; }
 		public static double? LocationLatitude { get; private set; }
@@ -21,14 +23,16 @@ namespace Aer
 
 		public static bool IsWeatherDataLoaded { get; private set; }
 		public static string? Condition { get; private set; }
-		public static string? Temperature { get; private set; }
+		public static double? Temperature { get; private set; } // Stored in Celsius
 		public static DateTime? LastUpdateTime { get; private set; }
 
 		/// <summary>
 		/// Readable Latitude and Longitude. Both values are stored separately.
 		/// </summary>
 		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString(CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString(CultureInfo.InvariantCulture)}";
-		public static bool IsUpdatingFromNetwork { get; private set; }
+		public static string ReadableTemperature => Preferences.TemperatureUnits == Preferences.TemperatureUnit.Celsius ? ReadableTemperatureCelsius : ReadableTemperatureFahrenheit;
+		public static string ReadableTemperatureCelsius => Temperature is null ? "—" : $"{Math.Round(Temperature.Value)} {Preferences.TemperatureUnit.Celsius.ToUnitString()}";
+		public static string ReadableTemperatureFahrenheit => Temperature is null ? "—" : $"{Math.Round(Temperature.Value * 1.8d + 32)} {Preferences.TemperatureUnit.Fahrenheit.ToUnitString()}";
 
 		public static event Action? UpdatedFromNetwork;
 
@@ -64,7 +68,7 @@ namespace Aer
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LastUpdateTime)}", out var lastUpdateTimeObj) && DateTime.TryParse(lastUpdateTimeObj as string, null, DateTimeStyles.RoundtripKind, out DateTime lastUpdateDateTime))
 			{
 				Condition = (string)conditionNameObj;
-				Temperature = (string)temperatureNameObj;
+				Temperature = (double)temperatureNameObj;
 				LastUpdateTime = lastUpdateDateTime;
 				IsWeatherDataLoaded = true;
 			}
@@ -92,12 +96,14 @@ namespace Aer
 
 		public async static Task<bool> UpdateWeatherDataFromNetwork()
 		{
+			Debug.Assert(isUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
+
 			if (IsCacheValid())
 			{
 				return false; // means: no network update performed
 			}
 
-			IsUpdatingFromNetwork = true;
+			isUpdatingFromNetwork = true;
 
 			// TODO: implement loading from data provider
 
@@ -106,7 +112,7 @@ namespace Aer
 			// On success
 			LastUpdateTime = DateTime.Now;
 			IsWeatherDataLoaded = true;
-			IsUpdatingFromNetwork = false;
+			isUpdatingFromNetwork = false;
 			// TODO: SaveWeatherData();
 			UpdatedFromNetwork?.Invoke();
 			return true; // means: data was updated from network
@@ -121,13 +127,13 @@ namespace Aer
 
 		private static void SaveWeatherData()
 		{
-			if (!IsWeatherDataLoaded || IsUpdatingFromNetwork)
+			if (!IsWeatherDataLoaded || isUpdatingFromNetwork)
 				throw new InvalidOperationException("Data must be loaded and no update should be running, before data can be saved.");
 
 			var settings = ApplicationData.Current.LocalSettings;
 
 			settings.Values[$"{SettingsPrefix}_{nameof(Condition)}"] = Condition;
-			settings.Values[$"{SettingsPrefix}_{nameof(Temperature)}"] = Temperature;
+			settings.Values[$"{SettingsPrefix}_{nameof(Temperature)}"] = Temperature.ToString();
 			settings.Values[$"{SettingsPrefix}_{nameof(LastUpdateTime)}"] = LastUpdateTime?.ToString("o");
 		}
 	}
