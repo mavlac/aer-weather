@@ -14,7 +14,7 @@
 	</Window.SystemBackdrop>
 
 	<NavigationView x:Name="NavView"
-					IsBackButtonVisible="Collapsed"
+					IsBackButtonVisible="Auto"
 					IsSettingsVisible="True"
 					PaneDisplayMode="Left"
 					BackRequested="NavView_BackRequested"

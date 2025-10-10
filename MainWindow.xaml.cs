@@ -25,6 +25,7 @@ namespace Aer
 
 			WindowUtils.ApplyAppTheme(this);
 
+			this.Activated += MainWindow_Activated;
 			this.SizeChanged += MainWindow_SizeChanged;
 			this.Closed += Window_Closed;
 
@@ -35,6 +36,11 @@ namespace Aer
 			ContentFrame.Navigated += ContentFrame_Navigated;
 
 			ContentFrame.Navigate(typeof(HomePage));
+		}
+
+		private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+		{
+			WindowUtils.UpdateTitleBarDraggableArea(this);
 		}
 
 		private async void ContentFrame_Loaded(object sender, RoutedEventArgs e)
@@ -54,6 +60,8 @@ namespace Aer
 
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
 		{
+			WindowUtils.UpdateTitleBarDraggableArea(this);
+
 			// Nav Pane Responsivity
 			if (e.Size.Width < (double)Application.Current.Resources["Breakpoint840Plus"])
 			{
