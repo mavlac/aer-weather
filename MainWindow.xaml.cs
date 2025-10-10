@@ -39,8 +39,17 @@ namespace Aer
 
 		private async void ContentFrame_Loaded(object sender, RoutedEventArgs e)
 		{
-			// TODO: Welcome
-			await MessageBoxEx.ShowAsync("Hello!", "This is a themed WinUI message box.");
+			// TODO: Welcome condition
+			bool goToSettings = await MessageBoxEx.ShowAsync(
+				$"Welcome to {Package.Current.DisplayName}!",
+				"Thank you for using my weather app.\r\n\r\nThe default location is shown for now. Set your preferred location in Settings.",
+				primaryButtonText: "Take me there");
+
+			if (goToSettings)
+			{
+				// Navigate to Settings page
+				ContentFrame.Navigate(typeof(SettingsPage));
+			}
 		}
 
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
