@@ -38,7 +38,7 @@ namespace Aer
 			}
 		}
 
-		private async void HomePage_Loaded(object sender, RoutedEventArgs e)
+		private void HomePage_Loaded(object sender, RoutedEventArgs e)
 		{
 			// Show whatever is available immediately
 			// Can be default location with no weather data, can be old cached data, can be valid current data

@@ -49,14 +49,14 @@
 					   VerticalAlignment="Bottom"
 					   HorizontalAlignment="Right"
 					   HorizontalTextAlignment="Right"
-					   Padding="0,0,24,16">
+					   Padding="0,0,24,16"
+					   ToolTipService.ToolTip="Click to force-update from network">
 				<Hyperlink Click="LastUpdateTimeTextHyperlink_Click"
 						   TextDecorations="None"
 						   IsTabStop="False">
 					<Run x:Name="LastUpdateTimeText"
 						 Text="Hello Footer"
-						 TextDecorations="None"
-						 ToolTipService.ToolTip="Click to force-update from network" />
+						 TextDecorations="None" />
 				</Hyperlink>
 			</TextBlock>
 		</Grid>

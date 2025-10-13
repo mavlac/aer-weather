@@ -98,7 +98,6 @@
 								   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 								   Text="{x:Bind AppVersion}" />
 						<controls:SettingsExpander.Items>
-							<!-- TODO -->
 							<controls:SettingsCard x:Name="GitHubRepoCard"
 												   Click="GitHubRepoCard_Click"
 												   Header="GitHub repository"
