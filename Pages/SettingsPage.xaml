@@ -102,6 +102,7 @@
 												   Click="GitHubRepoCard_Click"
 												   Header="GitHub repository"
 												   IsClickEnabled="True"
+												   Cursor="Hand"
 												   DataContext="{StaticResource GitHubRepositoryUrl}">
 								<controls:SettingsCard.ActionIcon>
 									<FontIcon Glyph="&#xE8A7;" /><!-- OpenInNewWindow Icon -->

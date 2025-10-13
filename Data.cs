@@ -10,7 +10,7 @@ namespace Aer
 	{
 		private const float CacheValidityMinutes = 30f;
 
-		private const string LocationLabelFormat = "{0}, {1}";
+		private const string LocationLabelFormat = "{0}, {1}"; // Name, Country
 		private const string DefaultLocationName = "Prague";
 		private const string DefaultLocationCountry = "CZ";
 		private const double DefaultLocationLatitude = 50.08804;
@@ -26,13 +26,16 @@ namespace Aer
 
 		public static bool IsWeatherDataLoaded { get; private set; }
 		public static string? Condition { get; private set; }
-		public static double? Temperature { get; private set; } // Stored in Celsius
+		public static double? Temperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
 		public static DateTime? LastUpdateTime { get; private set; }
 
 		/// <summary>
 		/// Readable Latitude and Longitude. Both values are stored separately.
 		/// </summary>
 		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString(CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString(CultureInfo.InvariantCulture)}";
+		/// <summary>
+		/// Readable Temperature - value with units based on stored measurement preference.
+		/// </summary>
 		public static string ReadableTemperature => Preferences.TemperatureUnits == Preferences.TemperatureUnit.Celsius ? ReadableTemperatureCelsius : ReadableTemperatureFahrenheit;
 		public static string ReadableTemperatureCelsius => Temperature is null ? "—" : $"{Math.Round(Temperature.Value)} {Preferences.TemperatureUnit.Celsius.ToUnitString()}";
 		public static string ReadableTemperatureFahrenheit => Temperature is null ? "—" : $"{Math.Round(Temperature.Value * 1.8d + 32)} {Preferences.TemperatureUnit.Fahrenheit.ToUnitString()}";
