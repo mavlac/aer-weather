@@ -92,7 +92,7 @@ namespace Aer
 				// Location
 				SubHeaderText.Text = Data.LocationLabel;
 				// Last updated
-				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.LastUpdateTime));
+				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
 
 				// TODO: Draw the chart
 			}
