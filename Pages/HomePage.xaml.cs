@@ -66,7 +66,7 @@ namespace Aer
 			// Await completion (still necessary to observe exceptions etc.)
 			bool wasUpdated = await updateTask;
 
-			// If nothing was wasUpdated or it finished, does not matter, hide loader
+			// Whatever happened, does not matter, hide loader
 			LoadingOverlay.Visibility = Visibility.Collapsed;
 
 			if (!wasUpdated)
@@ -85,10 +85,10 @@ namespace Aer
 
 		private void UpdatePageDataContent()
 		{
-			if (Data.IsWeatherDataLoaded)
+			if (Data.IsCacheDataValid)
 			{
-				// Condition + Temperature
-				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.Condition);
+				// CachedCondition + CachedTemperature
+				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.CachedCondition);
 				// Location
 				SubHeaderText.Text = Data.LocationLabel;
 				// Last updated
@@ -102,7 +102,7 @@ namespace Aer
 				// There should always be at least some cache, no matter how valid.
 				// This means that app is started a first time or settings were cleared.
 
-				// Condition - unknown
+				// CachedCondition - unknown
 				HeaderText.Text = "No data";
 				// Location - always known
 				SubHeaderText.Text = Data.LocationLabel;

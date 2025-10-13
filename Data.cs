@@ -11,6 +11,7 @@ namespace Aer
 		private const float CacheValidityMinutes = 30f;
 
 		private const string LocationLabelFormat = "{0}, {1}"; // Name, Country
+		private const int DefaultLocationID = 3067696;
 		private const string DefaultLocationName = "Prague";
 		private const string DefaultLocationCountry = "CZ";
 		private const double DefaultLocationLatitude = 50.08804;
@@ -20,41 +21,46 @@ namespace Aer
 
 		private static bool isUpdatingFromNetwork;
 
+		public static int? LocationID { get; private set; }
 		public static string? LocationLabel { get; private set; }
 		public static double? LocationLatitude { get; private set; }
 		public static double? LocationLongitude { get; private set; }
 
-		public static bool IsWeatherDataLoaded { get; private set; }
-		public static string? Condition { get; private set; }
-		public static double? Temperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
+		public static int? CachedDataLocationID { get; private set; }
+		public static string? CachedCondition { get; private set; }
+		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
 		public static DateTime? LastUpdateTime { get; private set; }
+		public static bool IsCacheDataValid { get; private set; }
 
 		/// <summary>
 		/// Readable Latitude and Longitude. Both values are stored separately.
 		/// </summary>
 		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString(CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString(CultureInfo.InvariantCulture)}";
 		/// <summary>
-		/// Readable Temperature - value with units based on stored measurement preference.
+		/// Readable CachedTemperature - value with units based on stored measurement preference.
 		/// </summary>
 		public static string ReadableTemperature => Preferences.TemperatureUnits == Preferences.TemperatureUnit.Celsius ? ReadableTemperatureCelsius : ReadableTemperatureFahrenheit;
-		public static string ReadableTemperatureCelsius => Temperature is null ? "—" : $"{Math.Round(Temperature.Value)} {Preferences.TemperatureUnit.Celsius.ToUnitString()}";
-		public static string ReadableTemperatureFahrenheit => Temperature is null ? "—" : $"{Math.Round(Temperature.Value * 1.8d + 32)} {Preferences.TemperatureUnit.Fahrenheit.ToUnitString()}";
+		public static string ReadableTemperatureCelsius => CachedTemperature is null ? "—" : $"{Math.Round(CachedTemperature.Value)} {Preferences.TemperatureUnit.Celsius.ToUnitString()}";
+		public static string ReadableTemperatureFahrenheit => CachedTemperature is null ? "—" : $"{Math.Round(CachedTemperature.Value * 1.8d + 32)} {Preferences.TemperatureUnit.Fahrenheit.ToUnitString()}";
 
 		public static event Action? UpdatedFromNetwork;
 
 		public static void LoadCacheOrDefaults()
 		{
 			// Will load location, and if valid, will load cached data.
-			// If location is not valid, will load default location and invalidate cached data flag IsWeatherDataLoaded
+			// If location is not valid, will load default location and invalidate cached data flag IsCacheDataValid
 
 			var settings = ApplicationData.Current.LocalSettings;
-			var isSavedLocationLoadSuccessful = false;
+			bool isSavedLocationLoadSuccessful;
+			bool isCachedDataMatchingLocation;
 
-			// Loading the saved location
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLabel)}", out var locationLabelObj) &&
+			// Loading the saved location details
+			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationID)}", out var locationIDObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLabel)}", out var locationLabelObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLatitude)}", out var locationLatitudeObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLongitude)}", out var locationLongitudeObj))
 			{
+				LocationID = (int)locationIDObj;
 				LocationLabel = (string)locationLabelObj;
 				LocationLatitude = (double)locationLatitudeObj;
 				LocationLongitude = (double)locationLongitudeObj;
@@ -62,51 +68,67 @@ namespace Aer
 			}
 			else
 			{
-				SetLocation(DefaultLocationName, DefaultLocationCountry, DefaultLocationLatitude, DefaultLocationLongitude);
+				SetLocation(DefaultLocationID, DefaultLocationName, DefaultLocationCountry, DefaultLocationLatitude, DefaultLocationLongitude);
+				isSavedLocationLoadSuccessful = false;
+			}
+
+			// Getting the cached location to compare with loaded location (cache can be fine, but location changed meanwhile)
+			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedDataLocationID)}", out var cachedDataLocationIDObj))
+			{
+				CachedDataLocationID = (int)cachedDataLocationIDObj;
+				isCachedDataMatchingLocation = CachedDataLocationID == LocationID;
+			}
+			else
+			{
+				isCachedDataMatchingLocation = false;
 			}
 
 			// Loading the saved weather data, only if the location was loaded successfully
 			if (isSavedLocationLoadSuccessful &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Condition)}", out var conditionObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(Temperature)}", out var temperatureObj) && temperatureObj is double temperature &&
+				isCachedDataMatchingLocation &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedCondition)}", out var cachedConditionObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedTemperature)}", out var cachedTemperatureObj) && cachedTemperatureObj is double temperature &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LastUpdateTime)}", out var lastUpdateTimeObj) && DateTime.TryParse(lastUpdateTimeObj as string, null, DateTimeStyles.RoundtripKind, out DateTime lastUpdateDateTime))
 			{
-				Condition = (string)conditionObj;
-				Temperature = temperature;
+				CachedCondition = (string)cachedConditionObj;
+				CachedTemperature = temperature;
 				LastUpdateTime = lastUpdateDateTime;
-				IsWeatherDataLoaded = true;
+				IsCacheDataValid = true;
 			}
 			else
 			{
-				// Location set to defaults, or no success loading the cache
+				// Location set to defaults
+				// or cached data from another location
+				// or no success loading the cache
 				LastUpdateTime = null;
-				IsWeatherDataLoaded = false;
+				IsCacheDataValid = false;
 			}
 		}
 
-		public static void SetLocation(string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
+		public static void SetLocation(int id, string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
 		{
+			LocationID = id;
 			LocationLabel = string.Format(LocationLabelFormat, newLocationName, newLocationCountry);
 			LocationLatitude = newLocationLatitude;
 			LocationLongitude = newLocationLongitude;
 
 			var settings = ApplicationData.Current.LocalSettings;
 
+			settings.Values[$"{SettingsPrefix}_{nameof(LocationID)}"] = LocationID;
 			settings.Values[$"{SettingsPrefix}_{nameof(LocationLabel)}"] = LocationLabel;
 			settings.Values[$"{SettingsPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
 			settings.Values[$"{SettingsPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
 
-			IsWeatherDataLoaded = false; // New data must be loaded
+			IsCacheDataValid = false; // New data must be loaded always after location change
 		}
 
 		public async static Task<bool> UpdateWeatherDataFromNetwork(bool skipCache)
 		{
 			Debug.Assert(isUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
 
-			if (IsCacheValid() && !skipCache)
+			if (IsCacheDataValid && IsCachedDataRecentEnough() && !skipCache)
 			{
-				IsWeatherDataLoaded = true;
-				return false; // means: no network update performed
+				return true; // means ok: no network update performed, because wasn't needed
 			}
 
 			isUpdatingFromNetwork = true;
@@ -115,18 +137,33 @@ namespace Aer
 
 			await Task.Delay(1000); // Simulate network delay
 
+			// TODO: return false on network error
+
 			// On success
-			Condition = "Light Showers";
-			Temperature = 10.758431d;
+			CachedCondition = "Light Showers";
+			CachedTemperature = 10.758431d;
 			LastUpdateTime = DateTime.Now;
-			IsWeatherDataLoaded = true;
+			IsCacheDataValid = true;
 			isUpdatingFromNetwork = false;
 			SaveWeatherData();
 			UpdatedFromNetwork?.Invoke();
-			return true; // means: data was updated from network
+			return true; // means ok: data was updated from network
 		}
 
-		private static bool IsCacheValid()
+		private static void SaveWeatherData()
+		{
+			Debug.Assert(isUpdatingFromNetwork is false, "SaveWeatherData called while an update is in progress.");
+			Debug.Assert(IsCacheDataValid, "SaveWeatherData called while weather data is not valid.");
+
+			var settings = ApplicationData.Current.LocalSettings;
+
+			settings.Values[$"{SettingsPrefix}_{nameof(CachedDataLocationID)}"] = CachedDataLocationID;
+			settings.Values[$"{SettingsPrefix}_{nameof(CachedCondition)}"] = CachedCondition;
+			settings.Values[$"{SettingsPrefix}_{nameof(CachedTemperature)}"] = CachedTemperature;
+			settings.Values[$"{SettingsPrefix}_{nameof(LastUpdateTime)}"] = LastUpdateTime?.ToString("o");
+		}
+
+		private static bool IsCachedDataRecentEnough()
 		{
 			if (LastUpdateTime is not null)
 			{
@@ -135,18 +172,6 @@ namespace Aer
 					return true;
 			}
 			return false;
-		}
-
-		private static void SaveWeatherData()
-		{
-			if (!IsWeatherDataLoaded || isUpdatingFromNetwork)
-				throw new InvalidOperationException("Data must be loaded and no update should be running, before data can be saved.");
-
-			var settings = ApplicationData.Current.LocalSettings;
-
-			settings.Values[$"{SettingsPrefix}_{nameof(Condition)}"] = Condition;
-			settings.Values[$"{SettingsPrefix}_{nameof(Temperature)}"] = Temperature;
-			settings.Values[$"{SettingsPrefix}_{nameof(LastUpdateTime)}"] = LastUpdateTime?.ToString("o");
 		}
 	}
 }

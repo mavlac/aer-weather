@@ -29,6 +29,7 @@ namespace Aer.Utils
 				var parts = line.Split('\t');
 				if (parts.Length < 9) continue;
 
+				int id = int.Parse(parts[0], CultureInfo.InvariantCulture); // name of geographical point (utf8)
 				string name = parts[1]; // name of geographical point (utf8)
 				string nameASCII = parts[2]; // name of geographical point in plain ascii characters, varchar(200)
 				string alternatenames = parts[3]; // alternate names, comma separated, ascii names automatically transliterated
@@ -38,13 +39,13 @@ namespace Aer.Utils
 				double longitude = double.Parse(parts[5], CultureInfo.InvariantCulture);
 				int population = int.Parse(parts[14], CultureInfo.InvariantCulture);
 
-				allGeoNamesLocations.Add(new GeoNamesLocation(name, nameASCII, alternatenames, country, admin1Code, latitude, longitude, population));
+				allGeoNamesLocations.Add(new GeoNamesLocation(id, name, nameASCII, alternatenames, country, admin1Code, latitude, longitude, population));
 			}
 
 			Debug.WriteLine($"Loaded {allGeoNamesLocations.Count} locations from {path}");
 			IsLoading = false;
 		}
 
-		public record GeoNamesLocation(string Name, string NameASCII, string AlternateNames, string Country, string Admin1Code, double Latitude, double Longitude, int Population);
+		public record GeoNamesLocation(int ID, string Name, string NameASCII, string AlternateNames, string Country, string Admin1Code, double Latitude, double Longitude, int Population);
 	}
 }

@@ -43,7 +43,7 @@ namespace Aer
 				{
 					// Open the URL in default browser
 					var uri = new Uri(url);
-					await Windows.System.Launcher.LaunchUriAsync(uri);
+					await Launcher.LaunchUriAsync(uri);
 				}
 			}
 		}
@@ -134,12 +134,10 @@ namespace Aer
 			{
 				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
 
-				Data.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
+				Data.SetLocation(location.ID, location.Name, location.Country, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
-				//sender.SetValue(AutoSuggestBox.TextProperty, "");
 
-				// TODO
-				//Data.UpdateWeatherDataFromNetwork();
+				// Data will update when showing the HomePage
 			}
 		}
 		#endregion
