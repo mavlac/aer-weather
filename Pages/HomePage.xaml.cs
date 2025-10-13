@@ -88,7 +88,7 @@ namespace Aer
 			if (Data.IsWeatherDataLoaded)
 			{
 				// Condition + Temperature
-				HeaderText.Text = string.Format("{0}, {1}", Data.Condition, Data.ReadableTemperature);
+				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.Condition);
 				// Location
 				SubHeaderText.Text = Data.LocationLabel;
 				// Last updated

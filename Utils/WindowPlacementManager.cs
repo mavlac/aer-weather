@@ -1,6 +1,8 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using System;
+using System.Runtime.InteropServices;
 using Windows.Graphics;
 using Windows.Storage;
 using WinRT.Interop;
@@ -9,6 +11,9 @@ namespace Aer.Utils
 {
 	public static class WindowPlacementManager
 	{
+		[DllImport("User32.dll")]
+		private static extern int GetDpiForWindow(IntPtr hwnd);
+		
 		public static string SettingsPrefix => nameof(WindowPlacementManager);
 
 		public static void Save(Window window)
@@ -16,15 +21,19 @@ namespace Aer.Utils
 			var appWindow = WindowUtils.GetAppWindow(window);
 			if (appWindow == null) return;
 
+			var hwnd = WindowNative.GetWindowHandle(window);
+			var dpi = GetDpiForWindow(hwnd);
+			double scale = dpi / 96.0;
+
 			var settings = ApplicationData.Current.LocalSettings;
 
 			var pos = appWindow.Position;
 			var size = appWindow.Size;
 
-			settings.Values[$"{SettingsPrefix}_X"] = pos.X;
-			settings.Values[$"{SettingsPrefix}_Y"] = pos.Y;
-			settings.Values[$"{SettingsPrefix}_W"] = size.Width;
-			settings.Values[$"{SettingsPrefix}_H"] = size.Height;
+			settings.Values[$"{SettingsPrefix}_X"] = (int)(pos.X / scale);
+			settings.Values[$"{SettingsPrefix}_Y"] = (int)(pos.Y / scale);
+			settings.Values[$"{SettingsPrefix}_W"] = (int)(size.Width / scale);
+			settings.Values[$"{SettingsPrefix}_H"] = (int)(size.Height / scale);
 
 			// SaveWeatherData maximized state (ignore minimized)
 			settings.Values[$"{SettingsPrefix}_IsMaximized"] =
@@ -37,6 +46,10 @@ namespace Aer.Utils
 			var appWindow = WindowUtils.GetAppWindow(window);
 			if (appWindow == null) return;
 
+			var hwnd = WindowNative.GetWindowHandle(window);
+			var dpi = GetDpiForWindow(hwnd);
+			double scale = dpi / 96.0;
+
 			var settings = ApplicationData.Current.LocalSettings;
 
 			// try size + position
@@ -45,10 +58,10 @@ namespace Aer.Utils
 				settings.Values.TryGetValue($"{SettingsPrefix}_X", out var xObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_Y", out var yObj))
 			{
-				int x = (int)xObj;
-				int y = (int)yObj;
-				int width = (int)wObj;
-				int height = (int)hObj;
+				int x = (int)((int)xObj * scale);
+				int y = (int)((int)yObj * scale);
+				int width = (int)((int)wObj * scale);
+				int height = (int)((int)hObj * scale);
 
 				var rect = new RectInt32(x, y, width, height);
 
@@ -58,7 +71,7 @@ namespace Aer.Utils
 				}
 				else
 				{
-					appWindow.Resize(new SizeInt32(defaultWidth, defaultHeight));
+					appWindow.Resize(new SizeInt32((int)(defaultWidth * scale), (int)(defaultHeight * scale)));
 				}
 			}
 			else
