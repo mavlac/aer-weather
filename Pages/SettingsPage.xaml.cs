@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
+using Windows.System;
 
 namespace Aer
 {
@@ -173,6 +174,16 @@ namespace Aer
 		#endregion
 
 		#region About and Debug
+		private async void GitHubRepoCard_Click(object sender, RoutedEventArgs e)
+		{
+			if (sender is FrameworkElement card &&
+				card.DataContext is string url &&
+				Uri.TryCreate(url, UriKind.Absolute, out var uri))
+			{
+				await Launcher.LaunchUriAsync(uri);
+			}
+		}
+
 		public string? WindowSizeInfoText()
 		{
 			if (App.MainWindow == null) return null;
@@ -206,5 +217,5 @@ namespace Aer
 			UpdatePreferences();
 		}
 		#endregion
-    }
+	}
 }

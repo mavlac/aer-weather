@@ -54,9 +54,9 @@
 						   TextDecorations="None"
 						   IsTabStop="False">
 					<Run x:Name="LastUpdateTimeText"
-						 TextDecorations="None">
-						Hello Footer
-					</Run>
+						 Text="Hello Footer"
+						 TextDecorations="None"
+						 ToolTipService.ToolTip="Click to force-update from network" />
 				</Hyperlink>
 			</TextBlock>
 		</Grid>

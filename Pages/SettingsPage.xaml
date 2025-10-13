@@ -98,11 +98,26 @@
 								   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 								   Text="{x:Bind AppVersion}" />
 						<controls:SettingsExpander.Items>
+							<!-- TODO -->
+							<controls:SettingsCard x:Name="GitHubRepoCard"
+												   Click="GitHubRepoCard_Click"
+												   Header="GitHub repository"
+												   IsClickEnabled="True"
+												   DataContext="{StaticResource GitHubRepositoryUrl}">
+								<controls:SettingsCard.ActionIcon>
+									<FontIcon Glyph="&#xE8A7;"  FontFamily="Segoe MDL2 Assets"/><!-- OpenInNewWindow Icon -->
+								</controls:SettingsCard.ActionIcon>
+							</controls:SettingsCard>
 							<controls:SettingsCard HorizontalContentAlignment="Left"
 												   ContentAlignment="Vertical"
 												   Header="Dependencies &amp; References">
 								<StackPanel Margin="-12,0,0,0"
 											Orientation="Vertical">
+									<HyperlinkButton Click="HyperlinkButton_Click">
+										<TextBlock Text="Open-Meteo weather API"
+												   TextDecorations="Underline"
+												   DataContext="https://open-meteo.com/"/>
+									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click">
 										<TextBlock Text="GeoNames Geographical Database"
 												   TextDecorations="Underline"
