@@ -47,7 +47,18 @@ namespace Aer
 				}
 			}
 		}
-
+		
+		// Generic handler for all hyperlink SettingsCard clicks
+		private async void HyperlinkSettingsCard_Click(object sender, RoutedEventArgs e)
+		{
+			if (sender is FrameworkElement card &&
+				card.DataContext is string url &&
+				Uri.TryCreate(url, UriKind.Absolute, out var uri))
+			{
+				await Launcher.LaunchUriAsync(uri);
+			}
+		}
+	
 		#region Location
 		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
 		{
@@ -173,16 +184,6 @@ namespace Aer
 		#endregion
 
 		#region About and Debug
-		private async void GitHubRepoCard_Click(object sender, RoutedEventArgs e)
-		{
-			if (sender is FrameworkElement card &&
-				card.DataContext is string url &&
-				Uri.TryCreate(url, UriKind.Absolute, out var uri))
-			{
-				await Launcher.LaunchUriAsync(uri);
-			}
-		}
-
 		public string? WindowSizeInfoText()
 		{
 			if (App.MainWindow == null) return null;

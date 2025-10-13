@@ -98,12 +98,18 @@
 								   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 								   Text="{x:Bind AppVersion}" />
 						<controls:SettingsExpander.Items>
-							<controls:SettingsCard x:Name="GitHubRepoCard"
-												   Click="GitHubRepoCard_Click"
-												   Header="GitHub repository"
+							<controls:SettingsCard Click="HyperlinkSettingsCard_Click"
 												   IsClickEnabled="True"
-												   Cursor="Hand"
+												   Header="GitHub repository"
 												   DataContext="{StaticResource GitHubRepositoryUrl}">
+								<controls:SettingsCard.ActionIcon>
+									<FontIcon Glyph="&#xE8A7;" /><!-- OpenInNewWindow Icon -->
+								</controls:SettingsCard.ActionIcon>
+							</controls:SettingsCard>
+							<controls:SettingsCard Click="HyperlinkSettingsCard_Click"
+												   IsClickEnabled="True"
+												   Header="Privacy statement"
+												   DataContext="{StaticResource PrivacyStatementUrl}">
 								<controls:SettingsCard.ActionIcon>
 									<FontIcon Glyph="&#xE8A7;" /><!-- OpenInNewWindow Icon -->
 								</controls:SettingsCard.ActionIcon>

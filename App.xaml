@@ -16,6 +16,7 @@
 			<!--  Constants  -->
 			<x:String x:Key="HomePageNavigationTag">home</x:String>
 			<x:String x:Key="GitHubRepositoryUrl">https://github.com/mavlac/aer-weather</x:String>
+			<x:String x:Key="PrivacyStatementUrl">https://github.com/mavlac/aer-weather/blob/main/PRIVACY.md</x:String>
 			
 			<!--  Breakpoints  -->
 			<x:Double x:Key="Breakpoint1008Plus">1008</x:Double>
