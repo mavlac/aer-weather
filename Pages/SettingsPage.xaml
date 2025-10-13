@@ -59,7 +59,7 @@
 					<controls:SettingsCard Header="Units"
 										   Description="Show temperature measurements in">
 						<controls:SettingsCard.HeaderIcon>
-							<FontIcon Glyph="&#xECC6;" FontFamily="Segoe MDL2 Assets"/><!-- Unit (Ruler) Icon -->
+							<FontIcon Glyph="&#xECC6;" /><!-- Unit (Ruler) Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<controls:Segmented Name="TempUnitSelector"
 											SelectionChanged="TempUnitSelector_SelectionChanged"
@@ -73,7 +73,7 @@
 					
 					<controls:SettingsCard Description="Select which app theme to display" Header="App theme">
 						<controls:SettingsCard.HeaderIcon>
-							<FontIcon Glyph="&#xE790;" FontFamily="Segoe MDL2 Assets"/><!-- Color (Palette) Icon -->
+							<FontIcon Glyph="&#xE790;" /><!-- Color (Palette) Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<ComboBox x:Name="AppThemeSelector"
 								  SelectionChanged="AppThemeSelector_SelectionChanged"
@@ -104,7 +104,7 @@
 												   IsClickEnabled="True"
 												   DataContext="{StaticResource GitHubRepositoryUrl}">
 								<controls:SettingsCard.ActionIcon>
-									<FontIcon Glyph="&#xE8A7;"  FontFamily="Segoe MDL2 Assets"/><!-- OpenInNewWindow Icon -->
+									<FontIcon Glyph="&#xE8A7;" /><!-- OpenInNewWindow Icon -->
 								</controls:SettingsCard.ActionIcon>
 							</controls:SettingsCard>
 							<controls:SettingsCard HorizontalContentAlignment="Left"
