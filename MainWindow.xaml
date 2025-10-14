@@ -13,19 +13,21 @@
 		<MicaBackdrop />
 	</Window.SystemBackdrop>
 
-	<NavigationView x:Name="NavView"
-					IsBackButtonVisible="Auto"
-					IsSettingsVisible="True"
-					PaneDisplayMode="Left"
-					BackRequested="NavView_BackRequested"
-					SelectionChanged="NavView_SelectionChanged">
+	<Grid x:Name="RootGrid">
+		<NavigationView x:Name="NavView"
+						IsBackButtonVisible="Auto"
+						IsSettingsVisible="True"
+						PaneDisplayMode="Left"
+						BackRequested="NavView_BackRequested"
+						SelectionChanged="NavView_SelectionChanged">
 
-		<!-- Navigation -->
-		<NavigationView.MenuItems>
-			<NavigationViewItem Content="Home" Icon="Home" Tag="{StaticResource HomePageNavigationTag}"/>
-		</NavigationView.MenuItems>
+			<!-- Navigation -->
+			<NavigationView.MenuItems>
+				<NavigationViewItem Content="Home" Icon="Home" Tag="{StaticResource HomePageNavigationTag}"/>
+			</NavigationView.MenuItems>
 
-		<!-- Frame to host pages -->
-		<Frame x:Name="ContentFrame"/>
-	</NavigationView>
+			<!-- Frame to host pages -->
+			<Frame x:Name="ContentFrame"/>
+		</NavigationView>
+	</Grid>
 </Window>

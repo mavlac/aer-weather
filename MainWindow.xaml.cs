@@ -1,11 +1,8 @@
 using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
 using System.Linq;
-using System.Xml.Linq;
 using Windows.ApplicationModel;
-using Windows.Devices.Enumeration;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -32,8 +29,23 @@ namespace Aer
 			NavigationViewStateManager.Restore(NavView, false);
 
 			ContentFrame.Navigated += ContentFrame_Navigated;
-
 			ContentFrame.Navigate(typeof(HomePage));
+
+			// Run after first layout pass of the visual tree
+			RootGrid.LayoutUpdated += RootGrid_LayoutUpdatedOnce;
+		}
+
+		private void RootGrid_LayoutUpdatedOnce(object? sender, object e)
+		{
+			// LayoutUpdated fires after measure / arrange - so element sizes & positions are valid.
+			// By attaching it to the root element(a Grid, StackPanel, etc.), it's sure it runs when the window content has stabilized.
+			RootGrid.LayoutUpdated -= RootGrid_LayoutUpdatedOnce;
+
+			// Wait one UI tick so NavigationView finishes its internal layout
+			DispatcherQueue.TryEnqueue(() =>
+			{
+				WindowUtils.UpdateTitleBarDraggableArea(this);
+			});
 		}
 
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
