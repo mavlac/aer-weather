@@ -12,4 +12,4 @@ It intentionally keeps things simple: just the essentials, no clutter.
 - Platform: Windows App SDK
 
 ### License
-[LICENSE.md](LICENSE.md) // File in the same folder
+Source-available, see [LICENSE.md](LICENSE.md)
