@@ -10,3 +10,6 @@ It intentionally keeps things simple: just the essentials, no clutter.
 - Framework: WinUI 3
 - Language: C#
 - Platform: Windows App SDK
+
+### License
+[LICENSE.md](LICENSE.md) // File in the same folder

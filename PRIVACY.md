@@ -4,4 +4,4 @@ Your privacy matters. Aer Weather does not collect, store, or share any personal
 
 ### What Information Does the Application Collect?
 
-Aer Weather only connects to the internet to retrieve current weather conditions and forecasts from the Open-Meteo data provider. The only data transmitted in this process are the geographic coordinates of your selected location—nothing more.
+Aer Weather only connects to the internet to retrieve current weather conditions and forecasts from the Open-Meteo data provider. The only data transmitted in this process are the geographic coordinates of your selected location - nothing more.
