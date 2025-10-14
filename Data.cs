@@ -131,27 +131,30 @@ namespace Aer
 
 			if (IsCacheDataValid && IsCachedDataRecentEnough() && !skipCache)
 			{
-				return true; // means ok: no network update performed, because wasn't needed
+				return true; // OK: no network update performed, because wasn't needed
 			}
 
 			isUpdatingFromNetwork = true;
-
-			// TODO: implement loading from data provider
-
-			await Task.Delay(1000); // Simulate network delay
-
-			// TODO: return false on network error
+			var provider = new OpenMeteo.OpenMeteoWeatherProvider();
+			var result = await provider.GetWeatherAsync(LocationLatitude!.Value, LocationLongitude!.Value);
+			isUpdatingFromNetwork = false;
+			if (result == null)
+			{
+				return false; // ERROR: network error or something went wrong
+			}
 
 			// On success
-			CachedCondition = "Light Showers";
-			CachedTemperature = 10.758431d;
+
 			CacheLocationID = LocationID;
+			CachedCondition = result!.Current.ConditionText;
+			CachedTemperature = result!.Current.Temperature;
 			CacheLastUpdateTime = DateTime.Now;
+
 			IsCacheDataValid = true;
-			isUpdatingFromNetwork = false;
 			SaveWeatherData();
 			UpdatedFromNetwork?.Invoke();
-			return true; // means ok: data was updated from network
+
+			return true; // OK: data was updated from network
 		}
 
 		private static void SaveWeatherData()
