@@ -5,15 +5,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Aer.OpenMeteo
 {
 	public class OpenMeteoWeatherProvider : IWeatherProvider
 	{
-		private const string CacheJsonKey = "OpenMeteo_CachedJson";
-		private const string CacheTimeKey = "OpenMeteo_CachedTime";
-
 		private readonly HttpClient _client;
 
 		public OpenMeteoWeatherProvider(HttpClient? client = null)
@@ -23,15 +21,18 @@ namespace Aer.OpenMeteo
 
 		public async Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude)
 		{
-			var response = await FetchAsync(latitude, longitude);
+			var response = await OpenMeteoNetworkQuery(latitude, longitude);
 			if (response == null || response.Current == null || response.Hourly == null)
+			{
+				Debug.WriteLine("Response is null or something went worng when parsing it.");
 				return null;
+			}
 
 			// Map current
 			var current = new WeatherData
 			{
-				Temperature = response.Current.Temperature_2m,
-				ConditionCode = response.Current.Weather_Code,
+				Temperature = response.Current.Temperature,
+				ConditionCode = response.Current.WeatherCode,
 				ObservationTime = response.Current.Time
 			};
 
@@ -42,8 +43,8 @@ namespace Aer.OpenMeteo
 				hourly.Add(new HourlyForecast
 				{
 					Time = response.Hourly.Time[i],
-					Temperature = response.Hourly.Temperature_2m[i],
-					ConditionCode = response.Hourly.Weather_Code[i],
+					Temperature = response.Hourly.Temperature[i],
+					ConditionCode = response.Hourly.WeatherCode[i],
 					Rain = response.Hourly.Rain[i],
 					Snowfall = response.Hourly.Snowfall[i]
 				});
@@ -52,7 +53,7 @@ namespace Aer.OpenMeteo
 			return new WeatherResult { Current = current, HourlyForecast = hourly };
 		}
 
-		private async Task<OpenMeteoResponse?> FetchAsync(double latitude, double longitude)
+		private async Task<OpenMeteoResponse?> OpenMeteoNetworkQuery(double latitude, double longitude)
 		{
 			try
 			{
@@ -78,24 +79,24 @@ namespace Aer.OpenMeteo
 
 		public class OpenMeteoResponse
 		{
-			public OpenMeteoCurrent? Current { get; set; }
-			public OpenMeteoHourly? Hourly { get; set; }
+			[JsonPropertyName("current_weather")] public OpenMeteoCurrent? Current { get; set; }
+			[JsonPropertyName("hourly")] public OpenMeteoHourly? Hourly { get; set; }
 		}
 
 		public class OpenMeteoCurrent
 		{
-			public string Time { get; set; } = string.Empty;
-			public double Temperature_2m { get; set; }
-			public int Weather_Code { get; set; }
+			[JsonPropertyName("time")] public string Time { get; set; } = string.Empty;
+			[JsonPropertyName("temperature")] public double Temperature { get; set; }
+			[JsonPropertyName("weathercode")] public int WeatherCode { get; set; }
 		}
 
 		public class OpenMeteoHourly
 		{
-			public List<string> Time { get; set; } = new();
-			public List<double> Temperature_2m { get; set; } = new();
-			public List<int> Weather_Code { get; set; } = new();
-			public List<double> Rain { get; set; } = new();
-			public List<double> Snowfall { get; set; } = new();
+			[JsonPropertyName("time")] public List<string> Time { get; set; } = new();
+			[JsonPropertyName("temperature_2m")] public List<double> Temperature { get; set; } = new();
+			[JsonPropertyName("weather_code")] public List<int> WeatherCode { get; set; } = new();
+			[JsonPropertyName("rain")] public List<double> Rain { get; set; } = new();
+			[JsonPropertyName("snowfall")] public List<double> Snowfall { get; set; } = new();
 		}
 		#endregion
 	}
