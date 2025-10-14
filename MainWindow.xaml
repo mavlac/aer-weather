@@ -23,7 +23,7 @@
 
 			<!-- Navigation -->
 			<NavigationView.MenuItems>
-				<NavigationViewItem Content="Home" Icon="Home" Tag="{StaticResource HomePageNavigationTag}"/>
+				<NavigationViewItem x:Name="HomeNavItem" Content="Home" Icon="Home" />
 			</NavigationView.MenuItems>
 
 			<!-- Frame to host pages -->

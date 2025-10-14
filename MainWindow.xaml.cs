@@ -25,6 +25,8 @@ namespace Aer
 			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight); // Load size and position
 			NavigationViewStateManager.Restore(NavView, false); // Load nav state
 
+			HomeNavItem.Tag = HomePage.NavigationTag;
+
 			ContentFrame.Navigated += ContentFrame_Navigated;
 			ContentFrame.Navigate(typeof(HomePage));
 
@@ -74,7 +76,6 @@ namespace Aer
 		}
 		
 		#region Navigation
-		// Handle Nav selection
 		private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
 		{
 			if (args.IsSettingsSelected)
@@ -85,11 +86,19 @@ namespace Aer
 			{
 				if (args.SelectedItem is NavigationViewItem selectedItem)
 				{
-					if ((string)selectedItem.Tag == (string)Application.Current.Resources["HomePageNavigationTag"])
+					if ((string)selectedItem.Tag == HomePage.NavigationTag)
 					{
 						ContentFrame.Navigate(typeof(HomePage));
 					}
 				}
+			}
+		}
+
+		private void NavView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+		{
+			if (ContentFrame.CanGoBack)
+			{
+				ContentFrame.GoBack();
 			}
 		}
 
@@ -103,20 +112,11 @@ namespace Aer
 			{
 				NavView.SelectedItem = NavView.MenuItems
 					.OfType<NavigationViewItem>()
-					.FirstOrDefault(x => (string)x.Tag == (string)Application.Current.Resources["HomePageNavigationTag"]);
+					.FirstOrDefault(x => (string)x.Tag == HomePage.NavigationTag);
 			}
 			else
 			{
 				NavView.SelectedItem = NavView.SettingsItem;
-			}
-		}
-
-		// Handle Back button
-		private void NavView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
-		{
-			if (ContentFrame.CanGoBack)
-			{
-				ContentFrame.GoBack();
 			}
 		}
 
