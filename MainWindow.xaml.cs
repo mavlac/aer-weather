@@ -4,15 +4,12 @@ using Microsoft.UI.Xaml.Controls;
 using System.Linq;
 using Windows.ApplicationModel;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace Aer
 {
 	public sealed partial class MainWindow : Window
 	{
-		private const int DefaultWindowWidth = 1600;
-		private const int DefaultWindowHeight = 1024;
+		private const int DefaultWindowWidth = 1660;
+		private const int DefaultWindowHeight = 1082;
 
 		public string WindowTitle => Package.Current.DisplayName;
 
@@ -23,10 +20,10 @@ namespace Aer
 			WindowUtils.ApplyAppTheme(this);
 
 			this.SizeChanged += MainWindow_SizeChanged;
-			this.Closed += Window_Closed;
+			this.Closed += MainWindow_Closed;
 
-			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight);
-			NavigationViewStateManager.Restore(NavView, false);
+			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight); // Load size and position
+			NavigationViewStateManager.Restore(NavView, false); // Load nav state
 
 			ContentFrame.Navigated += ContentFrame_Navigated;
 			ContentFrame.Navigate(typeof(HomePage));
@@ -37,14 +34,14 @@ namespace Aer
 
 		private void RootGrid_LayoutUpdatedOnce(object? sender, object e)
 		{
-			// LayoutUpdated fires after measure / arrange - so element sizes & positions are valid.
-			// By attaching it to the root element(a Grid, StackPanel, etc.), it's sure it runs when the window content has stabilized.
+			// LayoutUpdated fires after measure / arrange - so element sizes & positions are now valid.
+			// By attaching event to the root element(a Grid, StackPanel, etc.), it's sure following code runs when the window content has stabilized.
 			RootGrid.LayoutUpdated -= RootGrid_LayoutUpdatedOnce;
 
 			// Wait one UI tick so NavigationView finishes its internal layout
 			DispatcherQueue.TryEnqueue(() =>
 			{
-				WindowUtils.UpdateTitleBarDraggableArea(this);
+				WindowUtils.UpdateTitleBarDraggableArea(this); // Now finally is the time to update the title bar
 			});
 		}
 
@@ -63,17 +60,20 @@ namespace Aer
 			}
 		}
 
-		private void Window_Closed(object sender, WindowEventArgs args)
+		private void MainWindow_Closed(object sender, WindowEventArgs args)
 		{
 			// Unsubscribe from events to allow proper cleanup
 			this.SizeChanged -= MainWindow_SizeChanged;
+			this.Closed -= MainWindow_Closed;
 			ContentFrame.Navigated -= ContentFrame_Navigated;
 
 			WindowPlacementManager.Save(this);
 			NavigationViewStateManager.Save(NavView);
+			
 			Preferences.Save();
 		}
-
+		
+		#region Navigation
 		// Handle Nav selection
 		private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
 		{
@@ -111,7 +111,7 @@ namespace Aer
 			}
 		}
 
-		// Handle Back button (Now hidden)
+		// Handle Back button
 		private void NavView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
 		{
 			if (ContentFrame.CanGoBack)
@@ -122,7 +122,9 @@ namespace Aer
 
 		public void NavigateToSettingsPage()
 		{
+			// TODO: Param to focus the Location AutoSuggestBox
 			ContentFrame.Navigate(typeof(SettingsPage));
 		}
+		#endregion
 	}
 }
