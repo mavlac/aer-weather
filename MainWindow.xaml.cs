@@ -120,10 +120,15 @@ namespace Aer
 			}
 		}
 
-		public void NavigateToSettingsPage()
+		public void NavigateToSettingsPage(bool focusLocationSearch = false)
 		{
 			// TODO: Param to focus the Location AutoSuggestBox
-			ContentFrame.Navigate(typeof(SettingsPage));
+			ContentFrame.Navigate(typeof(SettingsPage), new SettingsNavigationArgs { FocusLocationSearch = focusLocationSearch });
+		}
+
+		public class SettingsNavigationArgs
+		{
+			public bool FocusLocationSearch { get; set; }
 		}
 		#endregion
 	}

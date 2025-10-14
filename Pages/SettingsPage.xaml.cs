@@ -2,6 +2,7 @@ using Aer.Utils;
 using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.System;
+using static Aer.MainWindow;
 
 namespace Aer
 {
@@ -32,6 +34,23 @@ namespace Aer
 		{
 			UpdateLocationSectionFromData();
 			UpdatePreferences();
+		}
+
+		protected override void OnNavigatedTo(NavigationEventArgs e)
+		{
+			base.OnNavigatedTo(e);
+
+			if (e.Parameter is SettingsNavigationArgs args && args.FocusLocationSearch)
+			{
+				Loaded += (_, __) =>
+				{
+					DispatcherQueue.TryEnqueue(() =>
+					{
+						// Focus but wait until loaded and after the current UI pass completes
+						LocationAutoSuggestBox.Focus(FocusState.Programmatic);
+					});
+				};
+			}
 		}
 
 		// Generic handler for all HyperlinkButton clicks

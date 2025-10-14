@@ -35,7 +35,7 @@ namespace Aer
 				if (goToSettings)
 				{
 					// Navigate to Settings page
-					App.MainWindow.NavigateToSettingsPage();
+					App.MainWindow.NavigateToSettingsPage(true);
 				}
 			}
 		}
