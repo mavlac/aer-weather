@@ -6,6 +6,10 @@ using Windows.Storage;
 
 namespace Aer
 {
+	/// <summary>
+	/// Holds the set location and cached weather data.
+	/// Able to update itself from network using the IWeatherProvider
+	/// </summary>	
 	public static class Data
 	{
 		private const float CacheValidityMinutes = 30f;

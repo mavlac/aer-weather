@@ -23,6 +23,10 @@
 						Grid.Row="0"
 						Orientation="Vertical"
 						Padding="24,18,24,0">
+				<FontIcon x:Name="HeaderIcon"
+						  FontFamily="{StaticResource WeatherIconsFont}"
+						  Glyph="&#xF00D;"
+						  FontSize="20" />
 				<TextBlock x:Name="HeaderText"
 						   Style="{StaticResource HeaderTextBlockStyle}"
 						   HorizontalAlignment="Left"

@@ -116,7 +116,7 @@
 							</controls:SettingsCard>
 							<controls:SettingsCard HorizontalContentAlignment="Left"
 												   ContentAlignment="Vertical"
-												   Header="Dependencies &amp; References">
+												   Header="References &amp; Resources">
 								<StackPanel Margin="-12,0,0,0"
 											Orientation="Vertical">
 									<HyperlinkButton Click="HyperlinkButton_Click">
@@ -129,6 +129,18 @@
 												   TextDecorations="Underline"
 												   DataContext="https://www.geonames.org/"/>
 									</HyperlinkButton>
+									<HyperlinkButton Click="HyperlinkButton_Click">
+										<TextBlock Text="Weather Icons"
+												   TextDecorations="Underline"
+												   DataContext="https://github.com/erikflowers/weather-icons"/>
+									</HyperlinkButton>
+								</StackPanel>
+							</controls:SettingsCard>
+							<controls:SettingsCard HorizontalContentAlignment="Left"
+												   ContentAlignment="Vertical"
+												   Header="Dependencies">
+								<StackPanel Margin="-12,0,0,0"
+											Orientation="Vertical">
 									<HyperlinkButton Click="HyperlinkButton_Click">
 										<TextBlock Text="Windows Community Toolkit"
 												   TextDecorations="Underline"
