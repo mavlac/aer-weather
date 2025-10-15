@@ -90,9 +90,11 @@ namespace Aer
 			if (Data.IsCacheDataValid)
 			{
 				// CachedCondition + CachedTemperature
-				HeaderText.Text = string.Format("{0}, {1} {2}", Data.ReadableTemperature, Data.CachedCondition, Data.CachedIsDaytime!.Value ? "(D)" : "(N)");
+				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.CachedCondition);
 				// Location
 				SubHeaderText.Text = Data.LocationLabel;
+				SubHeaderIcon.Visibility = Visibility.Visible;
+				SubHeaderIcon.Glyph = WeatherIconsUtils.GetWeatherIcon(Data.CachedCondition!);
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
 
@@ -108,6 +110,7 @@ namespace Aer
 				HeaderText.Text = "No data";
 				// Location - always known
 				SubHeaderText.Text = Data.LocationLabel;
+				SubHeaderIcon.Visibility = Visibility.Collapsed;
 				// Last updated - unknown
 				LastUpdateTimeText.Text = "Loading from network…";
 			}

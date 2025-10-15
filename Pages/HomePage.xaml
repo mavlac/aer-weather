@@ -29,14 +29,14 @@
 							   Grid.Column="0"
 							   Text="HeaderText" />
 				<StackPanel Orientation="Horizontal">
-					<FontIcon x:Name="HeaderIcon"
+					<FontIcon x:Name="SubHeaderIcon"
 						  FontFamily="{StaticResource WeatherIconsFont}"
 						  Glyph="&#xF00D;"
-						  FontSize="16"
-						  Margin="0,12,8,0"/>
+						  FontSize="13"
+						  Margin="0,6.5,8,0"/>
 					<TextBlock x:Name="SubHeaderText"
 						   Style="{StaticResource BodyTextBlockStyle}"
-						   Padding="0,16,0,0"
+						   Padding="0,8,0,0"
 						   Text="SubHeaderText" />
 				</StackPanel>
 			</StackPanel>
