@@ -58,7 +58,7 @@ namespace Aer.OpenMeteo
 			try
 			{
 				// Fetch weather data from Open-Meteo API
-				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall&timezone=auto&temperature_unit=celsius";
+				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&timezone=auto&temperature_unit=celsius";
 				string json = await _client.GetStringAsync(url);
 				
 				return JsonSerializer.Deserialize<OpenMeteoResponse>(json);
@@ -86,6 +86,7 @@ namespace Aer.OpenMeteo
 		public class OpenMeteoCurrent
 		{
 			[JsonPropertyName("time")] public string Time { get; set; } = string.Empty;
+			[JsonPropertyName("is_day")] public bool IsDay { get; set; }
 			[JsonPropertyName("temperature")] public double Temperature { get; set; }
 			[JsonPropertyName("weathercode")] public int WeatherCode { get; set; }
 		}
@@ -93,6 +94,7 @@ namespace Aer.OpenMeteo
 		public class OpenMeteoHourly
 		{
 			[JsonPropertyName("time")] public List<string> Time { get; set; } = new();
+			[JsonPropertyName("is_day")] public bool IsDay { get; set; }
 			[JsonPropertyName("temperature_2m")] public List<double> Temperature { get; set; } = new();
 			[JsonPropertyName("weather_code")] public List<int> WeatherCode { get; set; } = new();
 			[JsonPropertyName("rain")] public List<double> Rain { get; set; } = new();

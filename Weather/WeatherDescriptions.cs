@@ -38,7 +38,7 @@ namespace Aer.Weather
 
 		public static string GetDescription(int WMOCode)
 		{
-			return (CodeToDescription.TryGetValue(WMOCode, out string? description) && description is not null) ? description : "Unknown";
+			return (CodeToDescription.TryGetValue(WMOCode, out string? description) && description is not null) ? description : $"Unknown (WMO {WMOCode})";
 		}
 	}
 }
