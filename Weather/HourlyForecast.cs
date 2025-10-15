@@ -9,6 +9,7 @@ namespace Aer.Weather
 	public class HourlyForecast
 	{
 		public string Time { get; set; } = string.Empty;
+		public bool IsDaytime { get; set; }
 		public double Temperature { get; set; }
 		public int ConditionCode { get; set; }
 		public double Rain { get; set; }

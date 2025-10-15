@@ -1,5 +1,4 @@
-﻿using Aer.Weather;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -8,7 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Aer.OpenMeteo
+namespace Aer.Weather.OpenMeteo
 {
 	public class OpenMeteoWeatherProvider : IWeatherProvider
 	{
@@ -24,13 +23,14 @@ namespace Aer.OpenMeteo
 			var response = await OpenMeteoNetworkQuery(latitude, longitude);
 			if (response == null || response.Current == null || response.Hourly == null)
 			{
-				Debug.WriteLine("Response is null or something went worng when parsing it.");
+				Debug.WriteLine("Response is null or something went wrong when parsing it.");
 				return null;
 			}
 
 			// Map current
 			var current = new WeatherData
 			{
+				IsDaytime = response.Current.IsDay == 1,
 				Temperature = response.Current.Temperature,
 				ConditionCode = response.Current.WeatherCode,
 				ObservationTime = response.Current.Time
@@ -43,6 +43,7 @@ namespace Aer.OpenMeteo
 				hourly.Add(new HourlyForecast
 				{
 					Time = response.Hourly.Time[i],
+					IsDaytime = response.Hourly.IsDay[i] == 1,
 					Temperature = response.Hourly.Temperature[i],
 					ConditionCode = response.Hourly.WeatherCode[i],
 					Rain = response.Hourly.Rain[i],
@@ -86,19 +87,19 @@ namespace Aer.OpenMeteo
 		public class OpenMeteoCurrent
 		{
 			[JsonPropertyName("time")] public string Time { get; set; } = string.Empty;
-			[JsonPropertyName("is_day")] public bool IsDay { get; set; }
 			[JsonPropertyName("temperature")] public double Temperature { get; set; }
+			[JsonPropertyName("is_day")] public int IsDay { get; set; }
 			[JsonPropertyName("weathercode")] public int WeatherCode { get; set; }
 		}
 
 		public class OpenMeteoHourly
 		{
 			[JsonPropertyName("time")] public List<string> Time { get; set; } = new();
-			[JsonPropertyName("is_day")] public bool IsDay { get; set; }
 			[JsonPropertyName("temperature_2m")] public List<double> Temperature { get; set; } = new();
 			[JsonPropertyName("weather_code")] public List<int> WeatherCode { get; set; } = new();
 			[JsonPropertyName("rain")] public List<double> Rain { get; set; } = new();
 			[JsonPropertyName("snowfall")] public List<double> Snowfall { get; set; } = new();
+			[JsonPropertyName("is_day")] public List<int> IsDay { get; set; } = new();
 		}
 		#endregion
 	}

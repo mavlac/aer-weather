@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.System;
-using static Aer.MainWindow;
 
 namespace Aer
 {
@@ -40,7 +39,7 @@ namespace Aer
 		{
 			base.OnNavigatedTo(e);
 
-			if (e.Parameter is SettingsNavigationArgs args && args.FocusLocationSearch)
+			if (e.Parameter is MainWindow.SettingsNavigationArgs args && args.FocusLocationSearch)
 			{
 				Loaded += (_, __) =>
 				{

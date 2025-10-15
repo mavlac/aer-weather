@@ -135,7 +135,7 @@ namespace Aer
 			}
 
 			isUpdatingFromNetwork = true;
-			var provider = new OpenMeteo.OpenMeteoWeatherProvider();
+			var provider = new Weather.OpenMeteo.OpenMeteoWeatherProvider();
 			var result = await provider.GetWeatherAsync(LocationLatitude!.Value, LocationLongitude!.Value);
 			isUpdatingFromNetwork = false;
 			if (result == null)
