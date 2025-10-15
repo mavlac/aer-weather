@@ -23,19 +23,22 @@
 						Grid.Row="0"
 						Orientation="Vertical"
 						Padding="24,18,24,0">
-				<FontIcon x:Name="HeaderIcon"
+					<TextBlock x:Name="HeaderText"
+							   Style="{StaticResource HeaderTextBlockStyle}"
+							   HorizontalAlignment="Left"
+							   Grid.Column="0"
+							   Text="HeaderText" />
+				<StackPanel Orientation="Horizontal">
+					<FontIcon x:Name="HeaderIcon"
 						  FontFamily="{StaticResource WeatherIconsFont}"
 						  Glyph="&#xF00D;"
-						  FontSize="20" />
-				<TextBlock x:Name="HeaderText"
-						   Style="{StaticResource HeaderTextBlockStyle}"
-						   HorizontalAlignment="Left"
-						   Grid.Column="0"
-						   Text="HeaderText" />
-				<TextBlock x:Name="SubHeaderText"
-						   Style="{StaticResource BaseTextBlockStyle}"
+						  FontSize="16"
+						  Margin="0,12,8,0"/>
+					<TextBlock x:Name="SubHeaderText"
+						   Style="{StaticResource BodyTextBlockStyle}"
 						   Padding="0,16,0,0"
 						   Text="SubHeaderText" />
+				</StackPanel>
 			</StackPanel>
 
 			<ScrollViewer x:Name="Scroller"
