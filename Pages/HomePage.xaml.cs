@@ -90,7 +90,7 @@ namespace Aer
 			if (Data.IsCacheDataValid)
 			{
 				// CachedCondition + CachedTemperature
-				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.CachedCondition);
+				HeaderText.Text = string.Format("{0}, {1} {2}", Data.ReadableTemperature, Data.CachedCondition, Data.CachedIsDaytime!.Value ? "(D)" : "(N)");
 				// Location
 				SubHeaderText.Text = Data.LocationLabel;
 				// Last updated

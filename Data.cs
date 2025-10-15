@@ -28,6 +28,7 @@ namespace Aer
 
 		public static int? CacheLocationID { get; private set; }
 		public static string? CachedCondition { get; private set; }
+		public static bool? CachedIsDaytime { get; private set; }
 		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
 		public static DateTime? CacheLastUpdateTime { get; private set; }
 		public static bool IsCacheDataValid { get; private set; }
@@ -87,10 +88,12 @@ namespace Aer
 			if (isSavedLocationLoadSuccessful &&
 				isCachedDataMatchingLocation &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedCondition)}", out var cachedConditionObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedIsDaytime)}", out var cachedIsDaytimeObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedTemperature)}", out var cachedTemperatureObj) && cachedTemperatureObj is double temperature &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}", out var cacheLastUpdateTimeObj) && DateTime.TryParse(cacheLastUpdateTimeObj as string, null, DateTimeStyles.RoundtripKind, out DateTime lastUpdateDateTime))
 			{
 				CachedCondition = (string)cachedConditionObj;
+				CachedIsDaytime = (bool)cachedIsDaytimeObj;
 				CachedTemperature = temperature;
 				CacheLastUpdateTime = lastUpdateDateTime;
 				IsCacheDataValid = true;
@@ -147,6 +150,7 @@ namespace Aer
 
 			CacheLocationID = LocationID;
 			CachedCondition = result!.Current.ConditionText;
+			CachedIsDaytime = result!.Current.IsDaytime;
 			CachedTemperature = result!.Current.Temperature;
 			CacheLastUpdateTime = DateTime.Now;
 
@@ -165,6 +169,7 @@ namespace Aer
 			var settings = ApplicationData.Current.LocalSettings;
 
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedCondition)}"] = CachedCondition;
+			settings.Values[$"{SettingsPrefix}_{nameof(CachedIsDaytime)}"] = CachedIsDaytime;
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedTemperature)}"] = CachedTemperature;
 			settings.Values[$"{SettingsPrefix}_{nameof(CacheLocationID)}"] = CacheLocationID;
 			settings.Values[$"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}"] = CacheLastUpdateTime?.ToString("o");
