@@ -1,6 +1,7 @@
 using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 
@@ -9,6 +10,8 @@ namespace Aer
 	public sealed partial class HomePage : Page
 	{
 		public const string NavigationTag = "home";
+
+		private readonly MinuteTimer _minuteTimer = new();
 
 		public HomePage()
 		{
@@ -19,6 +22,8 @@ namespace Aer
 
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
+
+			_minuteTimer.Start(OnMinuteTick);
 		}
 
 		private async void HomePage_Loading(FrameworkElement sender, object args)
@@ -49,6 +54,19 @@ namespace Aer
 			Data.UpdatedFromNetwork += Data_UpdatedFromNetwork;
 
 			UpdateDataFromNetwork(forceNetworkUpdate: false);
+		}
+
+		protected override void OnNavigatedFrom(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+		{
+			base.OnNavigatedFrom(e);
+			
+			_minuteTimer.Stop();
+		}
+
+		private void OnMinuteTick()
+		{
+			// Update. If cache is not expired, no network call will be made.
+			UpdateDataFromNetwork(false);
 		}
 
 		private async void UpdateDataFromNetwork(bool forceNetworkUpdate)
