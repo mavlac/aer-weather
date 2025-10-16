@@ -66,7 +66,10 @@ namespace Aer
 
 		private void OnMinuteTick()
 		{
-			// Update. If cache is not expired, no network call will be made.
+			UpdatePageDataContent(); // Among other content will update the LastUpdateTimeText
+
+			// Data Update
+			// If cache is still valid, no network call will be made.
 			UpdateDataFromNetwork(false);
 		}
 
@@ -85,12 +88,12 @@ namespace Aer
 			}
 
 			// Await completion (still necessary to observe exceptions etc.)
-			bool wasUpdated = await updateTask;
+			bool updateSucceeded = await updateTask;
 
 			// Whatever happened, does not matter, hide loader
 			LoadingOverlay.Visibility = Visibility.Collapsed;
 
-			if (!wasUpdated)
+			if (!updateSucceeded)
 			{
 				await MessageBoxEx.ShowAsync(
 					"Unable to update weather data",
