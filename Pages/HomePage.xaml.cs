@@ -2,6 +2,7 @@ using Aer.Utils;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 
@@ -113,10 +114,14 @@ namespace Aer
 				SubHeaderText.Text = Data.LocationLabel;
 				SubHeaderIcon.Visibility = Visibility.Visible;
 				SubHeaderIcon.Glyph = Data.ConditionWeatherIconsGlyph;
+				// Content
+				// TODO: Draw the chart
+				string contentTempText = string.Empty;
+				for (int i = 0; i < Data.CachedHourly.Count; i++)
+					contentTempText += $"{Data.CachedHourly[i].Time} : {Data.CachedHourly[i].ConditionCode}, {Data.CachedHourly[i].IsDaytime}\n";
+				Content.Text = contentTempText;
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
-
-				// TODO: Draw the chart
 			}
 			else
 			{
@@ -129,6 +134,8 @@ namespace Aer
 				// Location - always known
 				SubHeaderText.Text = Data.LocationLabel;
 				SubHeaderIcon.Visibility = Visibility.Collapsed;
+				// Content
+				Content.Text = string.Empty;
 				// Last updated - unknown
 				LastUpdateTimeText.Text = "Loading from network…";
 			}

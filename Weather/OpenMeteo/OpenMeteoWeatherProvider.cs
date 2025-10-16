@@ -28,7 +28,7 @@ namespace Aer.Weather.OpenMeteo
 			}
 
 			// Map current
-			var current = new WeatherData
+			var current = new CurrentWeatherData
 			{
 				IsDaytime = response.Current.IsDay == 1,
 				Temperature = response.Current.Temperature,
@@ -51,7 +51,7 @@ namespace Aer.Weather.OpenMeteo
 				});
 			}
 
-			return new WeatherResult { Current = current, HourlyForecast = hourly };
+			return new WeatherResult { Current = current, Hourly = hourly };
 		}
 
 		private async Task<OpenMeteoResponse?> OpenMeteoNetworkQuery(double latitude, double longitude)
@@ -59,7 +59,7 @@ namespace Aer.Weather.OpenMeteo
 			try
 			{
 				// Fetch weather data from Open-Meteo API
-				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&timezone=auto&temperature_unit=celsius";
+				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&timezone=auto&temperature_unit=celsius&forecast_days=1";
 				string json = await _client.GetStringAsync(url);
 				
 				return JsonSerializer.Deserialize<OpenMeteoResponse>(json);

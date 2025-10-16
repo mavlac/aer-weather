@@ -43,10 +43,10 @@
 
 			<ScrollViewer x:Name="Scroller"
 						  Grid.Row="1"
-						  Padding="36,10,36,0">
+						  Padding="24,16,24,0">
 				<Grid>
 					<StackPanel HorizontalAlignment="Stretch">
-						<!-- Content -->
+						<TextBlock x:Name="Content" Text="Content"/>
 					</StackPanel>
 				</Grid>
 			</ScrollViewer>

@@ -1,8 +1,10 @@
 ﻿using Aer.Utils;
 using Aer.Weather;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -36,6 +38,7 @@ namespace Aer
 		public static int? CachedConditionCode { get; private set; }
 		public static bool? CachedIsDaytime { get; private set; }
 		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
+		public static List<HourlyForecast> CachedHourly { get; private set; } = new();
 		public static DateTime? CacheLastUpdateTime { get; private set; }
 		public static bool IsCacheDataValid { get; private set; }
 
@@ -101,11 +104,13 @@ namespace Aer
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedConditionCode)}", out var cachedConditionCodeObj) && cachedConditionCodeObj is int conditionCode &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedIsDaytime)}", out var cachedIsDaytimeObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedTemperature)}", out var cachedTemperatureObj) && cachedTemperatureObj is double temperature &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedHourly)}", out var cachedHourlyObj) && JsonSerializer.Deserialize<List<HourlyForecast>>((string)cachedHourlyObj) is List<HourlyForecast> hourly &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}", out var cacheLastUpdateTimeObj) && DateTime.TryParse(cacheLastUpdateTimeObj as string, null, DateTimeStyles.RoundtripKind, out DateTime lastUpdateDateTime))
 			{
 				CachedConditionCode = conditionCode;
 				CachedIsDaytime = (bool)cachedIsDaytimeObj;
 				CachedTemperature = temperature;
+				CachedHourly = hourly;
 				CacheLastUpdateTime = lastUpdateDateTime;
 				IsCacheDataValid = true;
 			}
@@ -163,6 +168,7 @@ namespace Aer
 			CachedConditionCode = result!.Current.ConditionCode;
 			CachedIsDaytime = result!.Current.IsDaytime;
 			CachedTemperature = result!.Current.Temperature;
+			CachedHourly = result!.Hourly;
 			CacheLastUpdateTime = DateTime.Now;
 
 			IsCacheDataValid = true;
@@ -182,6 +188,7 @@ namespace Aer
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedConditionCode)}"] = CachedConditionCode;
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedIsDaytime)}"] = CachedIsDaytime;
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedTemperature)}"] = CachedTemperature;
+			settings.Values[$"{SettingsPrefix}_{nameof(CachedHourly)}"] = JsonSerializer.Serialize(CachedHourly); // TODO: Will not be enough for data larger than 8kB, now hourly a single day only
 			settings.Values[$"{SettingsPrefix}_{nameof(CacheLocationID)}"] = CacheLocationID;
 			settings.Values[$"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}"] = CacheLastUpdateTime?.ToString("o");
 		}

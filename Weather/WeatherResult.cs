@@ -4,7 +4,7 @@ namespace Aer.Weather
 {
 	public class WeatherResult
 	{
-		public WeatherData Current { get; set; } = new();
-		public List<HourlyForecast> HourlyForecast { get; set; } = new();
+		public CurrentWeatherData Current { get; set; } = new();
+		public List<HourlyForecast> Hourly { get; set; } = new();
 	}
 }
