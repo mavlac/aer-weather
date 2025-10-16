@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Aer.Utils;
+using Aer.Weather;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -31,7 +33,7 @@ namespace Aer
 		public static double? LocationLongitude { get; private set; }
 
 		public static int? CacheLocationID { get; private set; }
-		public static string? CachedCondition { get; private set; }
+		public static int? CachedConditionCode { get; private set; }
 		public static bool? CachedIsDaytime { get; private set; }
 		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
 		public static DateTime? CacheLastUpdateTime { get; private set; }
@@ -47,6 +49,11 @@ namespace Aer
 		public static string ReadableTemperature => Preferences.TemperatureUnits == Preferences.TemperatureUnit.Celsius ? ReadableTemperatureCelsius : ReadableTemperatureFahrenheit;
 		public static string ReadableTemperatureCelsius => CachedTemperature is null ? "—" : $"{Math.Round(CachedTemperature.Value)} {Preferences.TemperatureUnit.Celsius.ToUnitString()}";
 		public static string ReadableTemperatureFahrenheit => CachedTemperature is null ? "—" : $"{Math.Round(CachedTemperature.Value * 1.8d + 32)} {Preferences.TemperatureUnit.Fahrenheit.ToUnitString()}";
+		/// <summary>
+		/// Readable CachedCondition - description based on condition code and daytime flag.
+		/// </summary>
+		public static string ReadableCondition => CachedConditionCode is null ? "—" : WeatherDescriptions.GetDescription(CachedConditionCode.Value, CachedIsDaytime!.Value);
+		public static string ConditionWeatherIconsGlyph => CachedConditionCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedConditionCode!.Value, CachedIsDaytime!.Value);
 
 		public static event Action? UpdatedFromNetwork;
 
@@ -91,12 +98,12 @@ namespace Aer
 			// Loading the saved weather data, only if the location was loaded successfully and cache location matches
 			if (isSavedLocationLoadSuccessful &&
 				isCachedDataMatchingLocation &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedCondition)}", out var cachedConditionObj) &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedConditionCode)}", out var cachedConditionCodeObj) && cachedConditionCodeObj is int conditionCode &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedIsDaytime)}", out var cachedIsDaytimeObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedTemperature)}", out var cachedTemperatureObj) && cachedTemperatureObj is double temperature &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}", out var cacheLastUpdateTimeObj) && DateTime.TryParse(cacheLastUpdateTimeObj as string, null, DateTimeStyles.RoundtripKind, out DateTime lastUpdateDateTime))
 			{
-				CachedCondition = (string)cachedConditionObj;
+				CachedConditionCode = conditionCode;
 				CachedIsDaytime = (bool)cachedIsDaytimeObj;
 				CachedTemperature = temperature;
 				CacheLastUpdateTime = lastUpdateDateTime;
@@ -153,7 +160,7 @@ namespace Aer
 			// On success
 
 			CacheLocationID = LocationID;
-			CachedCondition = result!.Current.ConditionText;
+			CachedConditionCode = result!.Current.ConditionCode;
 			CachedIsDaytime = result!.Current.IsDaytime;
 			CachedTemperature = result!.Current.Temperature;
 			CacheLastUpdateTime = DateTime.Now;
@@ -172,7 +179,7 @@ namespace Aer
 
 			var settings = ApplicationData.Current.LocalSettings;
 
-			settings.Values[$"{SettingsPrefix}_{nameof(CachedCondition)}"] = CachedCondition;
+			settings.Values[$"{SettingsPrefix}_{nameof(CachedConditionCode)}"] = CachedConditionCode;
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedIsDaytime)}"] = CachedIsDaytime;
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedTemperature)}"] = CachedTemperature;
 			settings.Values[$"{SettingsPrefix}_{nameof(CacheLocationID)}"] = CacheLocationID;

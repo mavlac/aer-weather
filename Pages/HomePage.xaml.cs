@@ -89,12 +89,12 @@ namespace Aer
 		{
 			if (Data.IsCacheDataValid)
 			{
-				// CachedCondition + CachedTemperature
-				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.CachedCondition);
+				// CachedTemperature, CachedCondition
+				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.ReadableCondition);
 				// Location
 				SubHeaderText.Text = Data.LocationLabel;
 				SubHeaderIcon.Visibility = Visibility.Visible;
-				SubHeaderIcon.Glyph = WeatherIconsUtils.GetWeatherIcon(Data.CachedCondition!);
+				SubHeaderIcon.Glyph = Data.ConditionWeatherIconsGlyph;
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
 

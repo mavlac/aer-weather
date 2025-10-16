@@ -14,7 +14,5 @@ namespace Aer.Weather
 		public int ConditionCode { get; set; }
 		public double Rain { get; set; }
 		public double Snowfall { get; set; }
-
-		public string ConditionText => WeatherDescriptions.GetDescription(ConditionCode);
 	}
 }
