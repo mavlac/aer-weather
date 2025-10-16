@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Aer.Utils;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -27,6 +28,8 @@ namespace Aer.Weather.OpenMeteo
 				return null;
 			}
 
+			Debug.WriteLine($"Got response '{response.Current.Time}' UTC → '{DateTimeUtils.ConvertUtcIsoToLocal(response.Current.Time)}' {TimeZoneInfo.Local.DisplayName}, {TimeZoneInfo.Local.DaylightName}");
+
 			// Map current
 			var current = new CurrentWeatherData
 			{
@@ -42,7 +45,7 @@ namespace Aer.Weather.OpenMeteo
 			{
 				hourly.Add(new HourlyForecast
 				{
-					Time = response.Hourly.Time[i],
+					Time = DateTimeUtils.ConvertUtcIsoToLocal(response.Hourly.Time[i]), // Convert Open-Meteo's UTC time to local OS time
 					IsDaytime = response.Hourly.IsDay[i] == 1,
 					Temperature = response.Hourly.Temperature[i],
 					ConditionCode = response.Hourly.WeatherCode[i],
@@ -86,7 +89,13 @@ namespace Aer.Weather.OpenMeteo
 
 		public class OpenMeteoCurrent
 		{
+			/// <summary>
+			/// Is GMT+0 / UTC when no timezone specified in query
+			/// </summary>
 			[JsonPropertyName("time")] public string Time { get; set; } = string.Empty;
+			/// <summary>
+			/// Is Celsius when no temperature_unit specified in query
+			/// </summary>
 			[JsonPropertyName("temperature")] public double Temperature { get; set; }
 			[JsonPropertyName("is_day")] public int IsDay { get; set; }
 			[JsonPropertyName("weathercode")] public int WeatherCode { get; set; }
@@ -94,7 +103,13 @@ namespace Aer.Weather.OpenMeteo
 
 		public class OpenMeteoHourly
 		{
-			[JsonPropertyName("time")] public List<string> Time { get; set; } = new();
+			/// <summary>
+			/// Is GMT+0 / UTC when no timezone specified in query
+			/// </summary>
+			[JsonPropertyName("time")] public List<string> Time { get; set; } = new(); // Is GMT+0 / UTC when no timezone specified in query
+			/// <summary>
+			/// Is Celsius when no temperature_unit specified in query
+			/// </summary>
 			[JsonPropertyName("temperature_2m")] public List<double> Temperature { get; set; } = new();
 			[JsonPropertyName("weather_code")] public List<int> WeatherCode { get; set; } = new();
 			[JsonPropertyName("rain")] public List<double> Rain { get; set; } = new();

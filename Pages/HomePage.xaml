@@ -46,7 +46,7 @@
 						  Padding="24,16,24,0">
 				<Grid>
 					<StackPanel HorizontalAlignment="Stretch">
-						<TextBlock x:Name="Content" Text="Content"/>
+						<TextBlock x:Name="ForecastContent" Text="..."/>
 					</StackPanel>
 				</Grid>
 			</ScrollViewer>

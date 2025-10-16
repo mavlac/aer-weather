@@ -1,4 +1,5 @@
 using Aer.Utils;
+using Aer.Weather;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -119,10 +120,14 @@ namespace Aer
 				SubHeaderIcon.Glyph = Data.ConditionWeatherIconsGlyph;
 				// Content
 				// TODO: Draw the chart
-				string contentTempText = string.Empty;
+				string forecastContentTempText = string.Empty;
 				for (int i = 0; i < Data.CachedHourly.Count; i++)
-					contentTempText += $"{Data.CachedHourly[i].Time} : {Data.CachedHourly[i].ConditionCode}, {Data.CachedHourly[i].IsDaytime}\n";
-				Content.Text = contentTempText;
+				{
+					if (Data.CachedHourly[i].Time < DateTime.Now)
+						continue; // Skip past hours
+					forecastContentTempText += $"{Data.CachedHourly[i].Time} {WeatherDescriptions.GetDescription(Data.CachedHourly[i].ConditionCode, Data.CachedHourly[i].IsDaytime)} {Data.CachedHourly[i].Temperature}\n";
+				}
+				ForecastContent.Text = forecastContentTempText;
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
 			}
@@ -138,7 +143,7 @@ namespace Aer
 				SubHeaderText.Text = Data.LocationLabel;
 				SubHeaderIcon.Visibility = Visibility.Collapsed;
 				// Content
-				Content.Text = string.Empty;
+				ForecastContent.Text = string.Empty;
 				// Last updated - unknown
 				LastUpdateTimeText.Text = "Loading from network…";
 			}
