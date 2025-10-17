@@ -6,22 +6,34 @@ using System.Globalization;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Aer.Weather.OpenMeteo
 {
 	public class OpenMeteoWeatherProvider : IWeatherProvider
 	{
+		private static readonly HttpClient _sharedClient = CreateDefaultClient();
 		private readonly HttpClient _client;
 
 		public OpenMeteoWeatherProvider(HttpClient? client = null)
 		{
-			_client = client ?? new HttpClient();
+			_client = client ?? _sharedClient;
 		}
 
-		public async Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude)
+		private static HttpClient CreateDefaultClient()
 		{
-			var response = await OpenMeteoNetworkQuery(latitude, longitude);
+			var client = new HttpClient
+			{
+				Timeout = TimeSpan.FromSeconds(10)
+			};
+			client.DefaultRequestHeaders.UserAgent.ParseAdd("AerWeatherApp/1.0");
+			return client;
+		}
+
+		public async Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
+		{
+			var response = await OpenMeteoNetworkQuery(latitude, longitude, cancellationToken);
 			if (response == null || response.Current == null || response.Hourly == null)
 			{
 				Debug.WriteLine("Response is null or something went wrong when parsing it.");
@@ -57,15 +69,22 @@ namespace Aer.Weather.OpenMeteo
 			return new WeatherResult { Current = current, Hourly = hourly };
 		}
 
-		private async Task<OpenMeteoResponse?> OpenMeteoNetworkQuery(double latitude, double longitude)
+		private async Task<OpenMeteoResponse?> OpenMeteoNetworkQuery(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			try
 			{
+				cancellationToken.ThrowIfCancellationRequested();
+				
 				// Fetch weather data from Open-Meteo API
 				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&timezone=auto&temperature_unit=celsius&forecast_days=1";
-				string json = await _client.GetStringAsync(url);
-				
+				string json = await _client.GetStringAsync(url, cancellationToken);
+
 				return JsonSerializer.Deserialize<OpenMeteoResponse>(json);
+			}
+			catch (OperationCanceledException)
+			{
+				Debug.WriteLine("Cancelled");
+				return null;
 			}
 			catch (HttpRequestException ex)
 			{

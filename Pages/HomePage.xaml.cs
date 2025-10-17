@@ -87,9 +87,11 @@ namespace Aer
 			_updateTask = Data.UpdateWeatherDataFromNetwork(forceNetworkUpdate, cancellationToken);
 
 			// Wait briefly before deciding to show loader, cancellable
-			await Task.Delay(200, cancellationToken).ContinueWith(_ => { }, TaskContinuationOptions.OnlyOnCanceled);
-
-			if (cancellationToken.IsCancellationRequested)
+			try
+			{
+				await Task.Delay(200, cancellationToken);
+			}
+			catch (TaskCanceledException)
 			{
 				_updateTask = null;
 				return;

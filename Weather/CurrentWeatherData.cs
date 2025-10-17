@@ -1,6 +1,6 @@
 ﻿namespace Aer.Weather
 {
-	public class CurrentWeatherData
+	public record CurrentWeatherData
 	{
 		public bool IsDaytime { get; set; }
 		public double Temperature { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Aer.Weather
 {
@@ -7,6 +8,6 @@ namespace Aer.Weather
 		/// <summary>
 		/// Fetch current weather and hourly forecast in a single call.
 		/// </summary>
-		Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude);
+		Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken);
 	}
 }

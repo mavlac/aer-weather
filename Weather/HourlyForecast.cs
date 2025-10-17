@@ -2,7 +2,7 @@
 
 namespace Aer.Weather
 {
-	public class HourlyForecast
+	public record HourlyForecast
 	{
 		public DateTime Time { get; set; }
 		public bool IsDaytime { get; set; }

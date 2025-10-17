@@ -28,7 +28,9 @@ namespace Aer
 
 		private static string SettingsPrefix => nameof(Data);
 
-		private static bool isUpdatingFromNetwork;
+		private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
+
+		private static bool IsUpdatingFromNetwork { get; set; }
 
 		public static int? LocationID { get; private set; }
 		public static string? LocationLabel { get; private set; }
@@ -103,7 +105,7 @@ namespace Aer
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedConditionCode)}", out var cachedConditionCodeObj) && cachedConditionCodeObj is int conditionCode &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedIsDaytime)}", out var cachedIsDaytimeObj) &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedTemperature)}", out var cachedTemperatureObj) && cachedTemperatureObj is double temperature &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedHourly)}", out var cachedHourlyObj) && JsonSerializer.Deserialize<List<HourlyForecast>>((string)cachedHourlyObj) is List<HourlyForecast> hourly &&
+				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedHourly)}", out var cachedHourlyObj) && JsonSerializer.Deserialize<List<HourlyForecast>>((string)cachedHourlyObj, _jsonOptions) is List<HourlyForecast> hourly &&
 				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}", out var cacheLastUpdateTimeObj) && DateTime.TryParse(cacheLastUpdateTimeObj as string, null, DateTimeStyles.RoundtripKind, out DateTime lastUpdateDateTime))
 			{
 				CachedConditionCode = conditionCode;
@@ -122,6 +124,7 @@ namespace Aer
 				IsCacheDataValid = false;
 			}
 
+			Debug.WriteLineIf(IsCacheDataValid, $"Cache loaded and valid. All OK.");
 			Debug.WriteLineIf(!IsCacheDataValid, $"Loading from the cache failed. isSavedLocationLoadSuccessful = {isSavedLocationLoadSuccessful}, isCachedDataMatchingLocation = {isCachedDataMatchingLocation}");
 			Debug.WriteLineIf(!isCachedDataMatchingLocation, $"Cache location not matching selected location. '{CacheLocationID}' vs '{LocationID}'");
 		}
@@ -143,45 +146,65 @@ namespace Aer
 			IsCacheDataValid = false; // New data must be loaded always after location change
 		}
 
-		public async static Task<bool> UpdateWeatherDataFromNetwork(bool skipCache, CancellationToken cancellationToken = default)
+		public static async Task<bool> UpdateWeatherDataFromNetwork(bool skipCache, CancellationToken cancellationToken)
 		{
-			Debug.Assert(isUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
+			Debug.Assert(IsUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
 
 			if (IsCacheDataValid && IsCachedDataRecentEnough() && !skipCache)
 			{
 				return true; // OK: no network update performed, because wasn't needed
 			}
 
-			isUpdatingFromNetwork = true;
+			IsUpdatingFromNetwork = true;
 
-			// TODO: cancellationToken
-
-			var provider = new Weather.OpenMeteo.OpenMeteoWeatherProvider();
-			var result = await provider.GetWeatherAsync(LocationLatitude!.Value, LocationLongitude!.Value);
-			isUpdatingFromNetwork = false;
-			if (result == null)
+			try
 			{
-				return false; // ERROR: network error or something went wrong
+				cancellationToken.ThrowIfCancellationRequested();
+
+				var provider = new Weather.OpenMeteo.OpenMeteoWeatherProvider();
+				var result = await provider.GetWeatherAsync(LocationLatitude!.Value, LocationLongitude!.Value, cancellationToken);
+
+				cancellationToken.ThrowIfCancellationRequested();
+
+				if (result == null)
+				{
+					return false; // ERROR: network error or something went wrong
+				}
+
+				// On success
+				CacheLocationID = LocationID;
+				CachedConditionCode = result.Current.ConditionCode;
+				CachedIsDaytime = result.Current.IsDaytime;
+				CachedTemperature = result.Current.Temperature;
+				CachedHourly = result.Hourly;
+				CacheLastUpdateTime = DateTime.Now;
+
+				IsUpdatingFromNetwork = false;
+				IsCacheDataValid = true;
+				SaveWeatherData();
+
+				return true; // OK: data was updated from network
 			}
-
-			// On success
-
-			CacheLocationID = LocationID;
-			CachedConditionCode = result!.Current.ConditionCode;
-			CachedIsDaytime = result!.Current.IsDaytime;
-			CachedTemperature = result!.Current.Temperature;
-			CachedHourly = result!.Hourly;
-			CacheLastUpdateTime = DateTime.Now;
-
-			IsCacheDataValid = true;
-			SaveWeatherData();
-
-			return true; // OK: data was updated from network
+			catch (OperationCanceledException)
+			{
+				Debug.WriteLine("Weather data update canceled.");
+				return true; // OK: was canceled, but no error
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Weather update failed: {ex}");
+				return false; // ERROR: failed with unexpected exception
+			}
+			finally
+			{
+				IsUpdatingFromNetwork = false;
+			}
 		}
+
 
 		private static void SaveWeatherData()
 		{
-			Debug.Assert(isUpdatingFromNetwork is false, "SaveWeatherData called while an update is in progress.");
+			Debug.Assert(IsUpdatingFromNetwork is false, "SaveWeatherData called while an update is in progress.");
 			Debug.Assert(IsCacheDataValid, "SaveWeatherData called while weather data is not valid.");
 
 			var settings = ApplicationData.Current.LocalSettings;
@@ -189,7 +212,7 @@ namespace Aer
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedConditionCode)}"] = CachedConditionCode;
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedIsDaytime)}"] = CachedIsDaytime;
 			settings.Values[$"{SettingsPrefix}_{nameof(CachedTemperature)}"] = CachedTemperature;
-			settings.Values[$"{SettingsPrefix}_{nameof(CachedHourly)}"] = JsonSerializer.Serialize(CachedHourly); // TODO: Will not be enough for data larger than 8kB, now hourly a single day only
+			settings.Values[$"{SettingsPrefix}_{nameof(CachedHourly)}"] = JsonSerializer.Serialize(CachedHourly, _jsonOptions); // TODO: Will not be enough for data larger than 8kB, now hourly a single day only
 			settings.Values[$"{SettingsPrefix}_{nameof(CacheLocationID)}"] = CacheLocationID;
 			settings.Values[$"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}"] = CacheLastUpdateTime?.ToString("o");
 		}
