@@ -45,20 +45,9 @@ namespace Aer
 		public static DateTime? CacheLastUpdateTime { get; private set; }
 		public static bool IsCacheDataValid { get; private set; }
 
-		/// <summary>
-		/// Readable Latitude and Longitude. Both values are stored separately.
-		/// </summary>
 		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString(CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString(CultureInfo.InvariantCulture)}";
-		/// <summary>
-		/// Readable CachedTemperature - value with units based on stored measurement preference.
-		/// </summary>
-		public static string ReadableTemperature => Preferences.TemperatureUnits == Preferences.TemperatureUnit.Celsius ? ReadableTemperatureCelsius : ReadableTemperatureFahrenheit;
-		public static string ReadableTemperatureCelsius => CachedTemperature is null ? "—" : $"{Math.Round(CachedTemperature.Value)} {Preferences.TemperatureUnit.Celsius.ToUnitString()}";
-		public static string ReadableTemperatureFahrenheit => CachedTemperature is null ? "—" : $"{Math.Round(CachedTemperature.Value * 1.8d + 32)} {Preferences.TemperatureUnit.Fahrenheit.ToUnitString()}";
-		/// <summary>
-		/// Readable CachedCondition - description based on condition code and daytime flag.
-		/// </summary>
-		public static string ReadableCondition => CachedConditionCode is null ? "—" : WeatherDescriptions.GetDescription(CachedConditionCode.Value, CachedIsDaytime!.Value);
+		public static string ReadableTemperature => CachedTemperature is null ? "—" : Temperature.GetReadableTemperature(CachedTemperature.Value);
+		public static string ConditionDescription => CachedConditionCode is null ? "—" : WeatherDescriptions.GetDescription(CachedConditionCode.Value, CachedIsDaytime!.Value);
 		public static string ConditionWeatherIconsGlyph => CachedConditionCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedConditionCode!.Value, CachedIsDaytime!.Value);
 
 		public static void LoadCacheOrDefaults()

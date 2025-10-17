@@ -141,7 +141,7 @@ namespace Aer
 			if (Data.IsCacheDataValid)
 			{
 				// CachedTemperature, CachedCondition
-				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.ReadableCondition);
+				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.ConditionDescription);
 				// Location
 				SubHeaderText.Text = Data.LocationLabel;
 				SubHeaderIcon.Visibility = Visibility.Visible;

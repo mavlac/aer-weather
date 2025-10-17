@@ -1,5 +1,4 @@
 ﻿using Aer.Utils;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using System.Diagnostics;
 using Windows.Storage;
@@ -8,15 +7,9 @@ namespace Aer
 {
 	public static class Preferences
 	{
-		public enum TemperatureUnit
-		{
-			Celsius,
-			Fahrenheit
-		}
-
 		private static string SettingsPrefix => nameof(Preferences);
 
-		public static TemperatureUnit TemperatureUnits { get; private set; } = TemperatureUnit.Celsius;
+		public static Temperature.Unit TemperatureUnits { get; private set; } = Temperature.Unit.Celsius;
 		public static ElementTheme AppTheme { get; private set; } = ElementTheme.Default;
 		public static bool WasWelcomeShown { get; private set; } = false;
 
@@ -26,7 +19,7 @@ namespace Aer
 
 			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(TemperatureUnits)}", out var temperatureUnitsObj) && temperatureUnitsObj is int temperatureUnitsIntValue)
 			{
-				TemperatureUnits = (TemperatureUnit)temperatureUnitsIntValue;
+				TemperatureUnits = (Temperature.Unit)temperatureUnitsIntValue;
 			}
 			else
 			{
@@ -61,7 +54,7 @@ namespace Aer
 			settings.Values[$"{SettingsPrefix}_{nameof(WasWelcomeShown)}"] = WasWelcomeShown;
 		}
 
-		public static void SetTemperatureUnits(TemperatureUnit unit)
+		public static void SetTemperatureUnits(Temperature.Unit unit)
 		{
 			Debug.WriteLine($"Preferences: Setting temperature units to {unit}");
 			TemperatureUnits = unit;
@@ -78,18 +71,6 @@ namespace Aer
 		{
 			WasWelcomeShown = shown;
 			Save();
-		}
-
-
-
-		public static string ToUnitString(this TemperatureUnit unit)
-		{
-			return unit switch
-			{
-				TemperatureUnit.Celsius => "°C",
-				TemperatureUnit.Fahrenheit => "°F",
-				_ => throw new System.NotImplementedException()
-			};
 		}
 	}
 }
