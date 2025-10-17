@@ -224,11 +224,14 @@ namespace Aer
 				settings.DeleteContainer(containerName);
 			}
 
-			// 3. Reload default values into data and preferences
+			// 3. Delete app storage file
+			AppStorage.Delete();
+
+			// 4. Reload default values into data and preferences
 			Data.LoadCacheOrDefaults();
 			Preferences.Load();
 
-			// 4. Refresh UI with default values
+			// 5. Refresh UI with default values
 			UpdateLocationSectionFromData(true);
 			UpdatePreferences();
 		}

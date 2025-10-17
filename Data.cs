@@ -14,7 +14,7 @@ namespace Aer
 	/// <summary>
 	/// Holds the set location and cached weather data.
 	/// Able to update itself from network using the IWeatherProvider
-	/// </summary>	
+	/// </summary>
 	public static class Data
 	{
 		private const float CacheValidityMinutes = 30f;
@@ -26,9 +26,10 @@ namespace Aer
 		private const double DefaultLocationLatitude = 50.08804;
 		private const double DefaultLocationLongitude = 14.42076;
 
-		private static string SettingsPrefix => nameof(Data);
-
 		private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
+
+		private static string SettingsPrefix => nameof(Data);
+		private static string AppStorageKeyPrefix => nameof(Data);
 
 		private static bool IsUpdatingFromNetwork { get; set; }
 
@@ -78,9 +79,9 @@ namespace Aer
 			}
 
 			// Getting the cached location to compare with loaded location (cache can be fine, but location changed meanwhile)
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CacheLocationID)}", out var cacheLocationIDObj))
+			if (AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", out int cacheLocationID))
 			{
-				CacheLocationID = (int)cacheLocationIDObj;
+				CacheLocationID = cacheLocationID;
 				isCachedDataMatchingLocation = CacheLocationID == LocationID;
 			}
 			else
@@ -91,17 +92,17 @@ namespace Aer
 			// Loading the saved weather data, only if the location was loaded successfully and cache location matches
 			if (isSavedLocationLoadSuccessful &&
 				isCachedDataMatchingLocation &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedConditionCode)}", out var cachedConditionCodeObj) && cachedConditionCodeObj is int conditionCode &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedIsDaytime)}", out var cachedIsDaytimeObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedTemperature)}", out var cachedTemperatureObj) && cachedTemperatureObj is double temperature &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CachedHourly)}", out var cachedHourlyObj) && JsonSerializer.Deserialize<List<HourlyForecast>>((string)cachedHourlyObj, _jsonOptions) is List<HourlyForecast> hourly &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}", out var cacheLastUpdateTimeObj) && DateTime.TryParse(cacheLastUpdateTimeObj as string, null, DateTimeStyles.RoundtripKind, out DateTime lastUpdateDateTime))
+				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedConditionCode)}", out int cachedConditionCode) &&
+				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
+				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedTemperature)}", out double cachedTemperature) &&
+				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedHourly)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
+				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime))
 			{
-				CachedConditionCode = conditionCode;
-				CachedIsDaytime = (bool)cachedIsDaytimeObj;
-				CachedTemperature = temperature;
-				CachedHourly = hourly;
-				CacheLastUpdateTime = lastUpdateDateTime;
+				CachedConditionCode = cachedConditionCode;
+				CachedIsDaytime = cachedIsDaytime;
+				CachedTemperature = cachedTemperature;
+				CachedHourly = cachedHourly;
+				CacheLastUpdateTime = cacheLastUpdateTime;
 				IsCacheDataValid = true;
 			}
 			else
@@ -196,14 +197,13 @@ namespace Aer
 			Debug.Assert(IsUpdatingFromNetwork is false, "SaveWeatherData called while an update is in progress.");
 			Debug.Assert(IsCacheDataValid, "SaveWeatherData called while weather data is not valid.");
 
-			var settings = ApplicationData.Current.LocalSettings;
-
-			settings.Values[$"{SettingsPrefix}_{nameof(CachedConditionCode)}"] = CachedConditionCode;
-			settings.Values[$"{SettingsPrefix}_{nameof(CachedIsDaytime)}"] = CachedIsDaytime;
-			settings.Values[$"{SettingsPrefix}_{nameof(CachedTemperature)}"] = CachedTemperature;
-			settings.Values[$"{SettingsPrefix}_{nameof(CachedHourly)}"] = JsonSerializer.Serialize(CachedHourly, _jsonOptions); // TODO: Will not be enough for data larger than 8kB, now hourly a single day only
-			settings.Values[$"{SettingsPrefix}_{nameof(CacheLocationID)}"] = CacheLocationID;
-			settings.Values[$"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}"] = CacheLastUpdateTime?.ToString("o");
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedConditionCode)}", CachedConditionCode);
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", CachedIsDaytime);
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", CachedTemperature);
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", CachedHourly);
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", CacheLocationID);
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", CacheLastUpdateTime);
+			AppStorage.Flush();
 		}
 
 		private static bool IsCachedDataRecentEnough()
