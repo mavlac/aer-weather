@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -57,8 +58,6 @@ namespace Aer
 		/// </summary>
 		public static string ReadableCondition => CachedConditionCode is null ? "—" : WeatherDescriptions.GetDescription(CachedConditionCode.Value, CachedIsDaytime!.Value);
 		public static string ConditionWeatherIconsGlyph => CachedConditionCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedConditionCode!.Value, CachedIsDaytime!.Value);
-
-		public static event Action? UpdatedFromNetwork;
 
 		public static void LoadCacheOrDefaults()
 		{
@@ -144,7 +143,7 @@ namespace Aer
 			IsCacheDataValid = false; // New data must be loaded always after location change
 		}
 
-		public async static Task<bool> UpdateWeatherDataFromNetwork(bool skipCache)
+		public async static Task<bool> UpdateWeatherDataFromNetwork(bool skipCache, CancellationToken cancellationToken = default)
 		{
 			Debug.Assert(isUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
 
@@ -154,6 +153,9 @@ namespace Aer
 			}
 
 			isUpdatingFromNetwork = true;
+
+			// TODO: cancellationToken
+
 			var provider = new Weather.OpenMeteo.OpenMeteoWeatherProvider();
 			var result = await provider.GetWeatherAsync(LocationLatitude!.Value, LocationLongitude!.Value);
 			isUpdatingFromNetwork = false;
@@ -173,7 +175,6 @@ namespace Aer
 
 			IsCacheDataValid = true;
 			SaveWeatherData();
-			UpdatedFromNetwork?.Invoke();
 
 			return true; // OK: data was updated from network
 		}

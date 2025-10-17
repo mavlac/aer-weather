@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 
@@ -14,6 +15,9 @@ namespace Aer
 		public const string NavigationTag = "home";
 
 		private readonly MinuteTimer _minuteTimer = new();
+
+		private Task<bool>? _updateTask;
+		private CancellationTokenSource? _updateTaskCts;
 
 		public HomePage()
 		{
@@ -51,9 +55,7 @@ namespace Aer
 		{
 			// Show whatever is available immediately
 			// Can be default location with no weather data, can be old cached data, can be valid current data
-			UpdatePageDataContent();
-
-			Data.UpdatedFromNetwork += Data_UpdatedFromNetwork;
+			UpdatePageContent();
 
 			UpdateDataFromNetwork(forceNetworkUpdate: false);
 		}
@@ -63,52 +65,76 @@ namespace Aer
 			base.OnNavigatedFrom(e);
 			
 			_minuteTimer.Stop();
-		}
 
-		private void OnMinuteTick()
-		{
-			UpdatePageDataContent(); // Among other content will update the LastUpdateTimeText
-
-			// Data Update
-			// If cache is still valid, no network call will be made.
-			UpdateDataFromNetwork(false);
+			_updateTaskCts?.Cancel();
+			_updateTaskCts?.Dispose();
+			_updateTaskCts = null;
 		}
 
 		private async void UpdateDataFromNetwork(bool forceNetworkUpdate)
 		{
+			if (_updateTask != null)
+				return;
+
+			// Cancel any previous operation first
+			_updateTaskCts?.Cancel();
+			_updateTaskCts?.Dispose();
+
+			_updateTaskCts = new();
+			var cancellationToken = _updateTaskCts.Token;
+
 			// Kick off the network update, but don't await it yet
-			var updateTask = Data.UpdateWeatherDataFromNetwork(forceNetworkUpdate);
+			_updateTask = Data.UpdateWeatherDataFromNetwork(forceNetworkUpdate, cancellationToken);
 
-			// Wait briefly before deciding to show loader
-			await Task.Delay(200);
+			// Wait briefly before deciding to show loader, cancellable
+			await Task.Delay(200, cancellationToken).ContinueWith(_ => { }, TaskContinuationOptions.OnlyOnCanceled);
 
-			// Only show loader if still not finished
-			if (!updateTask.IsCompleted)
+			if (cancellationToken.IsCancellationRequested)
+			{
+				_updateTask = null;
+				return;
+			}
+
+			// Only show loader and loading status if still not finished
+			if (!_updateTask.IsCompleted)
 			{
 				LoadingOverlay.Visibility = Visibility.Visible;
+				LastUpdateTimeText.Text = "Loading from network…";
 			}
 
 			// Await completion (still necessary to observe exceptions etc.)
-			bool updateSucceeded = await updateTask;
+			bool didUpdateSucceed = await _updateTask;
 
 			// Whatever happened, does not matter, hide loader
 			LoadingOverlay.Visibility = Visibility.Collapsed;
+			UpdatePageContent(); // Will update the content and LastUpdateTimeText
 
-			if (!updateSucceeded)
+			if (!didUpdateSucceed)
 			{
 				await MessageBoxEx.ShowAsync(
 					"Unable to update weather data",
 					"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.",
 					"Oh dear");
 			}
+
+			_updateTask = null;
 		}
 
-		private void Data_UpdatedFromNetwork()
+		private void OnMinuteTick()
 		{
-			UpdatePageDataContent();
+			UpdatePageContent(); // Among other content will update the LastUpdateTimeText
+
+			// Data Update
+			// If cache is still valid, no network call will be made.
+			UpdateDataFromNetwork(false);
 		}
 
-		private void UpdatePageDataContent()
+		private void LastUpdateTimeTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
+		{
+			UpdateDataFromNetwork(forceNetworkUpdate: true);
+		}
+
+		private void UpdatePageContent()
 		{
 			if (Data.IsCacheDataValid)
 			{
@@ -145,13 +171,8 @@ namespace Aer
 				// Content
 				ForecastContent.Text = string.Empty;
 				// Last updated - unknown
-				LastUpdateTimeText.Text = "Loading from network…";
+				LastUpdateTimeText.Text = string.Empty;
 			}
-		}
-
-		private void LastUpdateTimeTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
-		{
-			UpdateDataFromNetwork(forceNetworkUpdate: true);
 		}
 	}
 }
