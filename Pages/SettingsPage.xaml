@@ -162,7 +162,9 @@
 											   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 											   Text="{x:Bind WindowSizeInfoText()}"
 											   Padding="12,8,0,8"/>
-									<HyperlinkButton Content="Clear local data and settings"
+									<HyperlinkButton Content="Open app local folder"
+													 Click="OpenAppLocalFolderButton_Click" />
+									<HyperlinkButton Content="Reset all data and settings"
 													 Click="ClearLocalSettingsButton_Click" />
 								</StackPanel>
 							</controls:SettingsCard>

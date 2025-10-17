@@ -210,6 +210,11 @@ namespace Aer
 			return "Window size: " + appWindow.Size.Width + "×" + appWindow.Size.Height;
 		}
 
+		private void OpenAppLocalFolderButton_Click(object sender, RoutedEventArgs e)
+		{
+			AppStorage.OpenLocalFolder();
+		}
+
 		private void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs e)
 		{
 			var settings = ApplicationData.Current.LocalSettings;

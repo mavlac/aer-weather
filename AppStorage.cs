@@ -20,6 +20,7 @@ namespace Aer
 				: new();
 		}
 
+		#region Save, Load, Delete
 		public static void Save<T>(string key, T value)
 		{
 			_store[key] = JsonSerializer.SerializeToElement(value);
@@ -62,5 +63,22 @@ namespace Aer
 			}
 			_store.Clear();
 		}
+		#endregion
+
+		#region Helpers
+		/// <summary>
+		/// Opens the local folder where the app data is stored in File Explorer.
+		/// </summary>
+		public static void OpenLocalFolder()
+		{
+			var folderPath = ApplicationData.Current.LocalFolder.Path;
+			Debug.WriteLine($"Opening LocalFolder: {folderPath}");
+			Process.Start(new ProcessStartInfo
+			{
+				FileName = folderPath,
+				UseShellExecute = true
+			});
+		}
+		#endregion
 	}
 }
