@@ -1,4 +1,6 @@
-﻿namespace Aer.Utils
+﻿using System;
+
+namespace Aer.Utils
 {
 	public static class Temperature
 	{
@@ -14,8 +16,8 @@
 		public static string GetReadableTemperature(double celsiusTemperature)
 		{
 			return Preferences.TemperatureUnits == Unit.Celsius
-				? $"{celsiusTemperature:F1} {Unit.Celsius.UnitString()}"
-				: $"{CelsiusToFahrenheit(celsiusTemperature):F1} {Unit.Fahrenheit.UnitString()}";
+				? $"{Math.Round(celsiusTemperature)} {Unit.Celsius.UnitString()}"
+				: $"{Math.Round(CelsiusToFahrenheit(celsiusTemperature))} {Unit.Fahrenheit.UnitString()}";
 		}
 
 		public static double GetTemperatureInPreferredUnit(double celsiusTemperature)

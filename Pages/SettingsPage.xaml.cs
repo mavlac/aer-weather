@@ -165,8 +165,8 @@ namespace Aer
 		{
 			Preferences.SetTemperatureUnits(
 				(SegmentedItem)TempUnitSelector.SelectedItem == TempUnitCelsius
-				? Preferences.TemperatureUnit.Celsius
-				: Preferences.TemperatureUnit.Fahrenheit);
+				? Temperature.Unit.Celsius
+				: Temperature.Unit.Fahrenheit);
 		}
 
 		private void AppThemeSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -185,8 +185,8 @@ namespace Aer
 		{
 			TempUnitSelector.SelectedItem = Preferences.TemperatureUnits switch
 			{
-				Preferences.TemperatureUnit.Celsius => TempUnitCelsius,
-				Preferences.TemperatureUnit.Fahrenheit => TempUnitFahrenheit,
+				Temperature.Unit.Celsius => TempUnitCelsius,
+				Temperature.Unit.Fahrenheit => TempUnitFahrenheit,
 				_ => null
 			};
 			AppThemeSelector.SelectedItem = Preferences.AppTheme switch

@@ -153,7 +153,7 @@ namespace Aer
 				{
 					if (Data.CachedHourly[i].Time < DateTime.Now)
 						continue; // Skip past hours
-					forecastContentTempText += $"{Data.CachedHourly[i].Time} {WeatherDescriptions.GetDescription(Data.CachedHourly[i].ConditionCode, Data.CachedHourly[i].IsDaytime)} {Data.CachedHourly[i].Temperature}\n";
+					forecastContentTempText += $"{Data.CachedHourly[i].Time} {WeatherDescriptions.GetDescription(Data.CachedHourly[i].ConditionCode, Data.CachedHourly[i].IsDaytime)} {Temperature.GetReadableTemperature(Data.CachedHourly[i].Temperature)}\n";
 				}
 				ForecastContent.Text = forecastContentTempText;
 				// Last updated
