@@ -40,7 +40,6 @@ namespace Aer.Drawing
 			// Colors
 			Color lineColor;
 			Color textColor;
-			Color dimColor;
 			bool isDarkTheme = sender.ActualTheme switch
 			{
 				ElementTheme.Dark => true,
@@ -52,12 +51,10 @@ namespace Aer.Drawing
 				case false:
 					lineColor = Colors.Black;
 					textColor = Colors.Black;
-					dimColor = Colors.Gray;
 					break;
 				case true:
 					lineColor = Colors.White;
 					textColor = Colors.White;
-					dimColor = Colors.Gray;
 					break;
 			}
 
@@ -68,6 +65,9 @@ namespace Aer.Drawing
 
 			// Drawing
 
+			// Zero deg line
+			ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), lineColor.WithAlpha(32), 1f);
+
 			// Temperature spline
 			var temperatureLinePoints = hourly.Select((h, i) =>
 			{
@@ -76,10 +76,7 @@ namespace Aer.Drawing
 				return new Vector2(x, y);
 			}).ToList();
 			Debug.WriteLine($"width={width}, lastPointX={temperatureLinePoints[^1].X}");
-			DrawSmoothLine(ds, temperatureLinePoints, chart, lineColor, thickness: 1.75f);
-
-			// Zero deg line
-			ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), dimColor, 1f);
+			DrawSmoothLine(ds, temperatureLinePoints, chart, lineColor, thickness: 1.667f, lineColor.WithAlpha(8));
 
 			// Draw some sample value text
 			var format = new CanvasTextFormat
@@ -119,26 +116,48 @@ namespace Aer.Drawing
 		/// Draws a smooth curve through the given temperatureLinePoints using quadratic Beziers.
 		/// Points should be in “data coordinates” (before flipping Y).
 		/// </summary>
-		public static void DrawSmoothLine(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color color, float thickness = 2f)
+		public static void DrawSmoothLine(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color lineColor, float thickness = 2f, Color? fillColor = null)
 		{
 			if (points.Count < 2)
 				return;
 
-			var spline = new CanvasPathBuilder(ds);
-			spline.BeginFigure(chart.XY(points[0]));
+			var spline = BuildSpline(ds, points, chart);
 
-			for (int i = 0; i < points.Count - 1; i++)
+			// If fill is requested, copy path and extend to bottom corners
+			if (fillColor.HasValue)
 			{
-				var p0 = chart.XY(points[i]);
-				var p1 = chart.XY(points[i + 1]);
-				var mid = (p0 + p1) / 2;
-				spline.AddQuadraticBezier(p0, mid);
-			}
-			spline.AddLine(chart.XY(points[^1])); // Connect last midpoint to final point
+				var fillArea = BuildSpline(ds, points, chart);
 
+				// Extend to bottom corners
+				fillArea.AddLine(new Vector2(chart.XY(points[^1]).X, chart.Y(0)));
+				fillArea.AddLine(new Vector2(chart.XY(points[0]).X, chart.Y(0)));
+				fillArea.EndFigure(CanvasFigureLoop.Closed);
+
+				ds.FillGeometry(CanvasGeometry.CreatePath(fillArea), fillColor.Value);
+			}
+
+			// Draw the line on top
 			spline.EndFigure(CanvasFigureLoop.Open);
-			var geometry = CanvasGeometry.CreatePath(spline);
-			ds.DrawGeometry(geometry, color, thickness);
+			ds.DrawGeometry(CanvasGeometry.CreatePath(spline), lineColor, thickness);
+
+
+
+			CanvasPathBuilder BuildSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart)
+			{
+				var builder = new CanvasPathBuilder(ds);
+				builder.BeginFigure(chart.XY(points[0]));
+
+				for (int i = 0; i < points.Count - 1; i++)
+				{
+					var p0 = chart.XY(points[i]);
+					var p1 = chart.XY(points[i + 1]);
+					var mid = (p0 + p1) / 2;
+					builder.AddQuadraticBezier(p0, mid);
+				}
+
+				builder.AddLine(chart.XY(points[^1]));
+				return builder;
+			}
 		}
 	}
 }

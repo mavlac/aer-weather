@@ -54,7 +54,7 @@
 										 Visibility="Visible"
 										 HorizontalAlignment="Stretch"
 										 VerticalAlignment="Stretch"
-										 Margin="2,6,0,6"/>
+										 Margin="0,6,0,6"/>
 					<!-- B) Scrollable data text, initially hidden -->
 					<TextBlock x:Name="ContentData"
 							   Text="Data"
