@@ -142,6 +142,11 @@
 								<StackPanel Margin="-12,0,0,0"
 											Orientation="Vertical">
 									<HyperlinkButton Click="HyperlinkButton_Click">
+										<TextBlock Text="Win2D"
+												   TextDecorations="Underline"
+												   DataContext="https://github.com/microsoft/Win2D/"/>
+									</HyperlinkButton>
+									<HyperlinkButton Click="HyperlinkButton_Click">
 										<TextBlock Text="Windows Community Toolkit"
 												   TextDecorations="Underline"
 												   DataContext="https://github.com/CommunityToolkit/Windows"/>

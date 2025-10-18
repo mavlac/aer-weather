@@ -45,27 +45,43 @@
 						  Grid.Row="1"
 						  Padding="24,16,24,0">
 				<Grid>
-					<StackPanel HorizontalAlignment="Stretch">
-						<TextBlock x:Name="ForecastContent" Text="..."/>
+					<StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+						<TextBlock x:Name="ContentChart" Text="Chart" Visibility="Collapsed"/>
+						<TextBlock x:Name="ContentData" Text="Data" />
 					</StackPanel>
 				</Grid>
 			</ScrollViewer>
 
-			<TextBlock Grid.Row="2"
+			<Grid Grid.Row="2"
+				  HorizontalAlignment="Stretch"
+				  Padding="12, 0, 0, 10">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<SelectorBar x:Name="ContentSelectorBar"
+							 Grid.Column="0"
+							 SelectionChanged="ContentSelectorBar_SelectionChanged">
+					<SelectorBarItem x:Name="ContentSelectorBar_ChartCard" Text="Chart" FontSize="12" Padding="16,8,16,2" IsSelected="True" />
+					<SelectorBarItem x:Name="ContentSelectorBar_DataCard" Text="Data" FontSize="12" Padding="16,8,16,2" />
+				</SelectorBar>
+				<TextBlock
+					   Grid.Column="1"
 					   Style="{StaticResource CaptionTextBlockStyle}"
 					   VerticalAlignment="Bottom"
 					   HorizontalAlignment="Right"
 					   HorizontalTextAlignment="Right"
-					   Padding="0,0,24,16"
+					   Padding="0,0,24,8"
 					   ToolTipService.ToolTip="Click to force-update from network">
-				<Hyperlink Click="LastUpdateTimeTextHyperlink_Click"
-						   TextDecorations="None"
-						   IsTabStop="False">
-					<Run x:Name="LastUpdateTimeText"
-						 Text="Hello Footer"
-						 TextDecorations="None" />
-				</Hyperlink>
-			</TextBlock>
+					<Hyperlink Click="LastUpdateTimeTextHyperlink_Click"
+							   TextDecorations="None"
+							   IsTabStop="False">
+						<Run x:Name="LastUpdateTimeText"
+							 Text="Hello Footer"
+							 TextDecorations="None" />
+					</Hyperlink>
+				</TextBlock>
+			</Grid>
 		</Grid>
 		
 		<!-- Loading Overlay -->

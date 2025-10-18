@@ -131,11 +131,6 @@ namespace Aer
 			UpdateDataFromNetwork(false);
 		}
 
-		private void LastUpdateTimeTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
-		{
-			UpdateDataFromNetwork(forceNetworkUpdate: true);
-		}
-
 		private void UpdatePageContent()
 		{
 			if (Data.IsCacheDataValid)
@@ -147,15 +142,19 @@ namespace Aer
 				SubHeaderIcon.Visibility = Visibility.Visible;
 				SubHeaderIcon.Glyph = Data.ConditionWeatherIconsGlyph;
 				// Content
-				// TODO: Draw the chart
 				string forecastContentTempText = string.Empty;
+				int valid = 0;
 				for (int i = 0; i < Data.CachedHourly.Count; i++)
 				{
 					if (Data.CachedHourly[i].Time < DateTime.Now)
 						continue; // Skip past hours
+
 					forecastContentTempText += $"{Data.CachedHourly[i].Time} {WeatherDescriptions.GetDescription(Data.CachedHourly[i].ConditionCode, Data.CachedHourly[i].IsDaytime)} {Temperature.GetReadableTemperature(Data.CachedHourly[i].Temperature)}\n";
+					valid++;
+					if (valid >= 62)
+						break;
 				}
-				ForecastContent.Text = forecastContentTempText;
+				ContentData.Text = forecastContentTempText;
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
 			}
@@ -171,10 +170,30 @@ namespace Aer
 				SubHeaderText.Text = Data.LocationLabel;
 				SubHeaderIcon.Visibility = Visibility.Collapsed;
 				// Content
-				ForecastContent.Text = string.Empty;
+				ContentData.Text = string.Empty;
 				// Last updated - unknown
 				LastUpdateTimeText.Text = string.Empty;
 			}
 		}
+
+		private void ContentSelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
+		{
+			if (sender.SelectedItem == ContentSelectorBar_ChartCard)
+			{
+				ContentChart.Visibility = Visibility.Visible;
+				ContentData.Visibility = Visibility.Collapsed;
+			}
+			else
+			{
+				ContentChart.Visibility = Visibility.Collapsed;
+				ContentData.Visibility = Visibility.Visible;
+			}
+		}
+
+		private void LastUpdateTimeTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
+		{
+			UpdateDataFromNetwork(forceNetworkUpdate: true);
+		}
+
 	}
 }
