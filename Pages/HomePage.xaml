@@ -5,7 +5,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="using:Aer"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:win2d="using:Microsoft.Graphics.Canvas.UI.Xaml"
 	mc:Ignorable="d">
 
 	<Grid>
@@ -46,8 +46,13 @@
 						  Padding="24,16,24,0">
 				<Grid>
 					<StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-						<TextBlock x:Name="ContentChart" Text="Chart" Visibility="Collapsed"/>
-						<TextBlock x:Name="ContentData" Text="Data" />
+						<win2d:CanvasControl x:Name="ContentChart"
+											 ClearColor="Transparent"
+											 Draw="ContentChartCanvas_Draw" />
+						<TextBlock x:Name="ContentData"
+								   Text="Data"
+								   Style="{StaticResource CaptionTextBlockStyle}"
+								   FontFamily="Consolas"/>
 					</StackPanel>
 				</Grid>
 			</ScrollViewer>

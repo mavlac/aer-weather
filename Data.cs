@@ -216,5 +216,31 @@ namespace Aer
 			}
 			return false;
 		}
+
+		public static string GetFutureHourly()
+		{
+			Debug.Assert(IsUpdatingFromNetwork is false, "GetFutureHourly called while an update is in progress.");
+			Debug.Assert(IsCacheDataValid, "GetFutureHourly called while weather data is not valid.");
+
+			//TODO abstract so objects are returned for drawing a chart instead of a string
+
+			CultureInfo culture = CultureInfo.CurrentCulture;
+
+			string dataString = string.Empty;
+			int valid = 0;
+			for (int i = 0; i < CachedHourly.Count; i++)
+			{
+				if (CachedHourly[i].Time < DateTime.Now)
+					continue; // Skip past hours
+
+				var formattedTime = CachedHourly[i].Time.ToString(culture.DateTimeFormat.ShortDatePattern) + " " + CachedHourly[i].Time.ToString("HH:mm");
+				dataString += $"{formattedTime} {WeatherDescriptions.GetDescription(CachedHourly[i].ConditionCode, CachedHourly[i].IsDaytime)} {Temperature.GetReadableTemperature(CachedHourly[i].Temperature)} {CachedHourly[i].Rain} {CachedHourly[i].Snowfall}\n";
+				valid++;
+				if (valid >= 62)
+					break;
+			}
+
+			return dataString;
+		}
 	}
 }

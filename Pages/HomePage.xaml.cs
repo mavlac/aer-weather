@@ -1,5 +1,6 @@
 using Aer.Utils;
 using Aer.Weather;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -142,19 +143,8 @@ namespace Aer
 				SubHeaderIcon.Visibility = Visibility.Visible;
 				SubHeaderIcon.Glyph = Data.ConditionWeatherIconsGlyph;
 				// Content
-				string forecastContentTempText = string.Empty;
-				int valid = 0;
-				for (int i = 0; i < Data.CachedHourly.Count; i++)
-				{
-					if (Data.CachedHourly[i].Time < DateTime.Now)
-						continue; // Skip past hours
-
-					forecastContentTempText += $"{Data.CachedHourly[i].Time} {WeatherDescriptions.GetDescription(Data.CachedHourly[i].ConditionCode, Data.CachedHourly[i].IsDaytime)} {Temperature.GetReadableTemperature(Data.CachedHourly[i].Temperature)}\n";
-					valid++;
-					if (valid >= 62)
-						break;
-				}
-				ContentData.Text = forecastContentTempText;
+				ContentChart.Invalidate();
+				ContentData.Text = Data.GetFutureHourly();
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
 			}
@@ -170,10 +160,24 @@ namespace Aer
 				SubHeaderText.Text = Data.LocationLabel;
 				SubHeaderIcon.Visibility = Visibility.Collapsed;
 				// Content
+				ContentChart.Invalidate();
 				ContentData.Text = string.Empty;
 				// Last updated - unknown
 				LastUpdateTimeText.Text = string.Empty;
 			}
+		}
+
+		private void ContentChartCanvas_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
+		{
+			var ds = args.DrawingSession;
+
+			ds.Clear(Colors.Transparent);
+
+			// No data - just clean
+			if (!Data.IsCacheDataValid)
+				return;
+
+			// TODO: Draw
 		}
 
 		private void ContentSelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
@@ -194,6 +198,5 @@ namespace Aer
 		{
 			UpdateDataFromNetwork(forceNetworkUpdate: true);
 		}
-
 	}
 }
