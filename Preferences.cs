@@ -9,7 +9,7 @@ namespace Aer
 	{
 		private static string SettingsPrefix => nameof(Preferences);
 
-		public static Temperature.Unit TemperatureUnits { get; private set; } = Temperature.Unit.Celsius;
+		public static TemperatureUtils.Unit TemperatureUnits { get; private set; } = TemperatureUtils.Unit.Celsius;
 		public static ElementTheme AppTheme { get; private set; } = ElementTheme.Default;
 		public static bool WasWelcomeShown { get; private set; } = false;
 
@@ -19,7 +19,7 @@ namespace Aer
 
 			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(TemperatureUnits)}", out var temperatureUnitsObj) && temperatureUnitsObj is int temperatureUnitsIntValue)
 			{
-				TemperatureUnits = (Temperature.Unit)temperatureUnitsIntValue;
+				TemperatureUnits = (TemperatureUtils.Unit)temperatureUnitsIntValue;
 			}
 			else
 			{
@@ -54,7 +54,7 @@ namespace Aer
 			settings.Values[$"{SettingsPrefix}_{nameof(WasWelcomeShown)}"] = WasWelcomeShown;
 		}
 
-		public static void SetTemperatureUnits(Temperature.Unit unit)
+		public static void SetTemperatureUnits(TemperatureUtils.Unit unit)
 		{
 			Debug.WriteLine($"Preferences: Setting temperature units to {unit}");
 			TemperatureUnits = unit;

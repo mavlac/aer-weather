@@ -47,7 +47,7 @@ namespace Aer
 		public static bool IsCacheDataValid { get; private set; }
 
 		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString(CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString(CultureInfo.InvariantCulture)}";
-		public static string ReadableTemperature => CachedTemperature is null ? "—" : Temperature.GetReadableTemperature(CachedTemperature.Value);
+		public static string ReadableTemperature => CachedTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedTemperature.Value);
 		public static string ConditionDescription => CachedConditionCode is null ? "—" : WeatherDescriptions.GetDescription(CachedConditionCode.Value, CachedIsDaytime!.Value);
 		public static string ConditionWeatherIconsGlyph => CachedConditionCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedConditionCode!.Value, CachedIsDaytime!.Value);
 
@@ -224,8 +224,6 @@ namespace Aer
 
 			//TODO abstract so objects are returned for drawing a chart instead of a string
 
-			CultureInfo culture = CultureInfo.CurrentCulture;
-
 			string dataString = string.Empty;
 			int valid = 0;
 			for (int i = 0; i < CachedHourly.Count; i++)
@@ -233,8 +231,7 @@ namespace Aer
 				if (CachedHourly[i].Time < DateTime.Now)
 					continue; // Skip past hours
 
-				var formattedTime = CachedHourly[i].Time.ToString(culture.DateTimeFormat.ShortDatePattern) + " " + CachedHourly[i].Time.ToString("HH:mm");
-				dataString += $"{formattedTime} {WeatherDescriptions.GetDescription(CachedHourly[i].ConditionCode, CachedHourly[i].IsDaytime)} {Temperature.GetReadableTemperature(CachedHourly[i].Temperature)} {CachedHourly[i].Rain} {CachedHourly[i].Snowfall}\n";
+				dataString += CachedHourly[i].ToString() + Environment.NewLine;
 				valid++;
 				if (valid >= 62)
 					break;

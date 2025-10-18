@@ -1,3 +1,4 @@
+using Aer.Drawing;
 using Aer.Utils;
 using Aer.Weather;
 using Microsoft.UI;
@@ -177,7 +178,8 @@ namespace Aer
 			if (!Data.IsCacheDataValid)
 				return;
 
-			// TODO: Draw
+			// Call Charting class to do the actual drawing
+			Charting.DrawHomePageChart(sender, ds);
 		}
 
 		private void ContentSelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)

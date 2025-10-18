@@ -2,7 +2,7 @@
 
 namespace Aer.Utils
 {
-	public static class Temperature
+	public static class TemperatureUtils
 	{
 		public enum Unit
 		{

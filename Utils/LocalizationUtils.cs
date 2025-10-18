@@ -5,7 +5,7 @@ namespace Aer.Utils
 {
 	internal class LocalizationUtils
 	{
-		public static Temperature.Unit GetPreferredTemperatureUnit()
+		public static TemperatureUtils.Unit GetPreferredTemperatureUnit()
 		{
 			var region = new GeographicRegion();
 			var code = region.CodeTwoLetter; // e.g. "US", "GB", "DE"
@@ -15,10 +15,10 @@ namespace Aer.Utils
 
 			if (Array.Exists(fahrenheitRegions, r => r == code))
 			{
-				return Temperature.Unit.Fahrenheit;
+				return TemperatureUtils.Unit.Fahrenheit;
 			}
 
-			return Temperature.Unit.Celsius;
+			return TemperatureUtils.Unit.Celsius;
 		}
 	}
 }
