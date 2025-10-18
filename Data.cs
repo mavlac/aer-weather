@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -217,29 +218,15 @@ namespace Aer
 			return false;
 		}
 
-		public static string GetFutureHourly()
+		public static List<HourlyForecast> GetHourlyDataSinceNow()
 		{
-			Debug.Assert(IsUpdatingFromNetwork is false, "GetFutureHourly called while an update is in progress.");
-			Debug.Assert(IsCacheDataValid, "GetFutureHourly called while weather data is not valid.");
+			Debug.Assert(IsCacheDataValid, "GetHourlyDataSinceNow called while weather data is not valid.");
 
-			// TODO: abstract so objects are returned for drawing a chart instead of a string
+			var now = DateTime.Now;
 
-			string dataString = string.Empty;
-			int valid = 0;
-			for (int i = 0; i < CachedHourly.Count; i++)
-			{
-				if (CachedHourly[i].Time < DateTime.Now)
-					continue; // Skip past hours
-
-				dataString += CachedHourly[i].ToString() + Environment.NewLine;
-				valid++;
-				if (valid >= 62)
-					break;
-			}
-
-			dataString = dataString.TrimEnd('\r', '\n');
-
-			return dataString;
+			return CachedHourly
+				.Where(f => f.Time >= now)
+				.ToList();
 		}
 	}
 }

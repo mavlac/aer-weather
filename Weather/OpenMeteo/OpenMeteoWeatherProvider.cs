@@ -76,7 +76,7 @@ namespace Aer.Weather.OpenMeteo
 				cancellationToken.ThrowIfCancellationRequested();
 				
 				// Fetch weather data from Open-Meteo API
-				const int days = 3; // Number of forecast days to retrieve
+				const int days = 4; // Number of forecast days to retrieve
 				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&timezone=GMT&temperature_unit=celsius&forecast_days={days}";
 				string json = await _client.GetStringAsync(url, cancellationToken);
 

@@ -1,11 +1,14 @@
 using Aer.Drawing;
 using Aer.Utils;
 using Aer.Weather;
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -145,7 +148,7 @@ namespace Aer
 				SubHeaderIcon.Glyph = Data.ConditionWeatherIconsGlyph;
 				// Content
 				ContentChart.Invalidate();
-				ContentData.Text = Data.GetFutureHourly();
+				ContentData.Text = string.Join(Environment.NewLine, Data.GetHourlyDataSinceNow());
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
 			}
@@ -174,12 +177,14 @@ namespace Aer
 
 			ds.Clear(Colors.Transparent);
 
-			// No data - just clean
-			if (!Data.IsCacheDataValid)
+			var hourlyData = Data.GetHourlyDataSinceNow();
+
+			// No data or not enough data - just clean
+			if (!Data.IsCacheDataValid || hourlyData.Count <= 2)
 				return;
 
 			// Call Charting class to do the actual drawing
-			Charting.DrawHomePageChart(sender, ds);
+			Charting.DrawHomePageChart(sender, ds, hourlyData);
 		}
 
 		private void ContentSelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
