@@ -1,10 +1,12 @@
-﻿using Microsoft.Graphics.Canvas;
+﻿using Aer.Utils.Extensions;
+using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
+using Windows.UI.ViewManagement;
 
 namespace Aer.Drawing
 {
@@ -18,27 +20,28 @@ namespace Aer.Drawing
 			float width = (float)sender.ActualWidth;
 			float height = (float)sender.ActualHeight;
 
+			// Set colors that will be used
 			Color lineColor;
 			Color textColor;
-
 			bool isDarkTheme = sender.ActualTheme switch
 			{
 				ElementTheme.Dark => true,
 				ElementTheme.Light => false,
 				_ => Application.Current.RequestedTheme == ApplicationTheme.Dark
 			};
-
 			switch (isDarkTheme)
 			{
 				case false:
-					lineColor = Colors.DodgerBlue;
+					lineColor = GetAccentColor().WithAlpha(127);
 					textColor = Colors.Black;
 					break;
 				case true:
-					lineColor = Colors.CornflowerBlue;
+					lineColor = GetAccentColor().WithAlpha(230);
 					textColor = Colors.White;
 					break;
 			}
+
+			// Drawing
 
 			// Top-left → bottom-right
 			ds.DrawLine(0, 0, width, height, lineColor, 3);
@@ -60,6 +63,12 @@ namespace Aer.Drawing
 				FontSize = 24
 			};
 			ds.DrawText("\uF00D", 50, 80, lineColor, iconFormat);
+		}
+
+		private static Color GetAccentColor()
+		{
+			var uiSettings = new UISettings();
+			return uiSettings.GetColorValue(UIColorType.Accent);
 		}
 	}
 }

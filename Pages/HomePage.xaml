@@ -42,28 +42,25 @@
 			</StackPanel>
 
 			<ScrollViewer x:Name="Scroller"
-              Grid.Row="1"
-              Padding="24,16,24,0"
-              HorizontalScrollMode="Disabled"
-              VerticalScrollMode="Auto">
-
-				<!-- Use Grid to switch content easily -->
+						  Grid.Row="1"
+						  Padding="24,16,24,0"
+						  HorizontalScrollMode="Disabled"
+						  VerticalScrollMode="Auto">
 				<Grid x:Name="ContentGrid">
-					<!-- Chart fills all space -->
+					<!-- A) Chart fills all space -->
 					<win2d:CanvasControl x:Name="ContentChart"
-                             ClearColor="Transparent"
-                             Draw="ContentChartCanvas_Draw"
-                             Visibility="Visible"
+										 ClearColor="Transparent"
+										 Draw="ContentChartCanvas_Draw"
+										 Visibility="Visible"
 										 HorizontalAlignment="Stretch"
-                     VerticalAlignment="Stretch"
+										 VerticalAlignment="Stretch"
 										 Margin="2,6,0,6"/>
-
-					<!-- Scrollable data text, initially hidden -->
+					<!-- B) Scrollable data text, initially hidden -->
 					<TextBlock x:Name="ContentData"
-                   Text="Data"
-                   TextWrapping="Wrap"
-                   FontFamily="Consolas"
-                   Visibility="Collapsed"/>
+							   Text="Data"
+							   TextWrapping="Wrap"
+							   FontFamily="Consolas"
+							   Visibility="Collapsed"/>
 				</Grid>
 			</ScrollViewer>
 

@@ -222,7 +222,7 @@ namespace Aer
 			Debug.Assert(IsUpdatingFromNetwork is false, "GetFutureHourly called while an update is in progress.");
 			Debug.Assert(IsCacheDataValid, "GetFutureHourly called while weather data is not valid.");
 
-			//TODO abstract so objects are returned for drawing a chart instead of a string
+			// TODO: abstract so objects are returned for drawing a chart instead of a string
 
 			string dataString = string.Empty;
 			int valid = 0;
@@ -236,6 +236,8 @@ namespace Aer
 				if (valid >= 62)
 					break;
 			}
+
+			dataString = dataString.TrimEnd('\r', '\n');
 
 			return dataString;
 		}
