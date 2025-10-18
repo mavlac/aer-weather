@@ -175,12 +175,15 @@ namespace Aer
 		{
 			var ds = args.DrawingSession;
 
+			// Clear the canvas first
 			ds.Clear(Colors.Transparent);
 
+			// No data
+			if (!Data.IsCacheDataValid)
+				return;
+			// Insufficient data
 			var hourlyData = Data.GetHourlyDataSinceNow();
-
-			// No data or not enough data - just clean
-			if (!Data.IsCacheDataValid || hourlyData.Count <= 2)
+			if (hourlyData.Count <= 2)
 				return;
 
 			// Call Charting class to do the actual drawing
