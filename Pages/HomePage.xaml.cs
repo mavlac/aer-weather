@@ -144,8 +144,8 @@ namespace Aer
 				HeaderText.Text = string.Format("{0}, {1}", Data.ReadableTemperature, Data.ConditionDescription);
 				// Location
 				SubHeaderText.Text = Data.LocationLabel;
-				SubHeaderIcon.Visibility = Visibility.Visible;
-				SubHeaderIcon.Glyph = Data.ConditionWeatherIconsGlyph;
+				CurrentConditionIcon.Visibility = Visibility.Visible;
+				CurrentConditionIcon.Glyph = Data.ConditionWeatherIconsGlyph;
 				// Content
 				ContentChart.Invalidate();
 				ContentData.Text = string.Join(Environment.NewLine, Data.GetHourlyDataSinceNow());
@@ -162,7 +162,7 @@ namespace Aer
 				HeaderText.Text = "No data";
 				// Location - always known
 				SubHeaderText.Text = Data.LocationLabel;
-				SubHeaderIcon.Visibility = Visibility.Collapsed;
+				CurrentConditionIcon.Visibility = Visibility.Collapsed;
 				// Content
 				ContentChart.Invalidate();
 				ContentData.Text = string.Empty;

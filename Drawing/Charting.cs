@@ -91,6 +91,7 @@ namespace Aer.Drawing
 			ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), 1f, strokeStyle);
 
 			// Time markers - vertical lines
+			var labels = new List<(string label, float x, float y)>();
 			for (int i = 0; i < hourly.Count; i++)
 			{
 				int hour = hourly[i].Time.Hour;
@@ -106,11 +107,14 @@ namespace Aer.Drawing
 					
 					string label = isNewDayMarker ? hourly[i].Time.DayOfWeek.ToString() : hour.ToString();
 
-					bool isLabelOnRightEdge = x > width - 30; // Skip label overlapping right edge
+					bool isLabelOnRightEdge = x > width - 30; // Skip label shortly overlapping right edge
 					if (!isLabelOnRightEdge)
-						ds.DrawText(label, x + 8, chart.Y(0 + 22), textColor, textFormat);
+						labels.Add((label, x + 8, chart.Y(0 + 22)));
 				}
 			}
+			// Labels need to be drawn on top of lines
+			foreach(var (label, x, y) in labels)
+				ds.DrawText(label, x, y, textColor, textFormat);
 
 			// Temperature spline
 			var temperatureLinePoints = hourly.Select((h, i) =>
@@ -130,13 +134,15 @@ namespace Aer.Drawing
 			{
 				startHourlyIndex++;
 			}
-			Debug.WriteLine("startHourlyIndex="+startHourlyIndex + " hour: " + hourly[startHourlyIndex].Time.Hour);
 			for (int i = startHourlyIndex; i < hourly.Count; i += eachNthHour)
 			{
-				Debug.WriteLine("icon at index " + i + " hour: " + hourly[i].Time.Hour);
 				float x = hourWidth * i;
-				var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].ConditionCode, hourly[i].IsDaytime);
-				ds.DrawText(glyph, x + 8.125f, chart.Y(52f), textColor, iconFormat);
+				bool isOnRightEdge = x > width - 30;
+				if (!isOnRightEdge)
+				{
+					var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].ConditionCode, hourly[i].IsDaytime);
+					ds.DrawText(glyph, x + 8.125f, chart.Y(52f), textColor, iconFormat);
+				}
 			}
 		}
 

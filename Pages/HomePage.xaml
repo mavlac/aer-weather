@@ -23,22 +23,23 @@
 						Grid.Row="0"
 						Orientation="Vertical"
 						Padding="24,18,24,0">
+				<StackPanel Orientation="Horizontal">
 					<TextBlock x:Name="HeaderText"
 							   Style="{StaticResource HeaderTextBlockStyle}"
 							   HorizontalAlignment="Left"
 							   Grid.Column="0"
 							   Text="HeaderText" />
-				<StackPanel Orientation="Horizontal">
-					<FontIcon x:Name="SubHeaderIcon"
+					<FontIcon x:Name="CurrentConditionIcon"
 						  FontFamily="{StaticResource WeatherIconsFont}"
 						  Glyph="&#xF00D;"
-						  FontSize="13"
-						  Margin="0,6.5,8,0"/>
-					<TextBlock x:Name="SubHeaderText"
-						   Style="{StaticResource BodyTextBlockStyle}"
-						   Padding="0,8,0,0"
-						   Text="SubHeaderText" />
+						  FontSize="25"
+						  Margin="14,0,2,0"
+						  VerticalAlignment="Top"/>
 				</StackPanel>
+				<TextBlock x:Name="SubHeaderText"
+						   Style="{StaticResource BodyTextBlockStyle}"
+						   Padding="0,6,0,0"
+						   Text="SubHeaderText" />
 			</StackPanel>
 
 			<ScrollViewer x:Name="Scroller"
@@ -54,8 +55,7 @@
 										 Draw="ContentChartCanvas_Draw"
 										 Visibility="Visible"
 										 HorizontalAlignment="Stretch"
-										 VerticalAlignment="Stretch"
-										 Margin="0,0,0,2"/>
+										 VerticalAlignment="Stretch" />
 					<!-- B) Scrollable data text, initially hidden -->
 					<TextBlock x:Name="ContentData"
 							   Text="Data"
@@ -68,7 +68,7 @@
 
 			<Grid Grid.Row="2"
 				  HorizontalAlignment="Stretch"
-				  Padding="12, 0, 0, 10">
+				  Padding="12, 2, 0, 10">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
