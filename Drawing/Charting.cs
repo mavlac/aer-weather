@@ -9,6 +9,7 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Windows.UI;
@@ -121,9 +122,18 @@ namespace Aer.Drawing
 			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, thickness: 1.6f, fillColor);
 
 			// Condition icons
-			int eachNthHour = isWide ? 3 : 5;
-			for (int i = 0; i < hourly.Count; i += eachNthHour)
+			int eachNthHour = isWide ? 3 : 6; // Density
+			int startHourlyIndex = 0;
+			// When dense, got to start at hours 0,3,6,9,12.. When sparse, got to start at hours 0,6,12,18..
+			// Find the start from where to draw first icon
+			while (hourly[startHourlyIndex].Time.Hour % eachNthHour != 0) // Look for the first divisible
 			{
+				startHourlyIndex++;
+			}
+			Debug.WriteLine("startHourlyIndex="+startHourlyIndex + " hour: " + hourly[startHourlyIndex].Time.Hour);
+			for (int i = startHourlyIndex; i < hourly.Count; i += eachNthHour)
+			{
+				Debug.WriteLine("icon at index " + i + " hour: " + hourly[i].Time.Hour);
 				float x = hourWidth * i;
 				var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].ConditionCode, hourly[i].IsDaytime);
 				ds.DrawText(glyph, x + 8.125f, chart.Y(52f), textColor, iconFormat);
