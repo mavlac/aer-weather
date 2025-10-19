@@ -77,6 +77,9 @@ namespace Aer.Drawing
 			float zeroDegPositionY = height / 3f; // TODO: Will be floating based on temperature range
 			float degreeHeight = height / 30f;
 
+			// Responsivity
+			bool isWide = width > 600;
+
 
 			// Drawing
 
@@ -89,8 +92,9 @@ namespace Aer.Drawing
 			// Time vertical lines
 			for (int i = 0; i < hourly.Count; i++)
 			{
-				bool isNewDayMarker = hourly[i].Time.Hour == 0;
-				bool isTimeMarker = hourly[i].Time.Hour == 12;
+				int hour = hourly[i].Time.Hour;
+				bool isNewDayMarker = hour is 0;
+				bool isTimeMarker = isWide ? hour is 6 or 12 or 18 : hour is 12;
 				float x = hourWidth * i;
 				float y = isNewDayMarker ? zeroDegPositionY + (float)hourly[i].Temperature * degreeHeight : 25;
 				if (isNewDayMarker || isTimeMarker)
@@ -99,9 +103,11 @@ namespace Aer.Drawing
 					if (!isLineOnEdge)
 						ds.DrawLine(x, chart.Y(y), x, chart.Y(0), lineColor, 1f);
 					
-					string label = isNewDayMarker ? hourly[i].Time.DayOfWeek.ToString() : hourly[i].Time.Hour.ToString();
-					
-					ds.DrawText(label, x + 8, chart.Y(0 + 22), textColor, textFormat);
+					string label = isNewDayMarker ? hourly[i].Time.DayOfWeek.ToString() : hour.ToString();
+
+					bool isLabelOnRightEdge = x > width - 30; // Skip label overlapping right edge
+					if (!isLabelOnRightEdge)
+						ds.DrawText(label, x + 8, chart.Y(0 + 22), textColor, textFormat);
 				}
 			}
 
@@ -112,7 +118,7 @@ namespace Aer.Drawing
 				float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 				return new Vector2(x, y);
 			}).ToList();
-			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, thickness: 1.667f, fillColor);
+			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, thickness: 1.6f, fillColor);
 
 			// Optional: draw a glyph from Segoe MDL2 Assets
 			// Get your custom font from App.xaml
