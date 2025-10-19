@@ -43,7 +43,7 @@
 
 			<ScrollViewer x:Name="Scroller"
 						  Grid.Row="1"
-						  Padding="24,16,24,0"
+						  Padding="0,16,0,0"
 						  HorizontalScrollMode="Disabled"
 						  VerticalScrollMode="Auto">
 				<Grid x:Name="ContentGrid">
@@ -54,13 +54,14 @@
 										 Visibility="Visible"
 										 HorizontalAlignment="Stretch"
 										 VerticalAlignment="Stretch"
-										 Margin="0,6,0,6"/>
+										 Margin="0,0,0,2"/>
 					<!-- B) Scrollable data text, initially hidden -->
 					<TextBlock x:Name="ContentData"
 							   Text="Data"
 							   TextWrapping="Wrap"
 							   FontFamily="Consolas"
-							   Visibility="Collapsed"/>
+							   Visibility="Collapsed"
+							   Padding="25,0,24,0"/>
 				</Grid>
 			</ScrollViewer>
 

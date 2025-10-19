@@ -8,7 +8,6 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Windows.UI;
@@ -38,8 +37,10 @@ namespace Aer.Drawing
 			hourly = hourly.Take(61).ToList();
 
 			// Colors
-			Color lineColor;
+			Color mainColor;
+			Color fillColor;
 			Color textColor;
+			Color lineColor;
 			bool isDarkTheme = sender.ActualTheme switch
 			{
 				ElementTheme.Dark => true,
@@ -49,24 +50,58 @@ namespace Aer.Drawing
 			switch (isDarkTheme)
 			{
 				case false:
-					lineColor = Colors.Black;
-					textColor = Colors.Black;
+					mainColor = Colors.Black;
+					fillColor = mainColor.WithAlpha(8);
+					textColor = Colors.Gray;
+					lineColor = Colors.LightGray;
 					break;
 				case true:
-					lineColor = Colors.White;
-					textColor = Colors.White;
+					mainColor = Colors.White;
+					fillColor = mainColor.WithAlpha(8);
+					textColor = Colors.Gray;
+					lineColor = Colors.DarkGray;
 					break;
 			}
+
+			// Fonts
+			var textFormat = new CanvasTextFormat
+			{
+				FontFamily = "Segoe UI",
+				FontSize = 12
+			};
 
 			// Constants
 			float hourWidth = width / (hourly.Count - 1);
 			float zeroDegPositionY = height / 3f; // TODO: Will be floating based on temperature range
 			float degreeHeight = height / 30f;
 
+
 			// Drawing
 
-			// Zero deg line
-			ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), lineColor.WithAlpha(32), 1f);
+			// Zero deg horizontal line
+			var strokeStyle = new CanvasStrokeStyle();
+			strokeStyle.DashStyle = CanvasDashStyle.Dash;
+			strokeStyle.CustomDashStyle = [1f, 5f];
+			ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), 1f, strokeStyle);
+
+			// Time vertical lines
+			for (int i = 0; i < hourly.Count; i++)
+			{
+				bool isNewDayMarker = hourly[i].Time.Hour == 0;
+				bool isTimeMarker = hourly[i].Time.Hour == 12;
+				float x = hourWidth * i;
+				float y = isNewDayMarker ? zeroDegPositionY + (float)hourly[i].Temperature * degreeHeight : 25;
+				if (isNewDayMarker || isTimeMarker)
+				{
+					bool isLineOnEdge = x < 10 || x > width - 10; // Skip vertical lines that would be on edge of chart, looks bad
+					if (!isLineOnEdge)
+						ds.DrawLine(x, chart.Y(y), x, chart.Y(0), lineColor, 1f);
+					
+					string label = isNewDayMarker ? hourly[i].Time.DayOfWeek.ToString() : hourly[i].Time.Hour.ToString();
+					
+					ds.DrawText(label, x + 8, chart.Y(0 + 22), textColor, textFormat);
+				}
+			}
 
 			// Temperature spline
 			var temperatureLinePoints = hourly.Select((h, i) =>
@@ -75,16 +110,7 @@ namespace Aer.Drawing
 				float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 				return new Vector2(x, y);
 			}).ToList();
-			Debug.WriteLine($"width={width}, lastPointX={temperatureLinePoints[^1].X}");
-			DrawSmoothLine(ds, temperatureLinePoints, chart, lineColor, thickness: 1.667f, lineColor.WithAlpha(8));
-
-			// Draw some sample value text
-			var format = new CanvasTextFormat
-			{
-				FontFamily = "Segoe UI",
-				FontSize = 12
-			};
-			ds.DrawText("Sample Value", 120, 60, textColor, format);
+			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, thickness: 1.667f, fillColor);
 
 			// Optional: draw a glyph from Segoe MDL2 Assets
 			// Get your custom font from App.xaml
@@ -94,7 +120,7 @@ namespace Aer.Drawing
 				FontFamily = weatherFont.Source,
 				FontSize = 24
 			};
-			ds.DrawText("\uF00D", 50, 80, lineColor, iconFormat);
+			ds.DrawText("\uF00D", 50, 80, mainColor, iconFormat);
 		}
 
 		private static Color GetAccentColor()
