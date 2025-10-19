@@ -39,8 +39,8 @@ namespace Aer.Drawing
 			// Colors
 			Color mainColor;
 			Color fillColor;
-			Color textColor;
 			Color lineColor;
+			Color textColor;
 			bool isDarkTheme = sender.ActualTheme switch
 			{
 				ElementTheme.Dark => true,
@@ -50,16 +50,18 @@ namespace Aer.Drawing
 			switch (isDarkTheme)
 			{
 				case false:
+					// Light
 					mainColor = Colors.Black;
 					fillColor = mainColor.WithAlpha(8);
+					lineColor = Color.FromArgb(255, 229, 229, 229);
 					textColor = Colors.Gray;
-					lineColor = Colors.LightGray;
 					break;
 				case true:
+					// Dark
 					mainColor = Colors.White;
 					fillColor = mainColor.WithAlpha(8);
+					lineColor = Colors.Gray;
 					textColor = Colors.Gray;
-					lineColor = Colors.DarkGray;
 					break;
 			}
 
