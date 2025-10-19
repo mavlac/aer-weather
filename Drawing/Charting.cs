@@ -8,10 +8,12 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Reflection.Emit;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 
@@ -64,6 +66,13 @@ namespace Aer.Drawing
 			{
 				FontFamily = "Segoe UI",
 				FontSize = 12
+			};
+			var textFormatCentered = new CanvasTextFormat
+			{
+				FontFamily = "Segoe UI",
+				FontSize = 12,
+				HorizontalAlignment = CanvasHorizontalAlignment.Center,
+				VerticalAlignment = CanvasVerticalAlignment.Center
 			};
 			var weatherFont = (FontFamily)Application.Current.Resources["WeatherIconsFont"];
 			var iconFormat = new CanvasTextFormat
@@ -124,6 +133,44 @@ namespace Aer.Drawing
 				return new Vector2(x, y);
 			}).ToList();
 			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, thickness: 1.6f, fillColor);
+
+			// Temperature readings
+			var dayExtremes = new List<DayExtremes>();
+			var currentExtremes = new DayExtremes();
+			// Daily extremes
+			int lastDay = hourly[0].Time.Day;
+			for (int i = 0; i < hourly.Count; i++)
+			{
+				if (hourly[i].Time.Day != lastDay)
+				{
+					dayExtremes.Add(currentExtremes);
+					currentExtremes = new DayExtremes();
+					lastDay = hourly[i].Time.Day;
+				}
+
+				double temperature = hourly[i].Temperature;
+				int hour = hourly[i].Time.Hour;
+				if (temperature < currentExtremes.DayLow.temperature)
+					currentExtremes.DayLow = (temperature, i);
+				if (temperature > currentExtremes.DayHigh.temperature)
+					currentExtremes.DayHigh = (temperature, i);
+			}
+			dayExtremes.Add(currentExtremes);
+			foreach (var day in dayExtremes)
+			{
+				float x = hourWidth * day.DayLow.chartHour;
+				float y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
+				string label = Math.Round(day.DayLow.temperature).ToString();
+				bool isOnEdge = x < 20 || x > width - 20;
+				if (!isOnEdge)
+					ds.DrawText(label, x, chart.Y(y - 12), mainColor, textFormatCentered);
+				x = hourWidth * day.DayHigh.chartHour;
+				y = zeroDegPositionY + (float)day.DayHigh.temperature * degreeHeight;
+				label = Math.Round(day.DayHigh.temperature).ToString();
+				isOnEdge = x < 20 || x > width - 20;
+				if (!isOnEdge)
+					ds.DrawText(label, x, chart.Y(y + 12), mainColor, textFormatCentered);
+			}
 
 			// Condition icons
 			int eachNthHour = isWide ? 3 : 6; // Density
@@ -191,7 +238,7 @@ namespace Aer.Drawing
 
 
 
-			CanvasPathBuilder BuildSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart)
+			static CanvasPathBuilder BuildSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart)
 			{
 				var builder = new CanvasPathBuilder(ds);
 				builder.BeginFigure(chart.XY(points[0]));
@@ -207,6 +254,12 @@ namespace Aer.Drawing
 				builder.AddLine(chart.XY(points[^1]));
 				return builder;
 			}
+		}
+
+		private record DayExtremes
+		{
+			public (double temperature, int chartHour) DayLow = (double.PositiveInfinity, -1);
+			public (double temperature, int chartHour) DayHigh = (double.NegativeInfinity, -1);
 		}
 	}
 }
