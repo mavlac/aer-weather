@@ -1,4 +1,5 @@
-﻿using Aer.Utils.Extensions;
+﻿using Aer.Utils;
+using Aer.Utils.Extensions;
 using Aer.Weather;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
@@ -17,9 +18,6 @@ namespace Aer.Drawing
 {
 	public static class Charting
 	{
-		/// <summary>
-		/// Draws a simple demo line chart from top-left to bottom-right.
-		/// </summary>
 		public static void DrawHomePageChart(CanvasControl sender, CanvasDrawingSession ds, List<HourlyForecast> hourly)
 		{
 			ds.Antialiasing = CanvasAntialiasing.Antialiased;
@@ -29,35 +27,30 @@ namespace Aer.Drawing
 			float height = (float)sender.ActualHeight;
 
 			// Helper for working with coordinates with left-bottom 0,0 origin.
-			// Running coordinates through this draws them onto canvas that has origin in left-top,
-			// which is pain to draw charts in.
+			// Running coordinates through this draws them onto canvas that has origin in left-top, which is pain to draw charts in.
 			var chart = new ChartSpace(height);
 
 			// Trim data
 			hourly = hourly.Take(61).ToList();
 
 			// Colors
-			Color mainColor;
-			Color fillColor;
-			Color lineColor;
-			Color textColor;
-			bool isDarkTheme = sender.ActualTheme switch
-			{
-				ElementTheme.Dark => true,
-				ElementTheme.Light => false,
-				_ => Application.Current.RequestedTheme == ApplicationTheme.Dark
-			};
-			switch (isDarkTheme)
+			Color mainColor, fillColor, lineColor, textColor;
+			switch (sender.ActualTheme switch // Is Dark? If unable to get from FrameworkElement, get from ApplicationTheme
+				{
+					ElementTheme.Dark => true,
+					ElementTheme.Light => false,
+					_ => Application.Current.RequestedTheme == ApplicationTheme.Dark
+				})
 			{
 				case false:
-					// Light
+					// Light theme
 					mainColor = Colors.Black;
 					fillColor = mainColor.WithAlpha(8);
 					lineColor = Color.FromArgb(255, 229, 229, 229);
 					textColor = Colors.Gray;
 					break;
 				case true:
-					// Dark
+					// Dark theme
 					mainColor = Colors.White;
 					fillColor = mainColor.WithAlpha(8);
 					lineColor = Colors.Gray;
@@ -71,6 +64,13 @@ namespace Aer.Drawing
 				FontFamily = "Segoe UI",
 				FontSize = 12
 			};
+			var weatherFont = (FontFamily)Application.Current.Resources["WeatherIconsFont"];
+			var iconFormat = new CanvasTextFormat
+			{
+				FontFamily = weatherFont.Source,
+				FontSize = 13
+			};
+
 
 			// Constants
 			float hourWidth = width / (hourly.Count - 1);
@@ -83,13 +83,13 @@ namespace Aer.Drawing
 
 			// Drawing
 
-			// Zero deg horizontal line
+			// Zero degrees horizontal line
 			var strokeStyle = new CanvasStrokeStyle();
 			strokeStyle.DashStyle = CanvasDashStyle.Dash;
 			strokeStyle.CustomDashStyle = [1f, 5f];
 			ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), 1f, strokeStyle);
 
-			// Time vertical lines
+			// Time markers - vertical lines
 			for (int i = 0; i < hourly.Count; i++)
 			{
 				int hour = hourly[i].Time.Hour;
@@ -120,15 +120,14 @@ namespace Aer.Drawing
 			}).ToList();
 			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, thickness: 1.6f, fillColor);
 
-			// Optional: draw a glyph from Segoe MDL2 Assets
-			// Get your custom font from App.xaml
-			var weatherFont = (FontFamily)Application.Current.Resources["WeatherIconsFont"];
-			var iconFormat = new CanvasTextFormat
+			// Condition icons
+			int eachNthHour = isWide ? 3 : 5;
+			for (int i = 0; i < hourly.Count; i += eachNthHour)
 			{
-				FontFamily = weatherFont.Source,
-				FontSize = 24
-			};
-			ds.DrawText("\uF00D", 50, 80, mainColor, iconFormat);
+				float x = hourWidth * i;
+				var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].ConditionCode, hourly[i].IsDaytime);
+				ds.DrawText(glyph, x + 8.125f, chart.Y(52f), textColor, iconFormat);
+			}
 		}
 
 		private static Color GetAccentColor()

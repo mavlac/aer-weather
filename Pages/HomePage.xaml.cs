@@ -196,11 +196,13 @@ namespace Aer
 			{
 				ContentChart.Visibility = Visibility.Visible;
 				ContentData.Visibility = Visibility.Collapsed;
+				Scroller.IsEnabled = false;
 			}
 			else
 			{
 				ContentChart.Visibility = Visibility.Collapsed;
 				ContentData.Visibility = Visibility.Visible;
+				Scroller.IsEnabled = true;
 			}
 		}
 
