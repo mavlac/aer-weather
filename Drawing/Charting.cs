@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -100,13 +101,32 @@ namespace Aer.Drawing
 				VerticalAlignment = CanvasVerticalAlignment.Center
 			};
 
+			// Visual
+			float mainLineThickness = 1.6f;
+
 			// Culture
 			var culture = CultureInfo.InvariantCulture;
 
-			// Constants
+			// Scaling and Range
 			float hourWidth = width / (hourly.Count - 1);
-			float zeroDegPositionY = height / 3f; // TODO: Will be floating based on temperature range
-			float degreeHeight = height / 30f;
+
+			float paddingTop = 40f;
+			float paddingBottom = 100f;
+			//ds.DrawLine(0f, chart.Y(paddingBottom), width, chart.Y(paddingBottom), Colors.Red, 0.5f);
+			//ds.DrawLine(0f, chart.Y(height - paddingTop), width, chart.Y(height - paddingTop), Colors.Red, 0.5f);
+			// total temperature tempRange
+			float tempRange = maxTemp - minTemp;
+			if (tempRange < 0.1f) tempRange = 0.1f; // avoid division by zero
+			// how tall one degree is in pixels
+			float degreeHeight = (height - (paddingTop + paddingBottom)) / tempRange;
+			// actual position of 0 °C based on data range
+			float dataZeroY = (0 - minTemp) * degreeHeight + paddingBottom;
+			//// preferred visual bias: 0 °C at 1/3 chart height
+			//// blend between data-based and biased position
+			//float desiredZeroY = height / 3f;
+			//float zeroDegPositionY = dataZeroY * 0.8f + desiredZeroY * 0.2f;
+			float zeroDegPositionY = dataZeroY;
+
 
 
 			// Drawing
@@ -114,8 +134,8 @@ namespace Aer.Drawing
 			// Zero degree horizontal line
 			var strokeStyle = new CanvasStrokeStyle();
 			strokeStyle.DashStyle = CanvasDashStyle.Dash;
-			strokeStyle.CustomDashStyle = [1f, 5f];
-			ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), 1f, strokeStyle);
+			strokeStyle.CustomDashStyle = [0.5f, 4f];
+			ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), mainLineThickness, strokeStyle);
 
 			// Time markers - vertical lines
 			var labels = new List<(string label, float x, float y)>();
@@ -173,7 +193,7 @@ namespace Aer.Drawing
 				float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 				return new Vector2(x, y);
 			}).ToList();
-			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, thickness: 1.6f, fillColor);
+			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, mainLineThickness, fillColor);
 
 			// Temperature readings
 			var dayExtremes = new List<DayExtremes>();
