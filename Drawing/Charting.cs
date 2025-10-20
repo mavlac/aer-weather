@@ -188,16 +188,18 @@ namespace Aer.Drawing
 			dayExtremes.Add(currentExtremes);
 			foreach (var day in dayExtremes)
 			{
+				// Day Min label
 				float x = hourWidth * day.DayLow.chartHour;
 				float y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
-				string label = ((int)Math.Round(day.DayHigh.temperature)).ToString();
+				string label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
 				bool isOnEdge = x < 20 || x > width - 20;
 				if (!isOnEdge)
 					ds.DrawText(label, x, chart.Y(y - 12), mainColor, textFormatCentered);
 				
+				// Day Max label
 				x = hourWidth * day.DayHigh.chartHour;
 				y = zeroDegPositionY + (float)day.DayHigh.temperature * degreeHeight;
-				label = ((int)Math.Round(day.DayHigh.temperature)).ToString();
+				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
 				isOnEdge = x < 20 || x > width - 20;
 				if (!isOnEdge)
 					ds.DrawText(label, x, chart.Y(y + 12), mainColor, textFormatCentered);
