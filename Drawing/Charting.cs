@@ -132,10 +132,14 @@ namespace Aer.Drawing
 			// Drawing
 
 			// Zero degree horizontal line
-			var strokeStyle = new CanvasStrokeStyle();
-			strokeStyle.DashStyle = CanvasDashStyle.Dash;
-			strokeStyle.CustomDashStyle = [0.5f, 4f];
-			ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), mainLineThickness, strokeStyle);
+			// Draw only if not above paddings
+			if (zeroDegPositionY > paddingBottom && zeroDegPositionY < height - paddingTop)
+			{
+				var strokeStyle = new CanvasStrokeStyle();
+				strokeStyle.DashStyle = CanvasDashStyle.Dash;
+				strokeStyle.CustomDashStyle = [0.5f, 4f];
+				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), mainLineThickness, strokeStyle);
+			}
 
 			// Time markers - vertical lines
 			var labels = new List<(string label, float x, float y)>();
