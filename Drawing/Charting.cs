@@ -25,15 +25,29 @@ namespace Aer.Drawing
 			ds.Antialiasing = CanvasAntialiasing.Antialiased;
 			ds.TextAntialiasing = CanvasTextAntialiasing.Auto;
 
+			// Responsivity
 			float width = (float)sender.ActualWidth;
 			float height = (float)sender.ActualHeight;
+			const float defaultWidth = 600;
+			bool isWide = width > defaultWidth;
 
 			// Helper for working with coordinates with left-bottom 0,0 origin.
 			// Running coordinates through this draws them onto canvas that has origin in left-top, which is pain to draw charts in.
 			var chart = new ChartSpace(height);
 
 			// Trim data
-			hourly = hourly.Take(61).ToList();
+			const int defaultHours = 61;
+			int extraHours = isWide ? (int)((width - defaultWidth) / 10f) : 0; // Each 20 points of width is an extra hour to show
+			hourly = hourly.Take(defaultHours + extraHours).ToList();
+
+			// Scan data
+			float minTemp = float.PositiveInfinity;
+			float maxTemp = float.NegativeInfinity;
+			foreach (var hourlyForecast in hourly)
+			{
+				minTemp = Math.Min(minTemp, (float)hourlyForecast.Temperature);
+				maxTemp = Math.Max(maxTemp, (float)hourlyForecast.Temperature);
+			}
 
 			// Colors
 			Color mainColor, fillColor, lineColor, textColor, rainBarColor, snowBarColor;
@@ -93,9 +107,6 @@ namespace Aer.Drawing
 			float hourWidth = width / (hourly.Count - 1);
 			float zeroDegPositionY = height / 3f; // TODO: Will be floating based on temperature range
 			float degreeHeight = height / 30f;
-
-			// Responsivity
-			bool isWide = width > 600;
 
 
 			// Drawing
@@ -217,7 +228,7 @@ namespace Aer.Drawing
 			for (int i = startHourlyIndex; i < hourly.Count; i += eachNthHour)
 			{
 				float x = hourWidth * i;
-				bool isOnRightEdge = x > width - 30;
+				bool isOnRightEdge = x > width - 35;
 				if (!isOnRightEdge)
 				{
 					var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].ConditionCode, hourly[i].IsDaytime);
