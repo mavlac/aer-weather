@@ -36,7 +36,7 @@ namespace Aer.Drawing
 			hourly = hourly.Take(61).ToList();
 
 			// Colors
-			Color mainColor, fillColor, lineColor, textColor;
+			Color mainColor, fillColor, lineColor, textColor, rainBarColor, snowBarColor;
 			switch (sender.ActualTheme switch // Is Dark? If unable to get from FrameworkElement, get from ApplicationTheme
 				{
 					ElementTheme.Dark => true,
@@ -48,15 +48,19 @@ namespace Aer.Drawing
 					// Light theme
 					mainColor = Colors.Black;
 					fillColor = mainColor.WithAlpha(8);
-					lineColor = Color.FromArgb(255, 229, 229, 229);
+					lineColor = Colors.Gainsboro;
 					textColor = Colors.Gray;
+					rainBarColor = Colors.LightSkyBlue;
+					snowBarColor = Colors.White;
 					break;
 				case true:
 					// Dark theme
 					mainColor = Colors.White;
 					fillColor = mainColor.WithAlpha(8);
-					lineColor = Colors.Gray;
+					lineColor = Color.FromArgb(255, 65, 65, 65);
 					textColor = Colors.Gray;
+					rainBarColor = Colors.SkyBlue;
+					snowBarColor = Colors.DarkGray;
 					break;
 			}
 
@@ -96,7 +100,7 @@ namespace Aer.Drawing
 
 			// Drawing
 
-			// Zero degrees horizontal line
+			// Zero degree horizontal line
 			var strokeStyle = new CanvasStrokeStyle();
 			strokeStyle.DashStyle = CanvasDashStyle.Dash;
 			strokeStyle.CustomDashStyle = [1f, 5f];
@@ -131,7 +135,27 @@ namespace Aer.Drawing
 			foreach(var (label, x, y) in labels)
 				ds.DrawText(label, x, y, textColor, textFormat);
 
-			// Temperature spline
+			// Rain and snow bars
+			for (int i = 0; i < hourly.Count; i++)
+			{
+				float rain = (float)hourly[i].Rain;
+				float snow = (float)hourly[i].Snowfall;
+				float x = hourWidth * i;
+				const float y = 60f;
+				const float minBarHeight = 0.15f;
+				if (rain > float.Epsilon)
+				{
+					float barHeight = (rain + minBarHeight) * -(height * 0.05f);
+					ds.FillRectangle(x - 0.5f, chart.Y(y), hourWidth + 0.5f, barHeight, rainBarColor);
+				}
+				if (snow > float.Epsilon)
+				{
+					float barHeight = (snow + minBarHeight) * -(height * 0.05f);
+					ds.FillRectangle(x - 0.5f, chart.Y(y), hourWidth + 0.5f, barHeight, snowBarColor);
+				}
+			}
+
+			// Main temperature spline
 			var temperatureLinePoints = hourly.Select((h, i) =>
 			{
 				float x = hourWidth * i;
