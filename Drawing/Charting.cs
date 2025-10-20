@@ -77,7 +77,9 @@ namespace Aer.Drawing
 			var iconFormat = new CanvasTextFormat
 			{
 				FontFamily = weatherFont.Source,
-				FontSize = 13
+				FontSize = 13,
+				HorizontalAlignment = CanvasHorizontalAlignment.Center,
+				VerticalAlignment = CanvasVerticalAlignment.Center
 			};
 
 			// Culture
@@ -192,7 +194,7 @@ namespace Aer.Drawing
 				if (!isOnRightEdge)
 				{
 					var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].ConditionCode, hourly[i].IsDaytime);
-					ds.DrawText(glyph, x + 8.125f, chart.Y(52f), textColor, iconFormat);
+					ds.DrawText(glyph, x + 16.5f, chart.Y(40f), textColor, iconFormat);
 				}
 			}
 		}
