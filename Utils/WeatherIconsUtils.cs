@@ -12,13 +12,13 @@
 				0 => isDaytime ? "\uf00d" : "\uf02e", // wi_day_sunny / wi_night_clear
 
 				// Mainly Sunny / Mainly Clear
-				1 => isDaytime ? "\uf00c" : "\uf081", // wi_day_sunny_overcast / wi_night_alt_partly_cloudy
+				1 => isDaytime ? "\uf00c" : "\uf086", // wi_day_sunny_overcast / wi_night_alt_cloudy
 
 				// Partly Cloudy
-				2 => isDaytime ? "\uf002" : "\uf081", // wi_day_cloudy / wi_night_alt_partly_cloudy
+				2 => isDaytime ? "\uf002" : "\uf086", // wi_day_cloudy / wi_night_alt_cloudy
 
 				// Cloudy / Overcast
-				3 => isDaytime ? "\uf013" : "\uf031", // wi_cloudy / wi_night_cloudy
+				3 => isDaytime ? "\uf002" : "\uf086", // wi-day-cloudy / wi_night_alt_cloudy
 
 				// Fog / Rime Fog
 				45 or 48 => isDaytime ? "\uf003" : "\uf04a", // wi_day_fog / wi_night_fog
@@ -39,7 +39,7 @@
 				71 or 73 or 75 => isDaytime ? "\uf00a" : "\uf02a", // wi_day_snow / wi_night_alt_snow
 
 				// Snow Grains
-				77 => isDaytime ? "\uf064" : "\uf066", // wi_snow_wind / wi_night_snow_wind
+				77 => isDaytime ? "\uf064" : "\uf067", // wi_snow_wind / wi-night-alt-snow-wind
 
 				// Showers
 				80 or 81 or 82 => isDaytime ? "\uf009" : "\uf029", // wi_day_showers / wi_night_alt_showers
