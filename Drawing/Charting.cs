@@ -10,10 +10,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using System.Reflection.Emit;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 
@@ -81,6 +80,8 @@ namespace Aer.Drawing
 				FontSize = 13
 			};
 
+			// Culture
+			var culture = CultureInfo.InvariantCulture;
 
 			// Constants
 			float hourWidth = width / (hourly.Count - 1);
@@ -113,8 +114,11 @@ namespace Aer.Drawing
 					bool isLineOnEdge = x < 10 || x > width - 10; // Skip vertical lines that would be on edge of chart, looks bad
 					if (!isLineOnEdge)
 						ds.DrawLine(x, chart.Y(y), x, chart.Y(0), lineColor, 1f);
-					
-					string label = isNewDayMarker ? hourly[i].Time.DayOfWeek.ToString() : hour.ToString();
+
+					string label =
+						isNewDayMarker
+						? culture.DateTimeFormat.GetAbbreviatedDayName(hourly[i].Time.DayOfWeek).ToUpper()
+						: hour.ToString();
 
 					bool isLabelOnRightEdge = x > width - 30; // Skip label shortly overlapping right edge
 					if (!isLabelOnRightEdge)
