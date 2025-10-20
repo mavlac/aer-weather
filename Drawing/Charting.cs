@@ -51,7 +51,7 @@ namespace Aer.Drawing
 					lineColor = Colors.Gainsboro;
 					textColor = Colors.Gray;
 					rainBarColor = Colors.LightSkyBlue;
-					snowBarColor = Colors.White;
+					snowBarColor = Colors.Gainsboro;
 					break;
 				case true:
 					// Dark theme
@@ -60,7 +60,7 @@ namespace Aer.Drawing
 					lineColor = Color.FromArgb(255, 65, 65, 65);
 					textColor = Colors.Gray;
 					rainBarColor = Colors.SkyBlue;
-					snowBarColor = Colors.DarkGray;
+					snowBarColor = Colors.Gray;
 					break;
 			}
 
@@ -145,12 +145,12 @@ namespace Aer.Drawing
 				const float minBarHeight = 0.15f;
 				if (rain > float.Epsilon)
 				{
-					float barHeight = (rain + minBarHeight) * -(height * 0.05f);
+					float barHeight = (rain + minBarHeight) * -(height * 0.1f);
 					ds.FillRectangle(x - 0.5f, chart.Y(y), hourWidth + 0.5f, barHeight, rainBarColor);
 				}
 				if (snow > float.Epsilon)
 				{
-					float barHeight = (snow + minBarHeight) * -(height * 0.05f);
+					float barHeight = (snow + minBarHeight) * -(height * 0.1f);
 					ds.FillRectangle(x - 0.5f, chart.Y(y), hourWidth + 0.5f, barHeight, snowBarColor);
 				}
 			}
@@ -190,13 +190,14 @@ namespace Aer.Drawing
 			{
 				float x = hourWidth * day.DayLow.chartHour;
 				float y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
-				string label = Math.Round(day.DayLow.temperature).ToString();
+				string label = ((int)Math.Round(day.DayHigh.temperature)).ToString();
 				bool isOnEdge = x < 20 || x > width - 20;
 				if (!isOnEdge)
 					ds.DrawText(label, x, chart.Y(y - 12), mainColor, textFormatCentered);
+				
 				x = hourWidth * day.DayHigh.chartHour;
 				y = zeroDegPositionY + (float)day.DayHigh.temperature * degreeHeight;
-				label = Math.Round(day.DayHigh.temperature).ToString();
+				label = ((int)Math.Round(day.DayHigh.temperature)).ToString();
 				isOnEdge = x < 20 || x > width - 20;
 				if (!isOnEdge)
 					ds.DrawText(label, x, chart.Y(y + 12), mainColor, textFormatCentered);
