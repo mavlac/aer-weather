@@ -175,18 +175,29 @@ namespace Aer.Drawing
 			{
 				float rain = (float)hourly[i].Rain;
 				float snow = (float)hourly[i].Snowfall;
-				float x = hourWidth * i;
+				bool drawRainBar = rain > float.Epsilon;
+				bool drawSnowBar = snow > float.Epsilon;
+				float x = hourWidth * i - 0.5f;
+				float barWidth = hourWidth + 0.5f;
 				const float y = 60f;
 				const float minBarHeight = 0.15f;
-				if (rain > float.Epsilon)
+				float snowBarHeight = (snow + minBarHeight) * -(height * 0.05f);
+				float rainBarHeight = (rain + minBarHeight) * -(height * 0.1f);
+				if (drawRainBar && !drawSnowBar)
 				{
-					float barHeight = (rain + minBarHeight) * -(height * 0.1f);
-					ds.FillRectangle(x - 0.5f, chart.Y(y), hourWidth + 0.5f, barHeight, rainBarColor);
+					ds.FillRectangle(x, chart.Y(y), barWidth, rainBarHeight, rainBarColor);
 				}
-				if (snow > float.Epsilon)
+				if (drawSnowBar && !drawRainBar)
 				{
-					float barHeight = (snow + minBarHeight) * -(height * 0.1f);
-					ds.FillRectangle(x - 0.5f, chart.Y(y), hourWidth + 0.5f, barHeight, snowBarColor);
+					ds.FillRectangle(x, chart.Y(y), barWidth, snowBarHeight, snowBarColor);
+				}
+				if (drawRainBar && drawSnowBar)
+				{
+					// The smaller value bar on top of the higher value one
+					(float height, Color color) backBar = rain > snow ? (rainBarHeight, rainBarColor) : (snowBarHeight, snowBarColor);
+					(float height, Color color) frontBar = rain > snow ? (snowBarHeight, snowBarColor) : (rainBarHeight, rainBarColor);
+					ds.FillRectangle(x, chart.Y(y), barWidth, backBar.height, backBar.color);
+					ds.FillRectangle(x, chart.Y(y), barWidth, frontBar.height, frontBar.color);
 				}
 			}
 
@@ -214,7 +225,7 @@ namespace Aer.Drawing
 					currentExtremes = new DayExtremes();
 					lastDay = hourly[i].Time.Day;
 				}
-
+				
 				double temperature = hourly[i].Temperature;
 				int hour = hourly[i].Time.Hour;
 				if (temperature < currentExtremes.DayLow.temperature &&
@@ -225,14 +236,19 @@ namespace Aer.Drawing
 					currentExtremes.DayHigh = (temperature, i);
 			}
 			dayExtremes.Add(currentExtremes);
+			
 			foreach (var day in dayExtremes)
 			{
+				float x, y;
+				string label;
+				bool isOnLeftEdge, isOnRightEdge;
+
 				// Day Min label
-				float x = hourWidth * day.DayLow.chartHour;
-				float y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
-				string label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
-				bool isOnLeftEdge = x < 15;
-				bool isOnRightEdge = x > width - 15;
+				x = hourWidth * day.DayLow.chartHour;
+				y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
+				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
+				isOnLeftEdge = x < 15;
+				isOnRightEdge = x > width - 15;
 				if (!isOnRightEdge)
 					ds.DrawText(label, isOnLeftEdge ? x + 12 : x, chart.Y(y - 12), mainColor, textFormatCentered);
 				
