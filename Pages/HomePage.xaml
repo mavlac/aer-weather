@@ -63,7 +63,8 @@
 							   TextWrapping="Wrap"
 							   FontFamily="Consolas"
 							   Visibility="Collapsed"
-							   Padding="24,0,24,0"/>
+							   Padding="24,0,24,0"
+							   IsTextSelectionEnabled="True"/>
 				</Grid>
 			</ScrollViewer>
 
