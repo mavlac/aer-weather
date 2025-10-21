@@ -68,7 +68,7 @@
 
 			<Grid Grid.Row="2"
 				  HorizontalAlignment="Stretch"
-				  Padding="8, 2, 0, 10">
+				  Padding="8, 2, 0, 8">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
@@ -97,6 +97,8 @@
 				</TextBlock>
 			</Grid>
 		</Grid>
+		
+		
 		
 		<!-- Loading Overlay -->
 		<Grid x:Name="LoadingOverlay"
