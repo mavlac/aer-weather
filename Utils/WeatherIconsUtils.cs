@@ -12,7 +12,7 @@
 				0 => isDaytime ? "\uf00d" : "\uf02e", // wi_day_sunny / wi_night_clear
 
 				// Mainly Sunny / Mainly Clear
-				1 => isDaytime ? "\uf00c" : "\uf086", // wi_day_sunny_overcast / wi_night_alt_cloudy
+				1 => isDaytime ? "\uf002" : "\uf086", // wi_day_cloudy / wi_night_alt_cloudy
 
 				// Partly Cloudy
 				2 => isDaytime ? "\uf002" : "\uf086", // wi_day_cloudy / wi_night_alt_cloudy
