@@ -227,17 +227,19 @@ namespace Aer.Drawing
 				float x = hourWidth * day.DayLow.chartHour;
 				float y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
 				string label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
-				bool isOnEdge = x < 20 || x > width - 20;
-				if (!isOnEdge)
-					ds.DrawText(label, x, chart.Y(y - 12), mainColor, textFormatCentered);
+				bool isOnLeftEdge = x < 15;
+				bool isOnRightEdge = x > width - 15;
+				if (!isOnRightEdge)
+					ds.DrawText(label, isOnLeftEdge ? x + 12 : x, chart.Y(y - 12), mainColor, textFormatCentered);
 				
 				// Day Max label
 				x = hourWidth * day.DayHigh.chartHour;
 				y = zeroDegPositionY + (float)day.DayHigh.temperature * degreeHeight;
 				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
-				isOnEdge = x < 20 || x > width - 20;
-				if (!isOnEdge)
-					ds.DrawText(label, x, chart.Y(y + 12), mainColor, textFormatCentered);
+				isOnLeftEdge = x < 15;
+				isOnRightEdge = x > width - 15;
+				if (!isOnRightEdge)
+					ds.DrawText(label, isOnLeftEdge ? x + 12 : x, chart.Y(y + 12), mainColor, textFormatCentered);
 			}
 
 			// Condition icons
