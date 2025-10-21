@@ -262,7 +262,7 @@ namespace Aer.Drawing
 				if (!isOnRightEdge)
 				{
 					var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].ConditionCode, hourly[i].IsDaytime);
-					ds.DrawText(glyph, x + 16.5f, chart.Y(40f), textColor, iconFormat);
+					ds.DrawText(glyph, x + 15f, chart.Y(40f), textColor, iconFormat);
 				}
 			}
 		}
