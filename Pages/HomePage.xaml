@@ -28,7 +28,8 @@
 							   Style="{StaticResource HeaderTextBlockStyle}"
 							   HorizontalAlignment="Left"
 							   Grid.Column="0"
-							   Text="HeaderText" />
+							   Text="HeaderText"
+							   Padding="1,0,0,0"/>
 					<FontIcon x:Name="CurrentConditionIcon"
 						  FontFamily="{StaticResource WeatherIconsFont}"
 						  Glyph="&#xF00D;"
