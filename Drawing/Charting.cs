@@ -51,6 +51,7 @@ namespace Aer.Drawing
 			}
 
 			// Colors
+			bool isDarkTheme;
 			Color mainColor, fillColor, lineColor, textColor, rainBarColor, snowBarColor;
 			switch (sender.ActualTheme switch // Is Dark? If unable to get from FrameworkElement, get from ApplicationTheme
 				{
@@ -61,21 +62,23 @@ namespace Aer.Drawing
 			{
 				case false:
 					// Light theme
+					isDarkTheme = false;
 					mainColor = Colors.Black;
 					fillColor = mainColor.WithAlpha(8);
 					lineColor = Colors.Gainsboro;
 					textColor = Colors.Gray;
 					rainBarColor = Colors.LightSkyBlue;
-					snowBarColor = Colors.Gainsboro;
+					snowBarColor = Colors.White;
 					break;
 				case true:
 					// Dark theme
+					isDarkTheme = true;
 					mainColor = Colors.White;
 					fillColor = mainColor.WithAlpha(8);
 					lineColor = Color.FromArgb(255, 65, 65, 65);
 					textColor = Colors.Gray;
-					rainBarColor = Colors.SkyBlue;
-					snowBarColor = Colors.Gray;
+					rainBarColor = Colors.LightSlateGray;
+					snowBarColor = Colors.White;
 					break;
 			}
 
@@ -179,25 +182,31 @@ namespace Aer.Drawing
 				bool drawSnowBar = snow > float.Epsilon;
 				float x = hourWidth * i - 0.5f;
 				float barWidth = hourWidth + 0.5f;
-				const float y = 60f;
+				const float bottomLineY = 60f;
 				const float minBarHeight = 0.15f;
-				float snowBarHeight = (snow + minBarHeight) * -(height * 0.05f);
-				float rainBarHeight = (rain + minBarHeight) * -(height * 0.1f);
+				float snowBarHeight = (snow + minBarHeight) * (height * 0.05f);
+				float rainBarHeight = (rain + minBarHeight) * (height * 0.1f);
 				if (drawRainBar && !drawSnowBar)
 				{
-					ds.FillRectangle(x, chart.Y(y), barWidth, rainBarHeight, rainBarColor);
+					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -rainBarHeight, rainBarColor);
 				}
 				if (drawSnowBar && !drawRainBar)
 				{
-					ds.FillRectangle(x, chart.Y(y), barWidth, snowBarHeight, snowBarColor);
+					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -snowBarHeight, snowBarColor);
 				}
 				if (drawRainBar && drawSnowBar)
 				{
 					// The smaller value bar on top of the higher value one
 					(float height, Color color) backBar = rain > snow ? (rainBarHeight, rainBarColor) : (snowBarHeight, snowBarColor);
 					(float height, Color color) frontBar = rain > snow ? (snowBarHeight, snowBarColor) : (rainBarHeight, rainBarColor);
-					ds.FillRectangle(x, chart.Y(y), barWidth, backBar.height, backBar.color);
-					ds.FillRectangle(x, chart.Y(y), barWidth, frontBar.height, frontBar.color);
+					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -backBar.height, backBar.color);
+					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -frontBar.height, frontBar.color);
+				}
+				if (!isDarkTheme && drawSnowBar)
+				{
+					// Light theme snow bars needs to have a line cap in order to be visible
+					float lineCapY = bottomLineY + snowBarHeight;
+					ds.DrawLine(x, chart.Y(lineCapY), x + barWidth, chart.Y(lineCapY), textColor);
 				}
 			}
 
