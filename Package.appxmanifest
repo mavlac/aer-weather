@@ -15,8 +15,8 @@
   <mp:PhoneIdentity PhoneProductId="fbe19408-b8c2-4233-98f7-afa6946ca79b" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>Āēr</DisplayName>
-    <PublisherDisplayName>vlach</PublisherDisplayName>
+    <DisplayName>Āēr Weather</DisplayName>
+    <PublisherDisplayName>mavlac</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -35,12 +35,10 @@
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="Āēr"
-        Description="Āēr"
-        BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        Description="Āēr Weather"
+        BackgroundColor="transparent" Square44x44Logo="Assets\AppIcon.png" Square150x150Logo="Assets\MediumTile.png">
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        <uap:DefaultTile Square71x71Logo="Assets\SmallTile.png"/>
       </uap:VisualElements>
     </Application>
   </Applications>
