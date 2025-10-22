@@ -22,31 +22,35 @@ namespace Aer.Utils
 			// Simulate a long-running operation
 			//await Task.Delay(1000);
 
-			string path = Path.Combine(AppContext.BaseDirectory, "Assets", "Data", "cities15000.txt");
-
-			allGeoNamesLocations = new();
-
-			Debug.WriteLine($"Loading GeoNames locations from {path}...");
-
-			foreach (var line in File.ReadLines(path))
+			await Task.Run(() =>
 			{
-				var parts = line.Split('\t');
-				if (parts.Length < 9) continue;
+				string path = Path.Combine(AppContext.BaseDirectory, "Assets", "Data", "cities15000.txt");
 
-				int id = int.Parse(parts[0], CultureInfo.InvariantCulture); // name of geographical point (utf8)
-				string name = parts[1]; // name of geographical point (utf8)
-				string nameASCII = parts[2]; // name of geographical point in plain ascii characters, varchar(200)
-				string alternatenames = parts[3]; // alternate names, comma separated, ascii names automatically transliterated
-				string country = parts[8]; // country code - ISO-3166 2-letter country code, 2 characters
-				string admin1Code = parts[10]; // fipscode (subject to change to iso code)
-				double latitude = double.Parse(parts[4], CultureInfo.InvariantCulture);
-				double longitude = double.Parse(parts[5], CultureInfo.InvariantCulture);
-				int population = int.Parse(parts[14], CultureInfo.InvariantCulture);
+				allGeoNamesLocations = new();
 
-				allGeoNamesLocations.Add(new GeoNamesLocation(id, name, nameASCII, alternatenames, country, admin1Code, latitude, longitude, population));
-			}
+				Debug.WriteLine($"Loading GeoNames locations from {path}...");
 
-			Debug.WriteLine($"Loaded {allGeoNamesLocations.Count} locations from {path}");
+				foreach (var line in File.ReadLines(path))
+				{
+					var parts = line.Split('\t');
+					if (parts.Length < 9) continue;
+
+					int id = int.Parse(parts[0], CultureInfo.InvariantCulture); // name of geographical point (utf8)
+					string name = parts[1]; // name of geographical point (utf8)
+					string nameASCII = parts[2]; // name of geographical point in plain ascii characters, varchar(200)
+					string alternatenames = parts[3]; // alternate names, comma separated, ascii names automatically transliterated
+					string country = parts[8]; // country code - ISO-3166 2-letter country code, 2 characters
+					string admin1Code = parts[10]; // fipscode (subject to change to iso code)
+					double latitude = double.Parse(parts[4], CultureInfo.InvariantCulture);
+					double longitude = double.Parse(parts[5], CultureInfo.InvariantCulture);
+					int population = int.Parse(parts[14], CultureInfo.InvariantCulture);
+					
+					allGeoNamesLocations.Add(new GeoNamesLocation(id, name, nameASCII, alternatenames, country, admin1Code, latitude, longitude, population));
+				}
+				
+				Debug.WriteLine($"Loaded {allGeoNamesLocations.Count} locations from {path}");
+			});
+			
 			IsLoading = false;
 		}
 
