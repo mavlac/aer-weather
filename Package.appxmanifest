@@ -36,9 +36,9 @@
       <uap:VisualElements
         DisplayName="Āēr"
         Description="Āēr Weather"
-        BackgroundColor="transparent" Square44x44Logo="Assets\AppIcon.png" Square150x150Logo="Assets\MediumTile.png">
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        BackgroundColor="transparent" Square150x150Logo="Assets\MediumTile.png" Square44x44Logo="Assets\AppIcon.png">
         <uap:DefaultTile Square71x71Logo="Assets\SmallTile.png"/>
+        <uap:SplashScreen BackgroundColor="transparent" Image="Assets\SplashScreen.png"/>
       </uap:VisualElements>
     </Application>
   </Applications>
