@@ -8,8 +8,8 @@ namespace Aer
 {
 	public sealed partial class MainWindow : Window
 	{
-		private const int DefaultWindowWidth = 1660;
-		private const int DefaultWindowHeight = 1082;
+		private const int DefaultWindowWidth = 1320;
+		private const int DefaultWindowHeight = 780;
 
 		public string WindowTitle => Package.Current.DisplayName;
 
