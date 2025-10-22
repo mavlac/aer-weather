@@ -142,12 +142,11 @@ namespace Aer
 			locationSuggestionsMap = new Dictionary<string, GeoNames.GeoNamesLocation>();
 			foreach (var c in filteredGeoNames)
 			{
-				string adminCode = string.IsNullOrWhiteSpace(c.Admin1Code) || double.TryParse(c.Admin1Code, out _)
-					? ""
-					: $", {c.Admin1Code}";
+				// Keep Admin1Code only if it present and not a digit
+				string adminCode = string.IsNullOrWhiteSpace(c.Admin1Code) || double.TryParse(c.Admin1Code, out _) ? "" : $", {c.Admin1Code}";
 				string key = $"{c.Name}, {c.Country}{adminCode}";
 
-				// Only add if not present (or replace if population is higher)
+				// Only add if not present (or replace if population is higher), keys can repeat
 				if (!locationSuggestionsMap.TryGetValue(key, out var existing) || c.Population > existing.Population)
 					locationSuggestionsMap[key] = c;
 			}
