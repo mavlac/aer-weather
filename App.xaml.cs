@@ -32,6 +32,7 @@ namespace Aer
 
 			MainWindow = new MainWindow();
 
+			WindowUtils.SetAppIcon(MainWindow);
 			WindowUtils.ApplyAppTheme(MainWindow);
 			WindowUtils.InitializeTitleBar(MainWindow);
 

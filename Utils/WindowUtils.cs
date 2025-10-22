@@ -4,7 +4,6 @@ using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;
 using Windows.Graphics;
-using Windows.Graphics.Display;
 using Windows.UI;
 using WinRT.Interop;
 
@@ -17,6 +16,18 @@ namespace Aer.Utils
 			var hwnd = WindowNative.GetWindowHandle(window);
 			var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
 			return AppWindow.GetFromWindowId(windowId);
+		}
+
+		internal static void SetAppIcon(Window window)
+		{
+			var appWindow = GetAppWindow(window);
+			if (appWindow == null) return;
+			
+			// The.ico file should include multiple resolutions(16, 32, 48, 64, 128, 256).
+			// Set its Build Action to Content and Copy to Output Directory to Do not copy.
+			// Shows in: Title bar, Taskbar(runtime), Alt + Tab switcher
+			// Does not override Start Menu icons - those still come from the manifest PNGs.
+			appWindow.SetIcon("Assets/AppIcon.ico");
 		}
 
 		public static void InitializeTitleBar(Window window)
