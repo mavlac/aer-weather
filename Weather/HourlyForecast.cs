@@ -18,8 +18,10 @@ namespace Aer.Weather
 		{
 			CultureInfo culture = CultureInfo.CurrentCulture;
 
-			var formattedTime = Time.ToString(culture.DateTimeFormat.ShortDatePattern) + " " + Time.ToString("HH:mm");
-			return $"{formattedTime} {WeatherDescriptions.GetDescription(ConditionCode, IsDaytime)} {TemperatureUtils.GetReadableTemperature(Temperature)} {Rain}mm/{Snowfall}mm";
+			const string separator = " ";
+			string formattedTime = Time.ToString(culture.DateTimeFormat.ShortDatePattern) + " " + Time.ToString("HH:mm");
+			
+			return $"{formattedTime}{separator}{TemperatureUtils.GetReadableTemperature(Temperature)}{separator}{WeatherDescriptions.GetDescription(ConditionCode, IsDaytime)}{separator}{Rain}mm{separator}{Snowfall}mm";
 		}
 	}
 }

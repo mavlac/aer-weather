@@ -47,7 +47,12 @@
 										   Description="LocationSettingsCard.Description"
 										   HeaderIcon="Map">
 						<StackPanel Orientation="Horizontal">
-							<ProgressRing x:Name="LocationProgressRing" IsActive="False" Background="Transparent" Width="18" Height="18" Margin="0,0,8,0"/>
+							<ProgressRing x:Name="LocationLoadingProgressRing"
+										  IsActive="False"
+										  Background="Transparent"
+										  Width="18"
+										  Height="18"
+										  Margin="0,0,8,0"/>
 							<AutoSuggestBox x:Name="LocationAutoSuggestBox"
 										TextChanged="LocationAutoSuggestBox_TextChanged"
 										SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"

@@ -96,7 +96,7 @@ namespace Aer
 			}
 		}
 
-		private void LocationAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+		private async void LocationAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
 		{
 			if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
 				return;
@@ -104,7 +104,11 @@ namespace Aer
 			if (!GeoNames.IsLoaded)
 			{
 				if (!GeoNames.IsLoading)
-					Task.Run(GeoNames.Load);
+				{
+					LocationLoadingProgressRing.IsActive = true;
+					await GeoNames.Load(); // Wait for it to finish
+					LocationLoadingProgressRing.IsActive = false; // disable the ring
+				}
 				
 				return;
 			}

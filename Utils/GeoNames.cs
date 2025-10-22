@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Aer.Utils
 {
@@ -14,9 +15,12 @@ namespace Aer.Utils
 		public static bool IsLoaded => allGeoNamesLocations != null && allGeoNamesLocations.Count > 0;
 		public static List<GeoNamesLocation> AllGeoNamesLocations => allGeoNamesLocations;
 
-		internal static void Load()
+		internal static async Task Load()
 		{
 			IsLoading = true;
+
+			// Simulate a long-running operation
+			//await Task.Delay(1000);
 
 			string path = Path.Combine(AppContext.BaseDirectory, "Assets", "Data", "cities15000.txt");
 
