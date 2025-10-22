@@ -41,6 +41,9 @@ namespace Aer
 
 			if (e.Parameter is MainWindow.SettingsNavigationArgs args && args.FocusLocationSearch)
 			{
+				// Onboarding
+				LocationAutoSuggestBoxTeachingTip.IsOpen = true;
+
 				Loaded += (_, __) =>
 				{
 					DispatcherQueue.TryEnqueue(() =>
@@ -100,6 +103,8 @@ namespace Aer
 		{
 			if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
 				return;
+
+			LocationAutoSuggestBoxTeachingTip.IsOpen = false;
 
 			if (!GeoNames.IsLoaded)
 			{

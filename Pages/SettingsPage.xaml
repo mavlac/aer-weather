@@ -57,7 +57,19 @@
 										TextChanged="LocationAutoSuggestBox_TextChanged"
 										SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
 										PlaceholderText="Type a location"
-										Width="280"/>
+										Width="280">
+								<TeachingTip
+									x:Name="LocationAutoSuggestBoxTeachingTip"
+									Title="Find your city"
+									Subtitle="Begin typing a city name to see suggestions"
+									Target="{x:Bind LocationAutoSuggestBox}"
+									IsOpen="False"
+									IsLightDismissEnabled="True">
+									<TeachingTip.IconSource>
+										<SymbolIconSource Symbol="Keyboard" />
+									</TeachingTip.IconSource>
+								</TeachingTip>
+							</AutoSuggestBox>
 						</StackPanel>
 					</controls:SettingsCard>
 					
