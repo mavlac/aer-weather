@@ -14,6 +14,7 @@
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
@@ -28,9 +29,9 @@
      inkscape:document-units="px"
      showborder="false"
      showgrid="false"
-     inkscape:zoom="2.1710388"
-     inkscape:cx="250.34099"
-     inkscape:cy="264.85017"
+     inkscape:zoom="1.0855194"
+     inkscape:cx="130.35235"
+     inkscape:cy="283.73514"
      inkscape:current-layer="layer1">
     <inkscape:grid
        id="grid1"
@@ -49,6 +50,18 @@
   </sodipodi:namedview>
   <defs
      id="defs1">
+    <linearGradient
+       id="linearGradient1"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#87cefa;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#4eb9f9;stop-opacity:1;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
     <filter
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
@@ -60,7 +73,7 @@
       <feFlood
          result="flood"
          in="SourceGraphic"
-         flood-opacity="1.000000"
+         flood-opacity="0.80000000000000004"
          flood-color="rgb(0,0,0)"
          id="feFlood4" />
       <feGaussianBlur
@@ -87,13 +100,22 @@
          in2="comp1"
          id="feComposite5" />
     </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="linearGradient2"
+       x1="10.37083"
+       y1="67.73333"
+       x2="125.09583"
+       y2="67.73333"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
     <circle
-       style="fill:#87cefa;fill-opacity:1;stroke:none;stroke-width:1.37834;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter5)"
+       style="fill:url(#linearGradient2);fill-opacity:1;stroke:none;stroke-width:1.37834;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter5)"
        id="path1"
        cx="67.73333"
        cy="67.73333"
