@@ -29,9 +29,9 @@
      inkscape:document-units="px"
      showborder="false"
      showgrid="false"
-     inkscape:zoom="1.0855194"
-     inkscape:cx="130.35235"
-     inkscape:cy="283.73514"
+     inkscape:zoom="0.13568993"
+     inkscape:cx="-1444.4698"
+     inkscape:cy="563.78541"
      inkscape:current-layer="layer1">
     <inkscape:grid
        id="grid1"
@@ -54,11 +54,11 @@
        id="linearGradient1"
        inkscape:collect="always">
       <stop
-         style="stop-color:#87cefa;stop-opacity:1;"
+         style="stop-color:#57bcf7;stop-opacity:1;"
          offset="0"
          id="stop1" />
       <stop
-         style="stop-color:#4eb9f9;stop-opacity:1;"
+         style="stop-color:#0892e2;stop-opacity:1;"
          offset="1"
          id="stop2" />
     </linearGradient>
@@ -104,10 +104,10 @@
        inkscape:collect="always"
        xlink:href="#linearGradient1"
        id="linearGradient2"
-       x1="10.37083"
-       y1="67.73333"
-       x2="125.09583"
-       y2="67.73333"
+       x1="27.171917"
+       y1="27.171915"
+       x2="108.29475"
+       y2="108.29475"
        gradientUnits="userSpaceOnUse" />
   </defs>
   <g
@@ -121,5 +121,16 @@
        cy="67.73333"
        r="55.5625"
        transform="matrix(1.1808233,0,0,1.1809637,-12.247762,-12.257272)" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:81.1389px;line-height:1.1;font-family:'Segoe Script';-inkscape-font-specification:'Segoe Script, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
+       x="18.210079"
+       y="90.830978"
+       id="text13"><tspan
+         sodipodi:role="line"
+         id="tspan13"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:81.1389px;line-height:1.1;font-family:'Segoe Script';-inkscape-font-specification:'Segoe Script, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+         x="18.210079"
+         y="90.830978">ae</tspan></text>
   </g>
 </svg>

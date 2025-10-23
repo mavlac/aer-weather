@@ -13,6 +13,22 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\AppIcon.altform-lightunplated_targetsize-24.png" />
+    <Content Remove="Assets\AppIcon.altform-lightunplated_targetsize-32.png" />
+    <Content Remove="Assets\AppIcon.altform-unplated_targetsize-24.png" />
+    <Content Remove="Assets\AppIcon.altform-unplated_targetsize-32.png" />
+    <Content Remove="Assets\AppIcon.scale-125.png" />
+    <Content Remove="Assets\AppIcon.scale-150.png" />
+    <Content Remove="Assets\AppIcon.targetsize-24.png" />
+    <Content Remove="Assets\AppIcon.targetsize-32.png" />
+    <Content Remove="Assets\MediumTile.scale-125.png" />
+    <Content Remove="Assets\MediumTile.scale-150.png" />
+    <Content Remove="Assets\SmallTile.scale-125.png" />
+    <Content Remove="Assets\SmallTile.scale-150.png" />
+    <Content Remove="Assets\SplashScreen.scale-125.png" />
+    <Content Remove="Assets\SplashScreen.scale-150.png" />
+    <Content Remove="Assets\StoreLogo.scale-125.png" />
+    <Content Remove="Assets\StoreLogo.scale-150.png" />
     <Content Remove="Assets\_IconSource.png" />
     <Content Remove="Assets\_IconSource.svg" />
   </ItemGroup>

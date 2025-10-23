@@ -34,7 +34,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="Āēr"
+        DisplayName="Aer"
         Description="Āēr Weather"
         BackgroundColor="transparent" Square150x150Logo="Assets\MediumTile.png" Square44x44Logo="Assets\AppIcon.png">
         <uap:DefaultTile Square71x71Logo="Assets\SmallTile.png"/>
