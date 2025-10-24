@@ -98,11 +98,9 @@
     <Folder Include="Assets\Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Update="Assets\Data\cities15000.txt">
+    <Content Update="Assets\Data\cities5000.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Update="Assets\Fonts\weathericons-regular-webfont.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
