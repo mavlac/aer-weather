@@ -62,7 +62,7 @@ namespace Aer.Drawing
 				case false:
 					// Light theme
 					isDarkTheme = false;
-					mainColor = Colors.Black;
+					mainColor = Color.FromArgb(255, 26, 26, 26);
 					fillColor = mainColor.WithAlpha(8);
 					lineColor = Colors.Gainsboro;
 					textColor = Colors.Gray;
@@ -104,7 +104,7 @@ namespace Aer.Drawing
 			};
 
 			// Visual
-			float mainLineThickness = 1.6f;
+			float mainLineThickness = 1f;
 
 			// Culture
 			var culture = CultureInfo.InvariantCulture;
