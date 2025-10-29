@@ -33,7 +33,7 @@
 					<FontIcon x:Name="CurrentConditionIcon"
 						  FontFamily="{StaticResource WeatherIconsFont}"
 						  Glyph="&#xF00D;"
-						  FontSize="22"
+						  FontSize="21"
 						  Margin="14,0,2,0"
 						  VerticalAlignment="Top"/>
 				</StackPanel>
