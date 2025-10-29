@@ -2,6 +2,7 @@
 using Aer.Utils.Extensions;
 using Aer.Weather;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -76,7 +77,7 @@ namespace Aer.Drawing
 					fillColor = mainColor.WithAlpha(8);
 					lineColor = Color.FromArgb(255, 65, 65, 65);
 					textColor = Colors.Gray;
-					rainBarColor = Colors.LightSlateGray;
+					rainBarColor = Colors.CornflowerBlue;
 					snowBarColor = Colors.White;
 					break;
 			}
@@ -86,6 +87,9 @@ namespace Aer.Drawing
 				Preferences.UseThickChartLine
 				? 1.6f
 				: 1f;
+
+			const float snowBarHeightMultiplier = 0.1f;
+			const float rainBarHeightMultiplier = 0.1f;
 
 			// Fonts
 			var textFormat = new CanvasTextFormat
@@ -183,12 +187,12 @@ namespace Aer.Drawing
 				float snow = (float)hourly[i].Snowfall;
 				bool drawRainBar = rain > float.Epsilon;
 				bool drawSnowBar = snow > float.Epsilon;
-				float x = hourWidth * i - 0.5f;
-				float barWidth = hourWidth + 0.5f;
+				float x = hourWidth * i + 1f;
+				float barWidth = hourWidth - 1f;
 				const float bottomLineY = 60f;
 				const float minBarHeight = 0.15f;
-				float snowBarHeight = (snow + minBarHeight) * (height * 0.05f);
-				float rainBarHeight = (rain + minBarHeight) * (height * 0.1f);
+				float rainBarHeight = (rain + minBarHeight) * (height * rainBarHeightMultiplier);
+				float snowBarHeight = (snow + minBarHeight) * (height * snowBarHeightMultiplier);
 				if (drawRainBar && !drawSnowBar)
 				{
 					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -rainBarHeight, rainBarColor);
@@ -209,7 +213,7 @@ namespace Aer.Drawing
 				{
 					// Light theme snow bars needs to have a line cap in order to be visible
 					float lineCapY = bottomLineY + snowBarHeight;
-					ds.DrawLine(x, chart.Y(lineCapY), x + barWidth, chart.Y(lineCapY), textColor);
+					ds.DrawLine(x, chart.Y(lineCapY), x + barWidth, chart.Y(lineCapY), Colors.AliceBlue);
 				}
 			}
 
@@ -305,6 +309,7 @@ namespace Aer.Drawing
 		{
 			private readonly float _height = height;
 			
+			public float Height => _height;
 			public float Y(float y) => _height - y;
 			public Vector2 XY(float x, float y) => new(x, _height - y);
 			public Vector2 XY(Vector2 v) => new(v.X, _height - v.Y);
