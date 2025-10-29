@@ -141,6 +141,7 @@ namespace Aer.Drawing
 			if (zeroDegPositionY > paddingBottom && zeroDegPositionY < height - paddingTop)
 			{
 				var strokeStyle = new CanvasStrokeStyle();
+				strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
 				strokeStyle.DashStyle = CanvasDashStyle.Dash;
 				strokeStyle.CustomDashStyle = [0.5f, 4f];
 				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), mainLineThickness, strokeStyle);
@@ -319,6 +320,8 @@ namespace Aer.Drawing
 				return;
 
 			var spline = BuildSpline(ds, points, chart);
+			var strokeStyle = new CanvasStrokeStyle();
+			strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
 
 			// If fill is requested, copy path and extend to bottom corners
 			if (fillColor.HasValue)
@@ -335,7 +338,7 @@ namespace Aer.Drawing
 
 			// Draw the line on top
 			spline.EndFigure(CanvasFigureLoop.Open);
-			ds.DrawGeometry(CanvasGeometry.CreatePath(spline), lineColor, thickness);
+			ds.DrawGeometry(CanvasGeometry.CreatePath(spline), lineColor, thickness, strokeStyle);
 
 
 
