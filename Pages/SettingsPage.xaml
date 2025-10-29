@@ -91,7 +91,8 @@
 						</controls:Segmented>
 					</controls:SettingsCard>
 					
-					<controls:SettingsCard Description="Select which app theme to display" Header="App theme">
+					<controls:SettingsCard Header="App theme"
+										   Description="Select which app theme to display" >
 						<controls:SettingsCard.HeaderIcon>
 							<FontIcon Glyph="&#xE790;" /><!-- Color (Palette) Icon -->
 						</controls:SettingsCard.HeaderIcon>
@@ -103,12 +104,23 @@
 							<ComboBoxItem Name="AppThemeDefault" Content="Use system setting" Tag="Default" />
 						</ComboBox>
 					</controls:SettingsCard>
+
+					<controls:SettingsCard Header="Thicker line"
+										   Description="Use a bolder line style for the chart.">
+						<controls:SettingsCard.HeaderIcon>
+							<FontIcon Glyph="&#xE771;" />
+							<!-- Personalize Icon -->
+						</controls:SettingsCard.HeaderIcon>
+						<ToggleSwitch IsOn="{x:Bind IsThickLineEnabled, Mode=TwoWay}"
+									  OnContent="Thick"
+									  OffContent="Thin"/>
+					</controls:SettingsCard>
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="About" />
 					
-					<controls:SettingsExpander Description="{x:Bind Copyright}"
-											   Header="{x:Bind AppName}"
+					<controls:SettingsExpander Header="{x:Bind AppName}"
+											   Description="{x:Bind Copyright}"
 											   IsExpanded="False">
 						<controls:SettingsExpander.HeaderIcon>
 							<BitmapIcon ShowAsMonochrome="False"

@@ -21,6 +21,12 @@ namespace Aer
 		public string Copyright => $"© {DateTime.Now.Year} {Package.Current.PublisherDisplayName}. All rights reserved.";
 		public string AppVersion => $"Version {Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
 
+		public bool IsThickLineEnabled
+		{
+			get => Preferences.UseThickChartLine;
+			set => Preferences.SetLineThickness(value);
+		}
+
 		public SettingsPage()
 		{
 			InitializeComponent();

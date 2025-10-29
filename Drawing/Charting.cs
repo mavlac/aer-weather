@@ -81,6 +81,12 @@ namespace Aer.Drawing
 					break;
 			}
 
+			// Visual
+			float mainLineThickness =
+				Preferences.UseThickChartLine
+				? 1.6f
+				: 1f;
+
 			// Fonts
 			var textFormat = new CanvasTextFormat
 			{
@@ -102,9 +108,6 @@ namespace Aer.Drawing
 				HorizontalAlignment = CanvasHorizontalAlignment.Center,
 				VerticalAlignment = CanvasVerticalAlignment.Center
 			};
-
-			// Visual
-			float mainLineThickness = 1f;
 
 			// Culture
 			var culture = CultureInfo.InvariantCulture;

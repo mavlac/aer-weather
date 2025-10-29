@@ -11,6 +11,7 @@ namespace Aer
 
 		public static TemperatureUtils.Unit TemperatureUnits { get; private set; } = TemperatureUtils.Unit.Celsius;
 		public static ElementTheme AppTheme { get; private set; } = ElementTheme.Default;
+		public static bool UseThickChartLine { get; private set; } = true;
 		public static bool WasWelcomeShown { get; private set; } = false;
 
 		public static void Load()
@@ -35,6 +36,15 @@ namespace Aer
 				AppTheme = ElementTheme.Default;
 			}
 
+			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(UseThickChartLine)}", out var useThickChartLineObj) && useThickChartLineObj is bool useThickChartLine)
+			{
+				UseThickChartLine = useThickChartLine;
+			}
+			else
+			{
+				UseThickChartLine = true;
+			}
+
 			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(WasWelcomeShown)}", out var wasWelcomeShownObj) && wasWelcomeShownObj is bool wasWelcomeShown)
 			{
 				WasWelcomeShown = wasWelcomeShown;
@@ -51,6 +61,7 @@ namespace Aer
 
 			settings.Values[$"{SettingsPrefix}_{nameof(TemperatureUnits)}"] = (int)TemperatureUnits;
 			settings.Values[$"{SettingsPrefix}_{nameof(AppTheme)}"] = (int)AppTheme;
+			settings.Values[$"{SettingsPrefix}_{nameof(UseThickChartLine)}"] = UseThickChartLine;
 			settings.Values[$"{SettingsPrefix}_{nameof(WasWelcomeShown)}"] = WasWelcomeShown;
 		}
 
@@ -64,6 +75,12 @@ namespace Aer
 		public static void SetAppTheme(ElementTheme newTheme)
 		{
 			AppTheme = newTheme;
+			Save();
+		}
+
+		public static void SetLineThickness(bool useThickChartLine)
+		{
+			UseThickChartLine = useThickChartLine;
 			Save();
 		}
 
