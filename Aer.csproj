@@ -21,6 +21,7 @@
     <Content Remove="Assets\AppIcon.scale-150.png" />
     <Content Remove="Assets\AppIcon.targetsize-24.png" />
     <Content Remove="Assets\AppIcon.targetsize-32.png" />
+    <Content Remove="Assets\Data\cities5000.txt" />
     <Content Remove="Assets\MediumTile.scale-125.png" />
     <Content Remove="Assets\MediumTile.scale-150.png" />
     <Content Remove="Assets\SmallTile.scale-125.png" />
@@ -95,12 +96,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Data\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="Assets\Data\cities5000.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Update="Assets\Data\cities500.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <None Update="Assets\Data\cities5000.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Update="Assets\Fonts\weathericons-regular-webfont.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>

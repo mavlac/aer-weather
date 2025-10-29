@@ -24,7 +24,7 @@ namespace Aer.Utils
 
 			await Task.Run(() =>
 			{
-				string path = Path.Combine(AppContext.BaseDirectory, "Assets", "Data", "cities5000.txt");
+				string path = Path.Combine(AppContext.BaseDirectory, "Assets", "Data", "cities500.txt");
 
 				allGeoNamesLocations = new();
 
