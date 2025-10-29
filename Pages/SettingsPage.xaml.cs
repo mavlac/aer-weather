@@ -113,14 +113,14 @@ namespace Aer
 
 			if (!GeoNames.IsLoaded)
 			{
-				if (!GeoNames.IsLoading)
-				{
-					LocationLoadingProgressRing.IsActive = true;
-					await GeoNames.Load(); // Wait for it to finish
-					LocationLoadingProgressRing.IsActive = false; // disable the ring
-				}
+				if (GeoNames.IsLoading)
+					return;
 				
-				return;
+				LocationLoadingProgressRing.IsActive = true;
+				await GeoNames.Load(); // Wait for it to finish
+				LocationLoadingProgressRing.IsActive = false; // disable the ring
+				
+				// Data ready - continue with creating options
 			}
 
 			string query = sender.Text;
