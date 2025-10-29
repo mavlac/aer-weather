@@ -30,8 +30,8 @@
      showborder="false"
      showgrid="false"
      inkscape:zoom="0.76757816"
-     inkscape:cx="-560.20354"
-     inkscape:cy="353.70991"
+     inkscape:cx="35.175571"
+     inkscape:cy="392.79388"
      inkscape:current-layer="layer1">
     <inkscape:grid
        id="grid1"
@@ -54,11 +54,11 @@
        id="linearGradient1"
        inkscape:collect="always">
       <stop
-         style="stop-color:#57bcf7;stop-opacity:1;"
+         style="stop-color:#0fadfd;stop-opacity:1;"
          offset="0"
          id="stop1" />
       <stop
-         style="stop-color:#0892e2;stop-opacity:1;"
+         style="stop-color:#087fd1;stop-opacity:1;"
          offset="1"
          id="stop2" />
     </linearGradient>
