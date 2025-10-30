@@ -151,7 +151,7 @@ namespace Aer.Drawing
 				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), mainLineThickness, strokeStyle);
 			}
 
-			// Time markers - vertical lines
+			// Day and Time markers - vertical lines and labels
 			var labels = new List<(string label, float x, float y)>();
 			for (int i = 0; i < hourly.Count; i++)
 			{
@@ -171,7 +171,7 @@ namespace Aer.Drawing
 						? culture.DateTimeFormat.GetAbbreviatedDayName(hourly[i].Time.DayOfWeek).ToUpper()
 						: hour.ToString();
 
-					bool isLabelOnRightEdge = x > width - 30; // Skip label shortly overlapping right edge
+					bool isLabelOnRightEdge = x > width - 35; // Skip label shortly overlapping right edge
 					if (!isLabelOnRightEdge)
 						labels.Add((label, x + 8, chart.Y(0 + 22)));
 				}
