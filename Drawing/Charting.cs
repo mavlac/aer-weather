@@ -265,8 +265,8 @@ namespace Aer.Drawing
 				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
 				isOnLeftEdge = x < 15;
 				isOnRightEdge = x > width - 15;
-				if (!isOnRightEdge)
-					ds.DrawText(label, isOnLeftEdge ? x + 12 : x, chart.Y(y - 12), mainColor, textFormatCentered);
+				if (!isOnRightEdge && !isOnLeftEdge)
+					ds.DrawText(label, x, chart.Y(y - 12), mainColor, textFormatCentered);
 				
 				// Day Max label
 				x = hourWidth * day.DayHigh.chartHour;
@@ -274,8 +274,8 @@ namespace Aer.Drawing
 				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
 				isOnLeftEdge = x < 15;
 				isOnRightEdge = x > width - 15;
-				if (!isOnRightEdge)
-					ds.DrawText(label, isOnLeftEdge ? x + 12 : x, chart.Y(y + 12), mainColor, textFormatCentered);
+				if (!isOnRightEdge && !isOnLeftEdge)
+					ds.DrawText(label, x, chart.Y(y + 12), mainColor, textFormatCentered);
 			}
 
 			// Condition icons
