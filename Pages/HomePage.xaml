@@ -29,7 +29,9 @@
 							   HorizontalAlignment="Left"
 							   Grid.Column="0"
 							   Text="HeaderText"
-							   Padding="1,0,0,0"/>
+							   Padding="1,0,0,0"
+							   FontFamily="Segoe UI"
+							   FontWeight="Light"/>
 					<FontIcon x:Name="CurrentConditionIcon"
 						  FontFamily="{StaticResource WeatherIconsFont}"
 						  Glyph="&#xF00D;"
