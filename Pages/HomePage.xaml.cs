@@ -3,6 +3,7 @@ using Aer.Utils;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,7 +61,14 @@ namespace Aer
 			UpdateDataFromNetwork(forceNetworkUpdate: false);
 		}
 
-		protected override void OnNavigatedFrom(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+		protected override void OnNavigatedTo(NavigationEventArgs e)
+		{
+			base.OnNavigatedTo(e);
+
+			MainWindow.GlobalHotkeyPressed += MainWindow_GlobalHotkeyPressed;
+		}
+
+		protected override void OnNavigatedFrom(NavigationEventArgs e)
 		{
 			base.OnNavigatedFrom(e);
 			
@@ -69,6 +77,27 @@ namespace Aer
 			_updateTaskCts?.Cancel();
 			_updateTaskCts?.Dispose();
 			_updateTaskCts = null;
+
+			MainWindow.GlobalHotkeyPressed -= MainWindow_GlobalHotkeyPressed;
+		}
+
+		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey obj)
+		{
+			if (obj == MainWindow.GlobalHotkey.DarkThemeToggle)
+			{
+				Preferences.SetAppTheme((Preferences.AppTheme is ElementTheme.Dark) ? ElementTheme.Default : ElementTheme.Dark);
+				WindowUtils.ApplyAppTheme(App.MainWindow);
+				ContentChart.Invalidate();
+			}
+		}
+
+		private void OnMinuteTick()
+		{
+			UpdatePageContent(); // Among other content will update the LastUpdateTimeText
+
+			// Data Update
+			// If cache is still valid, no network call will be made.
+			UpdateDataFromNetwork(false);
 		}
 
 		private async void UpdateDataFromNetwork(bool forceNetworkUpdate)
@@ -120,15 +149,6 @@ namespace Aer
 			}
 
 			_updateTask = null;
-		}
-
-		private void OnMinuteTick()
-		{
-			UpdatePageContent(); // Among other content will update the LastUpdateTimeText
-
-			// Data Update
-			// If cache is still valid, no network call will be made.
-			UpdateDataFromNetwork(false);
 		}
 
 		private void UpdatePageContent()

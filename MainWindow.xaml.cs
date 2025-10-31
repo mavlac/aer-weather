@@ -1,8 +1,15 @@
 using Aer.Utils;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using System;
 using System.Linq;
 using Windows.ApplicationModel;
+using Windows.System;
+using Windows.UI.Core;
+using WindowActivatedEventArgs = Microsoft.UI.Xaml.WindowActivatedEventArgs;
+using WindowSizeChangedEventArgs = Microsoft.UI.Xaml.WindowSizeChangedEventArgs;
 
 namespace Aer
 {
@@ -11,7 +18,11 @@ namespace Aer
 		private const int DefaultWindowWidth = 1320;
 		private const int DefaultWindowHeight = 780;
 
+		public enum GlobalHotkey { DarkThemeToggle }
+
 		public string WindowTitle => Package.Current.DisplayName;
+
+		public static event Action<GlobalHotkey>? GlobalHotkeyPressed;
 
 		public MainWindow()
 		{
@@ -19,6 +30,7 @@ namespace Aer
 
 			WindowUtils.ApplyAppTheme(this);
 
+			this.Activated += MainWindow_Activated;
 			this.SizeChanged += MainWindow_SizeChanged;
 			this.Closed += MainWindow_Closed;
 
@@ -34,17 +46,12 @@ namespace Aer
 			RootGrid.LayoutUpdated += RootGrid_LayoutUpdatedOnce;
 		}
 
-		private void RootGrid_LayoutUpdatedOnce(object? sender, object e)
+		private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
 		{
-			// LayoutUpdated fires after measure / arrange - so element sizes & positions are now valid.
-			// By attaching event to the root element(a Grid, StackPanel, etc.), it's sure following code runs when the window content has stabilized.
-			RootGrid.LayoutUpdated -= RootGrid_LayoutUpdatedOnce;
-
-			// Wait one UI tick so NavigationView finishes its internal layout
-			DispatcherQueue.TryEnqueue(() =>
-			{
-				WindowUtils.UpdateTitleBarDraggableArea(this); // Now finally is the time to update the title bar
-			});
+			this.Content?.AddHandler(
+				UIElement.KeyDownEvent,
+				new KeyEventHandler(OnKeyDown),
+				true); // Handle even if handled elsewhere
 		}
 
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
@@ -74,7 +81,21 @@ namespace Aer
 			
 			Preferences.Save();
 		}
-		
+
+		private void RootGrid_LayoutUpdatedOnce(object? sender, object e)
+		{
+			// LayoutUpdated fires after measure / arrange - so element sizes & positions are now valid.
+			// By attaching event to the root element(a Grid, StackPanel, etc.), it's sure following code runs when the window content has stabilized.
+			RootGrid.LayoutUpdated -= RootGrid_LayoutUpdatedOnce;
+
+			// Wait one UI tick so NavigationView finishes its internal layout
+			DispatcherQueue.TryEnqueue(() =>
+			{
+				WindowUtils.UpdateTitleBarDraggableArea(this); // Now finally is the time to update the title bar
+			});
+		}
+
+
 		#region Navigation
 		private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
 		{
@@ -129,6 +150,18 @@ namespace Aer
 		public class SettingsNavigationArgs
 		{
 			public bool FocusLocationSearch { get; set; }
+		}
+		#endregion
+
+		#region Hot-Keys
+		private void OnKeyDown(object sender, KeyRoutedEventArgs e)
+		{
+			// Ctrl + D
+			if (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) && e.Key == VirtualKey.D)
+			{
+				e.Handled = true;
+				GlobalHotkeyPressed?.Invoke(GlobalHotkey.DarkThemeToggle);
+			}
 		}
 		#endregion
 	}
