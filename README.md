@@ -13,3 +13,5 @@ Application aims to feel like a natural part of Windows, blending seamlessly wit
 
 ### License: Source-available
 For brief details see [LICENSE.md](LICENSE.md)
+
+[![Get it from Microsoft](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9NFLN708XZLH?referrer=appbadge&mode=direct)
