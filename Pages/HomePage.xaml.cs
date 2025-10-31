@@ -1,5 +1,6 @@
 using Aer.Drawing;
 using Aer.Utils;
+using Aer.Utils.Extensions;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -85,9 +86,7 @@ namespace Aer
 		{
 			if (obj == MainWindow.GlobalHotkey.DarkThemeToggle)
 			{
-				Preferences.SetAppTheme((Preferences.AppTheme is ElementTheme.Dark) ? ElementTheme.Default : ElementTheme.Dark);
-				WindowUtils.ApplyAppTheme(App.MainWindow);
-				ContentChart.Invalidate();
+				ToggleDarkAndLightTheme();
 			}
 		}
 
@@ -205,6 +204,7 @@ namespace Aer
 			Charting.DrawHomePageChart(sender, ds, hourlyData);
 		}
 
+		#region User Interface
 		private void ContentSelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
 		{
 			if (sender.SelectedItem == ContentSelectorBar_ChartCard)
@@ -225,5 +225,38 @@ namespace Aer
 		{
 			UpdateDataFromNetwork(forceNetworkUpdate: true);
 		}
+		#endregion
+
+		#region Utils
+		private void ToggleDarkAndLightTheme()
+		{
+			var systemTheme = ThemeUtils.GetSystemTheme(); // Dark or Light (only, OS is always specific)
+			
+			ElementTheme newTheme;
+			if (Preferences.AppTheme == ElementTheme.Default)
+			{
+				// Is using OS default
+				newTheme = systemTheme.Opposite(); // Set the opposite as override
+			}
+			else
+			{
+				// Is using specific theme override
+				if (Preferences.AppTheme == systemTheme)
+				{
+					// That is specific but matches OS default
+					newTheme = systemTheme.Opposite(); // Set the opposite
+				}
+				else
+				{
+					// That is opposite to OS default
+					newTheme = ElementTheme.Default; // Set the OS default
+				}
+			}
+			
+			Preferences.SetAppTheme(newTheme);
+			WindowUtils.ApplyAppTheme(App.MainWindow);
+			ContentChart.Invalidate();
+		}
+		#endregion
 	}
 }

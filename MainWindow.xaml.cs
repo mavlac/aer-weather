@@ -153,7 +153,7 @@ namespace Aer
 		}
 		#endregion
 
-		#region Hot-Keys
+		#region Hotkeys
 		private void OnKeyDown(object sender, KeyRoutedEventArgs e)
 		{
 			// Ctrl + D
