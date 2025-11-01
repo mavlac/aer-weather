@@ -20,6 +20,8 @@ namespace Aer
 
 		public enum GlobalHotkey { DarkThemeToggle }
 
+		private bool _isKeyHandlerAdded;
+
 		public string WindowTitle => Package.Current.DisplayName;
 
 		public static event Action<GlobalHotkey>? GlobalHotkeyPressed;
@@ -48,10 +50,20 @@ namespace Aer
 
 		private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
 		{
-			this.Content?.AddHandler(
+			// Only act when the window is becoming active (not deactivated)
+			if (args.WindowActivationState == WindowActivationState.Deactivated)
+				return;
+
+			// Ensure Content is ready and handler isn't already added
+			if (this.Content != null && !_isKeyHandlerAdded)
+			{
+				this.Content?.AddHandler(
 				UIElement.KeyDownEvent,
 				new KeyEventHandler(OnKeyDown),
 				true); // Handle even if handled elsewhere
+
+				_isKeyHandlerAdded = true;
+			}
 		}
 
 		private void MainWindow_SizeChanged(object sender, WindowSizeChangedEventArgs e)
@@ -75,6 +87,8 @@ namespace Aer
 			this.SizeChanged -= MainWindow_SizeChanged;
 			this.Closed -= MainWindow_Closed;
 			ContentFrame.Navigated -= ContentFrame_Navigated;
+
+			GlobalHotkeyPressed = null;
 
 			WindowPlacementManager.Save(this);
 			NavigationViewStateManager.Save(NavView);
