@@ -1,12 +1,10 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics;
 using Windows.Graphics;
 using Windows.UI;
-using Windows.UI.ViewManagement;
 using WinRT.Interop;
 
 namespace Aer.Utils
