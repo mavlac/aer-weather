@@ -37,7 +37,7 @@ namespace Aer
 		private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
 		{
 			UpdateLocationSectionFromData();
-			UpdatePreferences();
+			UpdatePreferenceUIControls();
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -201,12 +201,11 @@ namespace Aer
 				if (bool.TryParse((string)selectedItem.Tag, out bool useSystemAccentColor))
 				{
 					Preferences.SetAccentColor(useSystemAccentColor);
-					// TODO: Apply
 				}
 			}
 		}
 
-		private void UpdatePreferences()
+		private void UpdatePreferenceUIControls()
 		{
 			TempUnitSelector.SelectedItem = Preferences.TemperatureUnits switch
 			{
@@ -272,7 +271,7 @@ namespace Aer
 
 			// 5. Refresh UI with default values
 			UpdateLocationSectionFromData(true);
-			UpdatePreferences();
+			UpdatePreferenceUIControls();
 		}
 		#endregion
 	}

@@ -1,10 +1,12 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics;
 using Windows.Graphics;
 using Windows.UI;
+using Windows.UI.ViewManagement;
 using WinRT.Interop;
 
 namespace Aer.Utils
@@ -116,6 +118,22 @@ namespace Aer.Utils
 					return frameworkElement.ActualTheme == ElementTheme.Dark;
 				}
 				return false;
+			}
+		}
+
+		internal static void ApplyAccentColor()
+		{
+			var resources = Application.Current.Resources;
+
+			if (Preferences.UseSystemAccentColor)
+			{
+				// --- Use system accent ---
+				resources.Remove("NavigationViewSelectionIndicatorForeground");
+			}
+			else
+			{
+				// --- Use custom app accent ---
+				resources["NavigationViewSelectionIndicatorForeground"] = resources["AppAccentBrush"];
 			}
 		}
 	}

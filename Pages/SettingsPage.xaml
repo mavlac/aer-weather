@@ -106,14 +106,14 @@
 					</controls:SettingsCard>
 					
 					<controls:SettingsCard Header="Accent Color"
-										   Description="Select to personalize app colors" >
+										   Description="Personalize app colors, see change the next time app starts" >
 						<controls:SettingsCard.HeaderIcon>
 							<FontIcon Glyph="&#xE790;" /><!-- Color (Palette) Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<ComboBox x:Name="AccentColorSelector"
 								  SelectionChanged="AccentColorSelector_SelectionChanged"
 								  Width="200">
-							<ComboBoxItem Name="AccentColorAer" Content="Aer (default scheme)" Tag="False" />
+							<ComboBoxItem Name="AccentColorAer" Content="Monochrome (default)" Tag="False" />
 							<ComboBoxItem Name="AccentColorSystem" Content="Use system setting" Tag="True" />
 						</ComboBox>
 					</controls:SettingsCard>

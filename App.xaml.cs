@@ -33,8 +33,9 @@ namespace Aer
 			MainWindow = new MainWindow();
 
 			WindowUtils.SetAppIcon(MainWindow);
-			WindowUtils.ApplyAppTheme(MainWindow);
 			WindowUtils.InitializeTitleBar(MainWindow);
+			WindowUtils.ApplyAppTheme(MainWindow);
+			WindowUtils.ApplyAccentColor();
 
 			// Activate the startup window.
 			MainWindow.Activate();
