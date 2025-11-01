@@ -11,47 +11,24 @@ namespace Aer
 
 		public static TemperatureUtils.Unit TemperatureUnits { get; private set; } = TemperatureUtils.Unit.Celsius;
 		public static ElementTheme AppTheme { get; private set; } = ElementTheme.Default;
+		public static bool UseSystemAccentColor { get; private set; } = false;
 		public static bool UseThickChartLine { get; private set; } = true;
 		public static bool WasWelcomeShown { get; private set; } = false;
 
 		public static void Load()
 		{
-			var settings = ApplicationData.Current.LocalSettings;
-
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(TemperatureUnits)}", out var temperatureUnitsObj) && temperatureUnitsObj is int temperatureUnitsIntValue)
+			TemperatureUnits = (TemperatureUtils.Unit)GetValueOrDefault(nameof(TemperatureUnits), (int)LocalizationUtils.GetPreferredTemperatureUnit());
+			AppTheme = (ElementTheme)GetValueOrDefault(nameof(AppTheme), (int)ElementTheme.Default);
+			UseThickChartLine = GetValueOrDefault(nameof(UseThickChartLine), true);
+			UseSystemAccentColor = GetValueOrDefault(nameof(UseSystemAccentColor), false);
+			WasWelcomeShown = GetValueOrDefault(nameof(WasWelcomeShown), false);
+			
+			static T GetValueOrDefault<T>(string key, T defaultValue)
 			{
-				TemperatureUnits = (TemperatureUtils.Unit)temperatureUnitsIntValue;
-			}
-			else
-			{
-				TemperatureUnits = LocalizationUtils.GetPreferredTemperatureUnit();
-			}
-
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(AppTheme)}", out var appThemeObj) && appThemeObj is int appThemeIntValue)
-			{
-				AppTheme = (ElementTheme)appThemeIntValue;
-			}
-			else
-			{
-				AppTheme = ElementTheme.Default;
-			}
-
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(UseThickChartLine)}", out var useThickChartLineObj) && useThickChartLineObj is bool useThickChartLine)
-			{
-				UseThickChartLine = useThickChartLine;
-			}
-			else
-			{
-				UseThickChartLine = true;
-			}
-
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(WasWelcomeShown)}", out var wasWelcomeShownObj) && wasWelcomeShownObj is bool wasWelcomeShown)
-			{
-				WasWelcomeShown = wasWelcomeShown;
-			}
-			else
-			{
-				WasWelcomeShown = false;
+				if (ApplicationData.Current.LocalSettings.Values.TryGetValue($"{SettingsPrefix}_{key}", out var obj) && obj is T value)
+					return value;
+				
+				return defaultValue;
 			}
 		}
 
@@ -61,6 +38,7 @@ namespace Aer
 
 			settings.Values[$"{SettingsPrefix}_{nameof(TemperatureUnits)}"] = (int)TemperatureUnits;
 			settings.Values[$"{SettingsPrefix}_{nameof(AppTheme)}"] = (int)AppTheme;
+			settings.Values[$"{SettingsPrefix}_{nameof(UseSystemAccentColor)}"] = UseSystemAccentColor;
 			settings.Values[$"{SettingsPrefix}_{nameof(UseThickChartLine)}"] = UseThickChartLine;
 			settings.Values[$"{SettingsPrefix}_{nameof(WasWelcomeShown)}"] = WasWelcomeShown;
 		}
@@ -75,6 +53,12 @@ namespace Aer
 		public static void SetAppTheme(ElementTheme newTheme)
 		{
 			AppTheme = newTheme;
+			Save();
+		}
+
+		public static void SetAccentColor(bool useSystemAccentColor)
+		{
+			UseSystemAccentColor = useSystemAccentColor;
 			Save();
 		}
 

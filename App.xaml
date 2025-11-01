@@ -13,6 +13,7 @@
 			
 			<!-- Other app resources here -->
 			<FontFamily x:Key="WeatherIconsFont">ms-appx:///Assets/Fonts/weathericons-regular-webfont.ttf#Weather Icons</FontFamily>
+			<FontFamily x:Key="FluentIconsFont">ms-appx:///Assets/Fonts/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular</FontFamily>
 			
 			<!--  Constants  -->
 			<x:String x:Key="GitHubRepositoryUrl">https://github.com/mavlac/aer-weather</x:String>

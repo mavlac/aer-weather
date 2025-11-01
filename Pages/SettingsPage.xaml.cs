@@ -194,6 +194,18 @@ namespace Aer
 			}
 		}
 
+		private void AccentColorSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (((ComboBox)sender).SelectedItem is ComboBoxItem selectedItem)
+			{
+				if (bool.TryParse((string)selectedItem.Tag, out bool useSystemAccentColor))
+				{
+					Preferences.SetAccentColor(useSystemAccentColor);
+					// TODO: Apply
+				}
+			}
+		}
+
 		private void UpdatePreferences()
 		{
 			TempUnitSelector.SelectedItem = Preferences.TemperatureUnits switch
@@ -202,6 +214,7 @@ namespace Aer
 				TemperatureUtils.Unit.Fahrenheit => TempUnitFahrenheit,
 				_ => null
 			};
+
 			AppThemeSelector.SelectedItem = Preferences.AppTheme switch
 			{
 				ElementTheme.Light => AppThemeLight,
@@ -209,6 +222,14 @@ namespace Aer
 				ElementTheme.Default => AppThemeDefault,
 				_ => null
 			};
+
+			AccentColorSelector.SelectedItem = Preferences.UseSystemAccentColor switch
+			{
+				true => AccentColorSystem,
+				false => AccentColorAer
+			};
+
+			this.Bindings.Update(); // All UI refreshed
 		}
 		#endregion
 

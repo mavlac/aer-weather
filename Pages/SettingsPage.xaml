@@ -94,7 +94,7 @@
 					<controls:SettingsCard Header="App theme"
 										   Description="Select which app theme to display" >
 						<controls:SettingsCard.HeaderIcon>
-							<FontIcon Glyph="&#xE790;" /><!-- Color (Palette) Icon -->
+							<FontIcon Glyph="&#xF0224;" FontFamily="{StaticResource FluentIconsFont}" Width="32" Height="32" FontSize="32" /><!-- Brush Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<ComboBox x:Name="AppThemeSelector"
 								  SelectionChanged="AppThemeSelector_SelectionChanged"
@@ -104,6 +104,19 @@
 							<ComboBoxItem Name="AppThemeDefault" Content="Use system setting" Tag="Default" />
 						</ComboBox>
 					</controls:SettingsCard>
+					
+					<controls:SettingsCard Header="Accent Color"
+										   Description="Select to personalize app colors" >
+						<controls:SettingsCard.HeaderIcon>
+							<FontIcon Glyph="&#xE790;" /><!-- Color (Palette) Icon -->
+						</controls:SettingsCard.HeaderIcon>
+						<ComboBox x:Name="AccentColorSelector"
+								  SelectionChanged="AccentColorSelector_SelectionChanged"
+								  Width="200">
+							<ComboBoxItem Name="AccentColorAer" Content="Aer (default scheme)" Tag="False" />
+							<ComboBoxItem Name="AccentColorSystem" Content="Use system setting" Tag="True" />
+						</ComboBox>
+					</controls:SettingsCard>
 
 					<controls:SettingsCard Header="Thicker line"
 										   Description="Use a bolder line style for the chart.">
@@ -111,7 +124,8 @@
 							<FontIcon Glyph="&#xE771;" />
 							<!-- Personalize Icon -->
 						</controls:SettingsCard.HeaderIcon>
-						<ToggleSwitch IsOn="{x:Bind IsThickLineEnabled, Mode=TwoWay}"
+						<ToggleSwitch x:Name="ThickLineToggle"
+									  IsOn="{x:Bind IsThickLineEnabled, Mode=TwoWay}"
 									  OnContent="Thick"
 									  OffContent="Thin"/>
 					</controls:SettingsCard>
@@ -165,6 +179,11 @@
 										<TextBlock Text="Weather Icons"
 												   TextDecorations="Underline"
 												   DataContext="https://github.com/erikflowers/weather-icons"/>
+									</HyperlinkButton>
+									<HyperlinkButton Click="HyperlinkButton_Click">
+										<TextBlock Text="Fluent UI System Icons"
+												   TextDecorations="Underline"
+												   DataContext="https://github.com/microsoft/fluentui-system-icons"/>
 									</HyperlinkButton>
 								</StackPanel>
 							</controls:SettingsCard>
