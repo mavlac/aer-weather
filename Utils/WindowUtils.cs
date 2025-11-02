@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics;
 using Windows.Graphics;
@@ -119,20 +120,60 @@ namespace Aer.Utils
 			}
 		}
 
+		/// <summary>
+		/// Set only on Application.OnLaunched - runtime changes are not applied
+		/// </summary>
 		internal static void ApplyAccentColor()
 		{
 			var resources = Application.Current.Resources;
 
 			if (Preferences.UseSystemAccentColor)
 			{
-				// --- Use system accent ---
-				resources.Remove("NavigationViewSelectionIndicatorForeground");
+				// Use system accent color - nothing to override
+				return;
 			}
-			else
-			{
-				// --- Use custom app accent ---
-				resources["NavigationViewSelectionIndicatorForeground"] = resources["AppAccentBrush"];
-			}
+
+			// Use custom app accent
+
+			bool isDarkTheme =
+				Preferences.AppTheme == ElementTheme.Dark
+				|| Preferences.AppTheme == ElementTheme.Default && Application.Current.RequestedTheme == ApplicationTheme.Dark;
+
+			var lightGray = (Color)resources["AerAccentColorLightGray"];
+			var mediumGray = (Color)resources["AerAccentColorMediumGray"];
+			var darkGray = (Color)resources["AerAccentColorDarkGray"];
+
+			var primaryAccentColor = isDarkTheme ? lightGray : darkGray;
+			var primaryAccentBrush = new SolidColorBrush(primaryAccentColor);
+			var secondaryAccentBrush = new SolidColorBrush(mediumGray);
+
+			// System accent colors - (respected in dark mode)
+			resources["SystemAccentColor"] = primaryAccentColor;
+			resources["SystemAccentColorLight1"] = lightGray;
+			resources["SystemAccentColorLight2"] = lightGray;
+			resources["SystemAccentColorLight3"] = mediumGray;
+			resources["SystemAccentColorDark1"] = darkGray;
+			resources["SystemAccentColorDark2"] = darkGray;
+			resources["SystemAccentColorDark3"] = mediumGray;
+
+			// Legacy Accent Brushes (some controls still use them)
+			resources["SystemControlHighlightAccentBrush"] = primaryAccentBrush;
+			resources["SystemControlForegroundAccentBrush"] = primaryAccentBrush;
+
+			// Modern Accent Brushes (light theme especially needs these)
+			resources["AccentFillColorDefaultBrush"] = primaryAccentBrush;
+			resources["AccentFillColorSecondaryBrush"] = primaryAccentBrush;
+			resources["AccentFillColorTertiaryBrush"] = secondaryAccentBrush;
+			resources["AccentTextFillColorPrimaryBrush"] = primaryAccentBrush;
+			resources["AccentTextFillColorSecondaryBrush"] = primaryAccentBrush;
+			resources["AccentTextFillColorTertiaryBrush"] = secondaryAccentBrush;
+			resources["AccentButtonBackgroundBrush"] = primaryAccentBrush;
+			resources["AccentButtonBackgroundPressedBrush"] = secondaryAccentBrush;
+			resources["AccentButtonBackgroundDisabledBrush"] = secondaryAccentBrush;
+
+			// Control-specific overrides
+			resources["NavigationViewSelectionIndicatorForeground"] = primaryAccentColor;
+			resources["HyperlinkForeground"] = primaryAccentBrush;
 		}
 	}
 }

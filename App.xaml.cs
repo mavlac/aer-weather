@@ -30,12 +30,13 @@ namespace Aer
 
 			Preferences.Load();
 
+			WindowUtils.ApplyAccentColor(); // Before the Window is created
+
 			MainWindow = new MainWindow();
 
 			WindowUtils.SetAppIcon(MainWindow);
 			WindowUtils.InitializeTitleBar(MainWindow);
 			WindowUtils.ApplyAppTheme(MainWindow);
-			WindowUtils.ApplyAccentColor();
 
 			// Activate the startup window.
 			MainWindow.Activate();

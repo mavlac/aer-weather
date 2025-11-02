@@ -27,8 +27,9 @@
 			<x:Double x:Key="NavPaneNarrowWidth">160</x:Double>
 			
 			<!-- Color Theme -->
-			<Color x:Key="AppAccentColor">#FF202020</Color>
-			<SolidColorBrush x:Key="AppAccentBrush" Color="{StaticResource AppAccentColor}" />
+			<Color x:Key="AerAccentColorDarkGray">#FF202020</Color>
+			<Color x:Key="AerAccentColorMediumGray">#FF909090</Color>
+			<Color x:Key="AerAccentColorLightGray">#FFE0E0E0</Color>
 		</ResourceDictionary>
 	</Application.Resources>
 </Application>
