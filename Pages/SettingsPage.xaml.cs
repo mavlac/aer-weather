@@ -201,8 +201,24 @@ namespace Aer
 				if (bool.TryParse((string)selectedItem.Tag, out bool useSystemAccentColor))
 				{
 					Preferences.SetAccentColor(useSystemAccentColor);
+					
+					if (useSystemAccentColor != App.StartedUsingSystemAccentColor)
+					{
+						// Differs from the setting App started with
+						RestartAppButton.Visibility = Visibility.Visible;
+						CompositorAnimations.AnimatePop(RestartAppButton, 0.5);
+					}
+					else
+					{
+						RestartAppButton.Visibility = Visibility.Collapsed;
+					}
 				}
 			}
+		}
+
+		private void RestartAppButton_Click(object sender, RoutedEventArgs e)
+		{
+			_ = App.Restart();
 		}
 
 		private void UpdatePreferenceUIControls()

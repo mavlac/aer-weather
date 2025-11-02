@@ -25,17 +25,47 @@ namespace Aer.Utils
 
 		public static void AnimatePop(FrameworkElement element, double duration)
 		{
-			var visual = ElementCompositionPreview.GetElementVisual(element);
-			var compositor = visual.Compositor;
+			// Ensure layout exists and element is visible before animating
+			if (element.Visibility == Visibility.Visible &&
+				element.ActualWidth > 0 &&
+				element.ActualHeight > 0)
+			{
+				StartAnimation();
+			}
+			else
+			{
+				void OnLayoutUpdated(object? s, object? e)
+				{
+					if (element.Visibility == Visibility.Visible &&
+						element.ActualWidth > 0 &&
+						element.ActualHeight > 0)
+					{
+						element.LayoutUpdated -= OnLayoutUpdated;
+						StartAnimation();
+					}
+				}
+				
+				element.LayoutUpdated += OnLayoutUpdated;
+			}
 
-			var animation = compositor.CreateVector3KeyFrameAnimation();
-			animation.InsertKeyFrame(0f, new Vector3(1f));
-			animation.InsertKeyFrame(0.2f, new Vector3(1.05f));
-			animation.InsertKeyFrame(1f, new Vector3(1f));
-			animation.Duration = TimeSpan.FromSeconds(duration);
-
-			visual.CenterPoint = new Vector3((float)element.ActualWidth / 2, (float)element.ActualHeight / 2, 0);
-			visual.StartAnimation(nameof(visual.Scale), animation);
+			void StartAnimation()
+			{
+				var visual = ElementCompositionPreview.GetElementVisual(element);
+				var compositor = visual.Compositor;
+				
+				visual.CenterPoint = new Vector3(
+					(float)element.ActualWidth / 2f,
+					(float)element.ActualHeight / 2f,
+					0f);
+				
+				var animation = compositor.CreateVector3KeyFrameAnimation();
+				animation.InsertKeyFrame(0f, new Vector3(1f));
+				animation.InsertKeyFrame(0.2f, new Vector3(1.05f));
+				animation.InsertKeyFrame(1f, new Vector3(1f));
+				animation.Duration = TimeSpan.FromSeconds(duration);
+				
+				visual.StartAnimation(nameof(visual.Scale), animation);
+			}
 		}
 	}
 }

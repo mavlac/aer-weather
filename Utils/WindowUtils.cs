@@ -86,7 +86,7 @@ namespace Aer.Utils
 			{
 				rootElement.RequestedTheme = Preferences.AppTheme;
 				ApplyTitleBarTheme(window);
-				ApplyAccentColor(); // This needs to reassing colors based on theme
+				ApplyAccentColor(); // This needs to reassign colors based on theme
 			}
 		}
 

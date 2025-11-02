@@ -108,14 +108,24 @@
 					<controls:SettingsCard Header="Accent Color"
 										   Description="See your change the next time you start the app." >
 						<controls:SettingsCard.HeaderIcon>
-							<FontIcon Glyph="&#xE790;" /><!-- Color (Palette) Icon -->
+							<FontIcon Glyph="&#xE790;" Width="20" Height="20"/><!-- Color (Palette) Icon -->
 						</controls:SettingsCard.HeaderIcon>
-						<ComboBox x:Name="AccentColorSelector"
-								  SelectionChanged="AccentColorSelector_SelectionChanged"
-								  Width="200">
-							<ComboBoxItem Name="AccentColorAer" Content="Monochrome (default)" Tag="False" />
-							<ComboBoxItem Name="AccentColorSystem" Content="Use system setting" Tag="True" />
-						</ComboBox>
+						<StackPanel Orientation="Horizontal">
+							<Button x:Name="RestartAppButton"
+									Click="RestartAppButton_Click"
+									Margin="0,0,5,0"
+									VerticalAlignment="Center"
+									Height="32"
+									Visibility="Collapsed">
+								<FontIcon Glyph="&#xE72C;" Width="20" Height="20" FontSize="14"/><!-- Refresh Icon -->
+							</Button>
+							<ComboBox x:Name="AccentColorSelector"
+									  SelectionChanged="AccentColorSelector_SelectionChanged"
+									  Width="200">
+								<ComboBoxItem Name="AccentColorAer" Content="Monochrome (default)" Tag="False" />
+								<ComboBoxItem Name="AccentColorSystem" Content="Use system setting" Tag="True" />
+							</ComboBox>
+						</StackPanel>
 					</controls:SettingsCard>
 
 					<controls:SettingsCard Header="Thicker line"

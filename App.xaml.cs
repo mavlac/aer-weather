@@ -1,6 +1,8 @@
 ﻿using Aer.Utils;
 using Microsoft.UI.Xaml;
+using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Aer
 {
@@ -10,6 +12,11 @@ namespace Aer
 	public partial class App : Application
 	{
 		internal static MainWindow MainWindow { get; private set; } = null!;
+		
+		/// <summary>
+		/// Remember the state of application start, so when accent color setting is changed, restart button can appear.
+		/// </summary>
+		internal static bool StartedUsingSystemAccentColor { get; private set; }
 
 		/// <summary>
 		/// Initializes the singleton application object.  This is the first line of authored code executed,
@@ -31,6 +38,7 @@ namespace Aer
 			Preferences.Load();
 
 			WindowUtils.ApplyAccentColor(); // Before the Window is created
+			StartedUsingSystemAccentColor = Preferences.UseSystemAccentColor;
 
 			MainWindow = new MainWindow();
 
@@ -40,6 +48,26 @@ namespace Aer
 
 			// Activate the startup window.
 			MainWindow.Activate();
+		}
+
+		internal static async Task Restart()
+		{
+			try
+			{
+				string exePath = Environment.ProcessPath!;
+				Process.Start(new ProcessStartInfo(exePath)
+				{
+					UseShellExecute = true,
+					Arguments = "restart"
+				});
+
+				await Task.Delay(200); // Let the new instance spin up
+				Application.Current.Exit();
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Manual restart failed: {ex}");
+			}
 		}
 	}
 }
