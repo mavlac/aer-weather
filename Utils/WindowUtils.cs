@@ -86,6 +86,7 @@ namespace Aer.Utils
 			{
 				rootElement.RequestedTheme = Preferences.AppTheme;
 				ApplyTitleBarTheme(window);
+				ApplyAccentColor(); // This needs to reassing colors based on theme
 			}
 		}
 
@@ -170,10 +171,6 @@ namespace Aer.Utils
 			resources["AccentButtonBackgroundBrush"] = primaryAccentBrush;
 			resources["AccentButtonBackgroundPressedBrush"] = secondaryAccentBrush;
 			resources["AccentButtonBackgroundDisabledBrush"] = secondaryAccentBrush;
-
-			// Control-specific overrides
-			resources["NavigationViewSelectionIndicatorForeground"] = primaryAccentColor;
-			resources["HyperlinkForeground"] = primaryAccentBrush;
 		}
 	}
 }
