@@ -129,15 +129,15 @@
 					</controls:SettingsCard>
 
 					<controls:SettingsCard Header="Thicker line"
-										   Description="Use a bolder line style for the chart.">
+										   Description="Use a bolder line style for the chart">
 						<controls:SettingsCard.HeaderIcon>
 							<FontIcon Glyph="&#xE771;" />
 							<!-- Personalize Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<ToggleSwitch x:Name="ThickLineToggle"
 									  IsOn="{x:Bind IsThickLineEnabled, Mode=TwoWay}"
-									  OnContent="Thick"
-									  OffContent="Thin"/>
+									  OnContent="Enabled"
+									  OffContent="Disabled"/>
 					</controls:SettingsCard>
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
