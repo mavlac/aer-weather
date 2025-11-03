@@ -121,8 +121,8 @@ namespace Aer.Drawing
 
 			float paddingTop = 40f;
 			float paddingBottom = 100f;
-			//ds.DrawLine(0f, chart.Y(paddingBottom), width, chart.Y(paddingBottom), Colors.Red, 0.5f);
-			//ds.DrawLine(0f, chart.Y(height - paddingTop), width, chart.Y(height - paddingTop), Colors.Red, 0.5f);
+			//ds.DrawLine(0f, chart.Y(paddingBottom), width, chart.Y(paddingBottom), Colors.Orange, 0.5f);
+			//ds.DrawLine(0f, chart.Y(height - paddingTop), width, chart.Y(height - paddingTop), Colors.Orange, 0.5f);
 			// total temperature tempRange
 			float tempRange = maxTemp - minTemp;
 			if (tempRange < 0.1f) tempRange = 0.1f; // avoid division by zero
@@ -130,10 +130,6 @@ namespace Aer.Drawing
 			float degreeHeight = (height - (paddingTop + paddingBottom)) / tempRange;
 			// actual position of 0 °C based on data range
 			float dataZeroY = (0 - minTemp) * degreeHeight + paddingBottom;
-			//// preferred visual bias: 0 °C at 1/3 chart height
-			//// blend between data-based and biased position
-			//float desiredZeroY = height / 3f;
-			//float zeroDegPositionY = dataZeroY * 0.8f + desiredZeroY * 0.2f;
 			float zeroDegPositionY = dataZeroY;
 
 
@@ -141,14 +137,14 @@ namespace Aer.Drawing
 			// Drawing
 
 			// Zero degree horizontal line
-			// Draw only if not above paddings
-			if (zeroDegPositionY > paddingBottom && zeroDegPositionY < height - paddingTop)
+			// Draw only if not above paddings (can go a bit under the bottom one)
+			if (zeroDegPositionY > (paddingBottom - 15) && zeroDegPositionY < height - paddingTop)
 			{
 				var strokeStyle = new CanvasStrokeStyle();
 				strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
 				strokeStyle.DashStyle = CanvasDashStyle.Dash;
 				strokeStyle.CustomDashStyle = [0.5f, 4f];
-				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), mainLineThickness, strokeStyle);
+				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), gridColor, mainLineThickness, strokeStyle);
 			}
 
 			// Day and Time markers - grid of vertical lines and labels
