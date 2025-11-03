@@ -51,7 +51,7 @@ namespace Aer.Drawing
 
 			// Colors
 			bool isDarkTheme;
-			Color mainColor, fillColor, lineColor, textColor, rainBarColor, snowBarColor;
+			Color mainColor, fillColor, gridColor, textColor, rainBarColor, snowBarColor;
 			switch (sender.ActualTheme switch // Is Dark? If unable to get from FrameworkElement, get from ApplicationTheme
 				{
 					ElementTheme.Dark => true,
@@ -64,20 +64,21 @@ namespace Aer.Drawing
 					isDarkTheme = false;
 					mainColor = Color.FromArgb(255, 26, 26, 26);
 					fillColor = mainColor.WithAlpha(8);
-					lineColor = Colors.Gainsboro;
+					gridColor = Colors.Gainsboro;
 					textColor = Colors.Gray;
 					rainBarColor = Colors.LightSkyBlue;
 					snowBarColor = Colors.White;
 					break;
+
 				case true:
 					// Dark theme
 					isDarkTheme = true;
 					mainColor = Colors.White;
 					fillColor = mainColor.WithAlpha(8);
-					lineColor = Color.FromArgb(255, 65, 65, 65);
+					gridColor = Color.FromArgb(255, 65, 65, 65);
 					textColor = Colors.Gray;
 					rainBarColor = Colors.CornflowerBlue;
-					snowBarColor = Colors.White;
+					snowBarColor = Color.FromArgb(255, 224, 224, 224);
 					break;
 			}
 
@@ -150,7 +151,7 @@ namespace Aer.Drawing
 				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), mainColor.WithAlpha(32), mainLineThickness, strokeStyle);
 			}
 
-			// Day and Time markers - vertical lines and labels
+			// Day and Time markers - grid of vertical lines and labels
 			var labels = new List<(string label, float x, float y)>();
 			for (int i = 0; i < hourly.Count; i++)
 			{
@@ -163,7 +164,7 @@ namespace Aer.Drawing
 				{
 					bool isLineOnEdge = x < 10 || x > width - 10; // Skip vertical lines that would be on edge of chart, looks bad
 					if (!isLineOnEdge)
-						ds.DrawLine(x, chart.Y(y), x, chart.Y(0), lineColor, 1f);
+						ds.DrawLine(x, chart.Y(y), x, chart.Y(0), gridColor, 1f);
 
 					string label =
 						isNewDayMarker
@@ -212,7 +213,7 @@ namespace Aer.Drawing
 				{
 					// Light theme snow bars needs to have a line cap in order to be visible
 					float lineCapY = bottomLineY + snowBarHeight;
-					ds.DrawLine(x, chart.Y(lineCapY), x + barWidth, chart.Y(lineCapY), Colors.AliceBlue);
+					ds.FillCircle(x + barWidth / 2f, chart.Y(lineCapY), 1.85f, rainBarColor);
 				}
 			}
 
