@@ -2,6 +2,7 @@
 using Aer.Utils.Extensions;
 using Aer.Weather;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -180,34 +181,43 @@ namespace Aer.Drawing
 			for (int i = 0; i < hourly.Count; i++)
 			{
 				float rain = (float)hourly[i].Rain;
+				float rainRounded = (float)Math.Round(rain, 1);
 				float snow = (float)hourly[i].Snowfall;
+				float snowRounded = (float)Math.Round(snow, 1);
 				bool drawRainBar = rain > float.Epsilon;
 				bool drawSnowBar = snow > float.Epsilon;
 				float x = hourWidth * i + 1f;
 				float barWidth = hourWidth - 1f;
 				const float bottomLineY = 60f;
 				const float minBarHeight = 0.15f;
-				float rainBarHeight = (rain + minBarHeight) * (height * rainBarHeightMultiplier);
-				float snowBarHeight = (snow + minBarHeight) * (height * snowBarHeightMultiplier);
+				float rainBarHeight = (rainRounded + minBarHeight) * (height * rainBarHeightMultiplier);
+				float snowBarHeight = (snowRounded + minBarHeight) * (height * snowBarHeightMultiplier);
+				bool drawSnowBarDot = !isDarkTheme && drawSnowBar;
 				if (drawRainBar && !drawSnowBar)
 				{
 					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -rainBarHeight, rainBarColor);
 				}
-				if (drawSnowBar && !drawRainBar)
+				else if (drawSnowBar && !drawRainBar)
 				{
 					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -snowBarHeight, snowBarColor);
 				}
-				if (drawRainBar && drawSnowBar)
+				else if (drawRainBar && drawSnowBar)
 				{
 					// The smaller value bar on top of the higher value one
 					(float height, Color color) backBar = rain > snow ? (rainBarHeight, rainBarColor) : (snowBarHeight, snowBarColor);
 					(float height, Color color) frontBar = rain > snow ? (snowBarHeight, snowBarColor) : (rainBarHeight, rainBarColor);
+					// Higher back one
 					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -backBar.height, backBar.color);
-					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -frontBar.height, frontBar.color);
+					// And the smaller front one is striped
+					DrawStripedBar(ds, x, chart.Y(bottomLineY), barWidth, -frontBar.height, rainBarColor, snowBarColor);
+					
+					// Snow bar dot only if both bar overlaying and snow is back and significantly higher than rain
+					drawSnowBarDot = drawSnowBarDot && snowBarHeight > rainBarHeight + 4;
 				}
-				if (!isDarkTheme && drawSnowBar)
+				
+				if (drawSnowBarDot)
 				{
-					// Light theme snow bars needs to have a line cap in order to be visible
+					// Light theme snow bars needs to have a dot in order to be visible
 					float lineCapY = bottomLineY + snowBarHeight;
 					ds.FillCircle(x + barWidth / 2f, chart.Y(lineCapY), 1.85f, rainBarColor);
 				}
@@ -359,6 +369,30 @@ namespace Aer.Drawing
 				builder.AddLine(chart.XY(points[^1]));
 				return builder;
 			}
+		}
+
+		public static void DrawStripedBar(CanvasDrawingSession ds, float x, float y, float width, float height, Color color1, Color color2)
+		{
+			// Create a small off-screen pattern (tile)
+			int patternSize = 4;
+			var pattern = new CanvasRenderTarget(ds, patternSize, patternSize, 96);
+			using (var patternDs = pattern.CreateDrawingSession())
+			{
+				// Fill background color
+				patternDs.Clear(color1);
+				// Draw a stripe
+				patternDs.FillRectangle(0, 0, patternSize, patternSize / 2f, color2);
+			}
+
+			// Create an image brush using that pattern
+			var brush = new CanvasImageBrush(ds, pattern);
+			brush.ExtendX = CanvasEdgeBehavior.Wrap;
+			brush.ExtendY = CanvasEdgeBehavior.Wrap;
+			brush.Interpolation = CanvasImageInterpolation.Linear;
+			brush.Transform = Matrix3x2.CreateRotation((float)(-Math.PI / 4.5f));
+
+			// Fill the bar area
+			ds.FillRectangle(x, y, width, height, brush);
 		}
 
 		private record DayExtremes
