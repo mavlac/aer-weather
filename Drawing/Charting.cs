@@ -91,6 +91,7 @@ namespace Aer.Drawing
 
 			const float snowBarHeightMultiplier = 0.1f;
 			const float rainBarHeightMultiplier = 0.1f;
+			const float snowBarDotRadius = 1.667f;
 
 			// Fonts
 			var textFormat = new CanvasTextFormat
@@ -219,7 +220,7 @@ namespace Aer.Drawing
 				{
 					// Light theme snow bars needs to have a dot in order to be visible
 					float lineCapY = bottomLineY + snowBarHeight;
-					ds.FillCircle(x + barWidth / 2f, chart.Y(lineCapY), 1.85f, rainBarColor);
+					ds.FillCircle(x + barWidth / 2f, chart.Y(lineCapY), snowBarDotRadius, rainBarColor);
 				}
 			}
 
