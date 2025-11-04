@@ -118,8 +118,8 @@ namespace Aer.Drawing
 			// Scaling and Range
 			float hourWidth = width / (hourly.Count - 1);
 
-			float paddingTop = 40f;
 			float paddingBottom = 100f;
+			float paddingTop = Math.Max(35f, (height - paddingBottom) * 0.22f);
 			//ds.DrawLine(0f, chart.Y(paddingBottom), width, chart.Y(paddingBottom), Colors.Orange, 0.5f);
 			//ds.DrawLine(0f, chart.Y(height - paddingTop), width, chart.Y(height - paddingTop), Colors.Orange, 0.5f);
 			// total temperature tempRange
