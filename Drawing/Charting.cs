@@ -84,11 +84,8 @@ namespace Aer.Drawing
 			}
 
 			// Visual
-			float mainLineThickness =
-				Preferences.UseThickChartLine
-				? 1.6f
-				: 1f;
-
+			float mainLineStrokeWidth = Preferences.UseThickChartLine ? 1.6f : 1f;
+			const float gridStrokeWidth = 1f;
 			const float snowBarHeightMultiplier = 0.1f;
 			const float rainBarHeightMultiplier = 0.1f;
 			const float snowBarDotRadius = 1.667f;
@@ -146,7 +143,7 @@ namespace Aer.Drawing
 				strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
 				strokeStyle.DashStyle = CanvasDashStyle.Dash;
 				strokeStyle.CustomDashStyle = [0.5f, 4f];
-				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), gridColor, mainLineThickness, strokeStyle);
+				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), gridColor, mainLineStrokeWidth, strokeStyle);
 			}
 
 			// Day and Time markers - grid of vertical lines and labels
@@ -162,7 +159,7 @@ namespace Aer.Drawing
 				{
 					bool isLineOnEdge = x < 10 || x > width - 10; // Skip vertical lines that would be on edge of chart, looks bad
 					if (!isLineOnEdge)
-						ds.DrawLine(x, chart.Y(y), x, chart.Y(0), gridColor, 1f);
+						ds.DrawLine(x, chart.Y(y), x, chart.Y(0), gridColor, gridStrokeWidth);
 
 					string label =
 						isNewDayMarker
@@ -231,7 +228,7 @@ namespace Aer.Drawing
 				float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 				return new Vector2(x, y);
 			}).ToList();
-			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, mainLineThickness, fillColor);
+			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, fillColor);
 
 			// Temperature readings
 			var dayExtremes = new List<DayExtremes>();
