@@ -233,7 +233,6 @@ namespace Aer.Drawing
 			// Temperature readings
 			var dayExtremes = new List<DayExtremes>();
 			var currentExtremes = new DayExtremes();
-			DayExtremes lastDayExtremes = null!;
 			// Daily extremes
 			int lastDay = hourly[0].Time.Day;
 			for (int i = 0; i < hourly.Count; i++)
@@ -241,45 +240,46 @@ namespace Aer.Drawing
 				if (hourly[i].Time.Day != lastDay)
 				{
 					dayExtremes.Add(currentExtremes);
-					lastDayExtremes = currentExtremes;
 					currentExtremes = new DayExtremes();
 					lastDay = hourly[i].Time.Day;
 				}
 				
 				double temperature = hourly[i].Temperature;
 				int hour = hourly[i].Time.Hour;
-				if (temperature < currentExtremes.DayLow.temperature &&
-					(lastDayExtremes == null || lastDayExtremes.DayLow.chartHour != i - 1)) // Skip if last day low was an hour before this one
+				if (temperature < currentExtremes.DayLow.temperature)
 					currentExtremes.DayLow = (temperature, i);
-				if (temperature > currentExtremes.DayHigh.temperature &&
-					(lastDayExtremes == null || lastDayExtremes.DayHigh.chartHour != i - 1)) // Skip if last day high was an hour before this one
+				if (temperature > currentExtremes.DayHigh.temperature)
 					currentExtremes.DayHigh = (temperature, i);
 			}
 			dayExtremes.Add(currentExtremes);
-			
+
+			// Day Low labels
+			DayExtremes? previousDayLow = null;
 			foreach (var day in dayExtremes)
 			{
-				float x, y;
-				string label;
-				bool isOnLeftEdge, isOnRightEdge;
-
-				// Day Min label
-				x = hourWidth * day.DayLow.chartHour;
-				y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
-				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
-				isOnLeftEdge = x < 15;
-				isOnRightEdge = x > width - 15;
-				if (!isOnRightEdge && !isOnLeftEdge)
+				float x = hourWidth * day.DayLow.chartHour;
+				float y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
+				string label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
+				bool isOnLeftEdge = x < 15;
+				bool isOnRightEdge = x > width - 15;
+				bool isNextToPrevious = previousDayLow != null && Math.Abs(day.DayLow.chartHour - previousDayLow.DayLow.chartHour) <= 3;
+				if (!isOnRightEdge && !isOnLeftEdge && !isNextToPrevious)
 					ds.DrawText(label, x, chart.Y(y - 12), mainColor, textFormatCentered);
-				
-				// Day Max label
-				x = hourWidth * day.DayHigh.chartHour;
-				y = zeroDegPositionY + (float)day.DayHigh.temperature * degreeHeight;
-				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
-				isOnLeftEdge = x < 15;
-				isOnRightEdge = x > width - 15;
-				if (!isOnRightEdge && !isOnLeftEdge)
+				previousDayLow = day;
+			}
+			// Day High labels
+			DayExtremes? previousDayHigh = null;
+			foreach (var day in dayExtremes)
+			{
+				float x = hourWidth * day.DayHigh.chartHour;
+				float y = zeroDegPositionY + (float)day.DayHigh.temperature * degreeHeight;
+				string label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
+				bool isOnLeftEdge = x < 15;
+				bool isOnRightEdge = x > width - 15;
+				bool isNextToPrevious = previousDayHigh != null && Math.Abs(day.DayHigh.chartHour - previousDayHigh.DayHigh.chartHour) <= 3;
+				if (!isOnRightEdge && !isOnLeftEdge && !isNextToPrevious)
 					ds.DrawText(label, x, chart.Y(y + 12), mainColor, textFormatCentered);
+				previousDayHigh = day;
 			}
 
 			// Condition icons
