@@ -147,7 +147,7 @@
 											   IsExpanded="False">
 						<controls:SettingsExpander.HeaderIcon>
 							<BitmapIcon ShowAsMonochrome="False"
-										UriSource="ms-appx:///Assets/StoreLogo.png" />
+										UriSource="ms-appx:///Assets/AppIcon.ico" />
 						</controls:SettingsExpander.HeaderIcon>
 						<TextBlock win:IsTextSelectionEnabled="True"
 								   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
