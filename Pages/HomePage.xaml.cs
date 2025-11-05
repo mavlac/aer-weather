@@ -143,7 +143,7 @@ namespace Aer
 			{
 				await MessageBoxEx.ShowAsync(
 					"Unable to update weather data",
-					"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.",
+					$"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.\r\n\r\n{Data.LastNetworkUpdateResult}",
 					"Oh dear");
 			}
 

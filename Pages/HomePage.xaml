@@ -107,7 +107,7 @@
 		<!-- Loading Overlay -->
 		<Grid x:Name="LoadingOverlay"
 			  Background="{ThemeResource LayerFillColorDefaultBrush}"
-			  Opacity="0.6"
+			  Opacity="0.8"
 			  Visibility="Collapsed"
 			  HorizontalAlignment="Stretch"
 			  VerticalAlignment="Stretch">

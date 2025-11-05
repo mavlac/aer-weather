@@ -33,6 +33,7 @@ namespace Aer
 		private static string AppStorageKeyPrefix => nameof(Data);
 
 		private static bool IsUpdatingFromNetwork { get; set; }
+		public static string? LastNetworkUpdateResult { get; private set; }
 
 		public static int? LocationID { get; private set; }
 		public static string? LocationLabel { get; private set; }
@@ -143,6 +144,7 @@ namespace Aer
 
 			if (IsCacheDataValid && IsCachedDataRecentEnough() && !skipCache)
 			{
+				LastNetworkUpdateResult = "Using cached data.";
 				return true; // OK: no network update performed, because wasn't needed
 			}
 
@@ -159,6 +161,8 @@ namespace Aer
 
 				if (result == null)
 				{
+					Debug.WriteLine("Weather update failed: network or data parsing error.");
+					LastNetworkUpdateResult = "Network or data parsing error.";
 					return false; // ERROR: network error or something went wrong
 				}
 
@@ -174,16 +178,19 @@ namespace Aer
 				IsCacheDataValid = true;
 				SaveWeatherData();
 
+				LastNetworkUpdateResult = "OK";
 				return true; // OK: data was updated from network
 			}
 			catch (OperationCanceledException)
 			{
 				Debug.WriteLine("Weather data update canceled.");
+				LastNetworkUpdateResult = "Update canceled.";
 				return true; // OK: was canceled, but no error
 			}
 			catch (Exception ex)
 			{
 				Debug.WriteLine($"Weather update failed: {ex}");
+				LastNetworkUpdateResult = ex.ToString();
 				return false; // ERROR: failed with unexpected exception
 			}
 			finally
