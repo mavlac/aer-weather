@@ -13,11 +13,11 @@ namespace Aer.Utils
 		/// <summary>
 		/// Returns a readable temperature string in the user's preferred units, including unit symbol.
 		/// </summary>
-		public static string GetReadableTemperature(double celsiusTemperature)
+		public static string GetReadableTemperature(double celsiusTemperature, string separator)
 		{
 			return Preferences.TemperatureUnits == Unit.Celsius
-				? $"{Math.Round(celsiusTemperature)} {Unit.Celsius.UnitString()}"
-				: $"{Math.Round(CelsiusToFahrenheit(celsiusTemperature))} {Unit.Fahrenheit.UnitString()}";
+				? $"{Math.Round(celsiusTemperature)}{separator}{Unit.Celsius.UnitString()}"
+				: $"{Math.Round(CelsiusToFahrenheit(celsiusTemperature))}{separator}{Unit.Fahrenheit.UnitString()}";
 		}
 
 		public static double GetTemperatureInPreferredUnit(double celsiusTemperature)

@@ -20,8 +20,9 @@ namespace Aer.Weather
 
 			const string separator = " ";
 			string formattedTime = Time.ToString(culture.DateTimeFormat.ShortDatePattern) + " " + Time.ToString("HH:mm");
-			
-			return $"{formattedTime}{separator}{TemperatureUtils.GetReadableTemperature(Temperature)}{separator}{WeatherDescriptions.GetDescription(ConditionCode, IsDaytime)}{separator}{Rain}mm{separator}{Snowfall}mm";
+			string formattedTemperature = TemperatureUtils.GetReadableTemperature(Temperature, string.Empty);
+
+			return $"{formattedTime}{separator}{formattedTemperature}{separator}{ConditionCode}{separator}{WeatherDescriptions.GetDescription(ConditionCode, IsDaytime)}{separator}{Rain}mm{separator}{Snowfall}mm";
 		}
 	}
 }
