@@ -106,7 +106,7 @@
 					</controls:SettingsCard>
 					
 					<controls:SettingsCard Header="Accent Color"
-										   Description="See your change the next time you start the app." >
+										   Description="See your change the next time you start the app" >
 						<controls:SettingsCard.HeaderIcon>
 							<FontIcon Glyph="&#xE790;" Width="20" Height="20"/><!-- Color (Palette) Icon -->
 						</controls:SettingsCard.HeaderIcon>
