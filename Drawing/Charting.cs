@@ -118,7 +118,7 @@ namespace Aer.Drawing
 			// Scaling and Range
 			float hourWidth = width / (hourly.Count - 1);
 
-			float paddingBottom = 100f;
+			float paddingBottom = Math.Max(100f, height * 0.33f);
 			float paddingTop = Math.Max(35f, (height - paddingBottom) * 0.22f);
 			//ds.DrawLine(0f, chart.Y(paddingBottom), width, chart.Y(paddingBottom), Colors.Orange, 0.5f);
 			//ds.DrawLine(0f, chart.Y(height - paddingTop), width, chart.Y(height - paddingTop), Colors.Orange, 0.5f);
