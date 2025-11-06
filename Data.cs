@@ -48,7 +48,7 @@ namespace Aer
 		public static DateTime? CacheLastUpdateTime { get; private set; }
 		public static bool IsCacheDataValid { get; private set; }
 
-		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString(CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString(CultureInfo.InvariantCulture)}";
+		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString("F4", CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString("F4", CultureInfo.InvariantCulture)}";
 		public static string ReadableTemperature => CachedTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedTemperature.Value, " ");
 		public static string ConditionDescription => CachedConditionCode is null ? "—" : WeatherDescriptions.GetDescription(CachedConditionCode.Value, CachedIsDaytime!.Value);
 		public static string ConditionWeatherIconsGlyph => CachedConditionCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedConditionCode!.Value, CachedIsDaytime!.Value);

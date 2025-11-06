@@ -104,6 +104,11 @@ namespace Aer
 			}
 		}
 
+		private void UseCurrentLocationButton_Click(object sender, RoutedEventArgs e)
+		{
+			// TODO
+		}
+
 		private async void LocationAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
 		{
 			if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)

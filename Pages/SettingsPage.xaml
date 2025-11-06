@@ -54,14 +54,14 @@
 										  Height="18"
 										  Margin="0,0,8,0"/>
 							<AutoSuggestBox x:Name="LocationAutoSuggestBox"
-										TextChanged="LocationAutoSuggestBox_TextChanged"
-										SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
-										PlaceholderText="Type a location"
-										Width="280">
+											TextChanged="LocationAutoSuggestBox_TextChanged"
+											SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
+											PlaceholderText="Type a location"
+											Width="280">
 								<TeachingTip
 									x:Name="LocationAutoSuggestBoxTeachingTip"
 									Title="Find your city"
-									Subtitle="Begin typing a city name to see suggestions"
+									Subtitle="Begin typing to see suggestions"
 									Target="{x:Bind LocationAutoSuggestBox}"
 									IsOpen="False"
 									IsLightDismissEnabled="True">
@@ -70,6 +70,16 @@
 									</TeachingTip.IconSource>
 								</TeachingTip>
 							</AutoSuggestBox>
+							<Button x:Name="UseCurrentLocationButton"
+									Click="UseCurrentLocationButton_Click"
+									Margin="4,0,0,0"
+									Padding="2,2,2,2"
+									VerticalAlignment="Center"
+									HorizontalAlignment="Center"
+									Height="32"
+									Width="36">
+								<FontIcon Glyph="&#xE81D;" FontSize="14"/><!-- Location Icon -->
+							</Button>
 						</StackPanel>
 					</controls:SettingsCard>
 					
@@ -114,8 +124,10 @@
 							<Button x:Name="RestartAppButton"
 									Click="RestartAppButton_Click"
 									Margin="0,0,5,0"
+									Padding="2,2,2,2"
 									VerticalAlignment="Center"
 									Height="32"
+									Width="36"
 									Visibility="Collapsed">
 								<FontIcon Glyph="&#xE72C;" Width="20" Height="20" FontSize="14"/><!-- Refresh Icon -->
 							</Button>
