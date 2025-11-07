@@ -15,8 +15,8 @@ namespace Aer
 {
 	public sealed partial class MainWindow : Window
 	{
-		private const int DefaultWindowWidth = 1320;
-		private const int DefaultWindowHeight = 780;
+		private const int DefaultWindowWidth = 1850;
+		private const int DefaultWindowHeight = 1040;
 
 		public enum GlobalHotkey { DarkThemeToggle }
 
