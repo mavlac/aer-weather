@@ -88,10 +88,9 @@ namespace Aer
 		#region Location
 		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
 		{
-			// Fallbacks should never be needed, default location and coordinates are used if nothing else is set
-			LocationSettingsCard.Header = Data.LocationLabel ?? "Unknown location";
-			LocationSettingsCard.Description = Data.LocationCoordinates ?? "No coordinates";
-
+			LocationSettingsCard.Header = Data.LocationLabel!;
+			LocationSettingsCard.Description = Data.LocationCoordinates!;
+			
 			if (acknowlidgeAChange)
 			{
 				// Highlight changes in LocationSettingsCard
@@ -104,9 +103,24 @@ namespace Aer
 			}
 		}
 
-		private void UseCurrentLocationButton_Click(object sender, RoutedEventArgs e)
+		private async void UseCurrentLocationButton_Click(object sender, RoutedEventArgs e)
 		{
-			// TODO
+			if (sender is Button button)
+			{
+				button.IsEnabled = false;
+
+				var location = await Utils.IpInfoHelper.GetLocationAsync();
+				if (location != null
+					&& !string.IsNullOrWhiteSpace(location.City)
+					&& !string.IsNullOrWhiteSpace(location.Country))
+				{
+					Data.SetLocation(location.City!, location.Country!, location.Latitude, location.Longitude);
+					
+					UpdateLocationSectionFromData(true);
+				}
+				
+				button.IsEnabled = true;
+			}
 		}
 
 		private async void LocationAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -170,7 +184,7 @@ namespace Aer
 			{
 				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
 
-				Data.SetLocation(location.ID, location.Name, location.Country, location.Latitude, location.Longitude);
+				Data.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
 
 				// Data will update when showing the HomePage

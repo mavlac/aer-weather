@@ -21,7 +21,6 @@ namespace Aer
 		private const float CacheValidityMinutes = 30f;
 
 		private const string LocationLabelFormat = "{0}, {1}"; // Name, Country
-		private const int DefaultLocationID = 3067696;
 		private const string DefaultLocationName = "Prague";
 		private const string DefaultLocationCountry = "CZ";
 		private const double DefaultLocationLatitude = 50.08804;
@@ -76,7 +75,7 @@ namespace Aer
 			}
 			else
 			{
-				SetLocation(DefaultLocationID, DefaultLocationName, DefaultLocationCountry, DefaultLocationLatitude, DefaultLocationLongitude);
+				SetLocation(DefaultLocationName, DefaultLocationCountry, DefaultLocationLatitude, DefaultLocationLongitude);
 				isSavedLocationLoadSuccessful = false;
 			}
 
@@ -121,9 +120,9 @@ namespace Aer
 			Debug.WriteLineIf(!isCachedDataMatchingLocation, $"Cache location not matching selected location. '{CacheLocationID}' vs '{LocationID}'");
 		}
 
-		public static void SetLocation(int id, string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
+		public static void SetLocation(string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
 		{
-			LocationID = id;
+			LocationID = GetLocationId(newLocationLatitude, newLocationLongitude);
 			LocationLabel = string.Format(LocationLabelFormat, newLocationName, newLocationCountry);
 			LocationLatitude = newLocationLatitude;
 			LocationLongitude = newLocationLongitude;
@@ -234,6 +233,26 @@ namespace Aer
 			return CachedHourly
 				.Where(f => f.Time >= now)
 				.ToList();
+		}
+
+		/// <summary>
+		/// Location ID is a hash calculated from lat/long
+		/// </summary>
+		private static int GetLocationId(double latitude, double longitude)
+		{
+			// Round to avoid floating noise (≈0.1m precision)
+			var lat = Math.Round(latitude, 6);
+			var lon = Math.Round(longitude, 6);
+
+			// Convert to long bits (stable numeric representation)
+			long latBits = BitConverter.DoubleToInt64Bits(lat);
+			long lonBits = BitConverter.DoubleToInt64Bits(lon);
+
+			// Combine deterministically
+			long hash = latBits ^ (lonBits * 31);
+
+			// Compress to int
+			return (int)(hash ^ (hash >> 32));
 		}
 	}
 }
