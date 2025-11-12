@@ -237,12 +237,14 @@ namespace Aer
 
 		/// <summary>
 		/// Location ID is a hash calculated from lat/long
+		/// and used to determine if the correct location is data is cached.
+		/// This way locations got from GeoData and from IPInfo can be kind-of compared.
 		/// </summary>
 		private static int GetLocationId(double latitude, double longitude)
 		{
-			// Round to avoid floating noise (≈0.1m precision)
-			var lat = Math.Round(latitude, 6);
-			var lon = Math.Round(longitude, 6);
+			// Round to avoid floating noise
+			var lat = Math.Round(latitude, 4);
+			var lon = Math.Round(longitude, 4);
 
 			// Convert to long bits (stable numeric representation)
 			long latBits = BitConverter.DoubleToInt64Bits(lat);
