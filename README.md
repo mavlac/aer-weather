@@ -16,5 +16,5 @@ Build, or get from MS Store.
 - Language: C#
 - Platform: Windows App SDK
 
-### License: Source-available
+### License: Freeware, source-available
 For brief details see [LICENSE.md](LICENSE.md)

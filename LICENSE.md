@@ -1,4 +1,4 @@
-# Source-available license
+# Freeware, Source-available
 
 Copyright (c) 2025 mavlac
 
