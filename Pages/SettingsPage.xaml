@@ -77,7 +77,8 @@
 									VerticalAlignment="Center"
 									HorizontalAlignment="Center"
 									Height="32"
-									Width="36">
+									Width="36"
+									ToolTipService.ToolTip="Estimate your location from your IP address">
 								<FontIcon Glyph="&#xE81D;" FontSize="14"/><!-- Location Icon -->
 							</Button>
 						</StackPanel>
