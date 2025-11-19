@@ -15,9 +15,10 @@ namespace Aer.Utils
 		/// </summary>
 		public static string GetReadableTemperature(double celsiusTemperature, string separator)
 		{
-			return Preferences.TemperatureUnits == Unit.Celsius
-				? $"{Math.Round(celsiusTemperature)}{separator}{Unit.Celsius.UnitString()}"
-				: $"{Math.Round(CelsiusToFahrenheit(celsiusTemperature))}{separator}{Unit.Fahrenheit.UnitString()}";
+			double t = GetTemperatureInPreferredUnit(celsiusTemperature);
+			int value = (int)Math.Round(t); // Eliminates -0 automatically
+
+			return $"{value}{separator}{Preferences.TemperatureUnits.UnitString()}";
 		}
 
 		public static double GetTemperatureInPreferredUnit(double celsiusTemperature)
