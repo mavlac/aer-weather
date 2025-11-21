@@ -4,7 +4,7 @@ A minimalistic WinUI 3 weather app I built for myself - designed for quick glanc
 It intentionally keeps things simple: just the essentials, no clutter.
 Application aims to feel like a natural part of Windows, blending seamlessly with the system's design language. It does so within a minimal scope, with the maximum amount of polish possible.
 
-![Screenshot](/Extras/Screenshot.png)
+![Screenshot](/Extras/Screenshot.jpg)
 
 ### Installation
 Build, or get from MS Store.
