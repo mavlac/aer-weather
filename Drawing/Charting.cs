@@ -67,7 +67,7 @@ namespace Aer.Drawing
 					fillColor = mainColor.WithAlpha(8);
 					gridColor = Colors.Gainsboro;
 					textColor = Colors.Gray;
-					rainBarColor = Colors.LightSkyBlue;
+					rainBarColor = Colors.LightSkyBlue; // #84C9F3
 					snowBarColor = Colors.White;
 					break;
 
@@ -78,7 +78,7 @@ namespace Aer.Drawing
 					fillColor = mainColor.WithAlpha(8);
 					gridColor = Color.FromArgb(255, 65, 65, 65);
 					textColor = Colors.Gray;
-					rainBarColor = Colors.CornflowerBlue;
+					rainBarColor = Color.FromArgb(255, 19, 130, 197);
 					snowBarColor = Color.FromArgb(255, 224, 224, 224);
 					break;
 			}
