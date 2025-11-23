@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Windows.Devices.Power;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 
@@ -150,6 +151,13 @@ namespace Aer.Drawing
 
 			// Sub-zero fill
 			int startSubZeroIndex = -1;
+			var freezeFillBrush = new CanvasLinearGradientBrush(
+					ds,
+					freezeFillColor,
+					freezeFillColor.WithAlpha(0));
+			freezeFillBrush.StartPoint = new Vector2(0, chart.Y(zeroDegPositionY));
+			freezeFillBrush.EndPoint = new Vector2(0, chart.Y(30f));
+			
 			for (int i = 0; i < hourly.Count; i++)
 			{
 				bool isLastPoint = i == hourly.Count - 1;
@@ -167,7 +175,7 @@ namespace Aer.Drawing
 						float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 						return new Vector2(x, y);
 					}).ToList();
-					DrawSpline(ds, subZeroPoints, chart, null, 0f, freezeFillColor);
+					DrawSpline(ds, subZeroPoints, chart, null, 0f, freezeFillBrush);
 					startSubZeroIndex = -1; // Reset
 				}
 			}
@@ -254,7 +262,8 @@ namespace Aer.Drawing
 				float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 				return new Vector2(x, y);
 			}).ToList();
-			DrawSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, fillColor);
+			var fillBrush = new CanvasSolidColorBrush(ds, fillColor);
+			DrawSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, fillBrush);
 
 			// Temperature readings
 			var dayExtremes = new List<DayExtremes>();
@@ -349,13 +358,13 @@ namespace Aer.Drawing
 		/// Draws a smooth curve through the given temperatureLinePoints using quadratic Beziers.
 		/// Points should be in “data coordinates” (before flipping Y).
 		/// </summary>
-		public static void DrawSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, Color? fillColor)
+		public static void DrawSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, ICanvasBrush fillBrush)
 		{
 			if (points.Count < 2)
 				return;
 
 			// Fill
-			if (fillColor.HasValue)
+			if (fillBrush is not null)
 			{
 				var fillArea = BuildSpline(ds, points, chart);
 				
@@ -364,7 +373,7 @@ namespace Aer.Drawing
 				fillArea.AddLine(new Vector2(chart.XY(points[0]).X, chart.Y(0)));
 				fillArea.EndFigure(CanvasFigureLoop.Closed);
 				
-				ds.FillGeometry(CanvasGeometry.CreatePath(fillArea), fillColor.Value);
+				ds.FillGeometry(CanvasGeometry.CreatePath(fillArea), fillBrush);
 			}
 
 			// Spline
