@@ -52,7 +52,7 @@ namespace Aer.Drawing
 
 			// Colors
 			bool isDarkTheme;
-			Color mainColor, fillColor, gridColor, textColor, rainBarColor, snowBarColor;
+			Color mainColor, fillColor, freezeFillColor, gridColor, textColor, rainBarColor, snowBarColor;
 			switch (sender.ActualTheme switch // Is Dark? If unable to get from FrameworkElement, get from ApplicationTheme
 				{
 					ElementTheme.Dark => true,
@@ -65,6 +65,7 @@ namespace Aer.Drawing
 					isDarkTheme = false;
 					mainColor = Color.FromArgb(255, 26, 26, 26);
 					fillColor = mainColor.WithAlpha(8);
+					freezeFillColor = Color.FromArgb(48, 135, 206, 250);
 					gridColor = Colors.Gainsboro;
 					textColor = Colors.Gray;
 					rainBarColor = Colors.LightSkyBlue; // #84C9F3
@@ -76,6 +77,7 @@ namespace Aer.Drawing
 					isDarkTheme = true;
 					mainColor = Colors.White;
 					fillColor = mainColor.WithAlpha(8);
+					freezeFillColor = Color.FromArgb(32, 173, 216, 230);
 					gridColor = Color.FromArgb(255, 65, 65, 65);
 					textColor = Colors.Gray;
 					rainBarColor = Color.FromArgb(255, 19, 130, 197);
@@ -144,6 +146,30 @@ namespace Aer.Drawing
 				strokeStyle.DashStyle = CanvasDashStyle.Dash;
 				strokeStyle.CustomDashStyle = [0.5f, 4f];
 				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), gridColor, mainLineStrokeWidth, strokeStyle);
+			}
+
+			// Sub-zero fill
+			int startSubZeroIndex = -1;
+			for (int i = 0; i < hourly.Count; i++)
+			{
+				bool isLastPoint = i == hourly.Count - 1;
+
+				if (startSubZeroIndex == -1 && hourly[i].Temperature < 0)
+				{
+					startSubZeroIndex = i;
+				}
+				else if (startSubZeroIndex != -1 && (hourly[i].Temperature >= 0 || isLastPoint))
+				{
+					// A range to fill
+					var subZeroPoints = hourly.Skip(startSubZeroIndex).Take(i - startSubZeroIndex + 1).Select((h, idx) =>
+					{
+						float x = hourWidth * (startSubZeroIndex + idx);
+						float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
+						return new Vector2(x, y);
+					}).ToList();
+					DrawSpline(ds, subZeroPoints, chart, null, 0f, freezeFillColor);
+					startSubZeroIndex = -1; // Reset
+				}
 			}
 
 			// Day and Time markers - grid of vertical lines and labels
