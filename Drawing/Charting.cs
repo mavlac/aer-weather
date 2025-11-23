@@ -288,33 +288,46 @@ namespace Aer.Drawing
 			}
 			dayExtremes.Add(currentExtremes);
 
-			// Day Low labels
-			DayExtremes? previousDayLow = null;
+			// Day Low/High labels
+			DayExtremes? previousPrintedLow = null;
+			DayExtremes? previousPrintedHigh = null;
 			foreach (var day in dayExtremes)
 			{
-				float x = hourWidth * day.DayLow.chartHour;
-				float y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
-				string label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
-				bool isOnLeftEdge = x < 15;
-				bool isOnRightEdge = x > width - 15;
-				bool isNextToPrevious = previousDayLow != null && Math.Abs(day.DayLow.chartHour - previousDayLow.DayLow.chartHour) <= 3;
-				if (!isOnRightEdge && !isOnLeftEdge && !isNextToPrevious)
+				float x, y;
+				string label;
+				bool isOnLeftEdge, isOnRightEdge, isNextToPrevious;
+				bool printLow, printHigh;
+
+				// Low
+				x = hourWidth * day.DayLow.chartHour;
+				y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
+				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
+				isOnLeftEdge = x < 10;
+				isOnRightEdge = x > width - 15;
+				isNextToPrevious =
+					previousPrintedLow != null && day.DayLow.chartHour - previousPrintedLow.DayLow.chartHour <= 3 ||
+					previousPrintedHigh != null && day.DayLow.chartHour - previousPrintedHigh.DayHigh.chartHour <= 3;
+				printLow = !isOnRightEdge && !isOnLeftEdge && !isNextToPrevious;
+				if (printLow)
 					ds.DrawText(label, x, chart.Y(y - 12), mainColor, textFormatCentered);
-				previousDayLow = day;
-			}
-			// Day High labels
-			DayExtremes? previousDayHigh = null;
-			foreach (var day in dayExtremes)
-			{
-				float x = hourWidth * day.DayHigh.chartHour;
-				float y = zeroDegPositionY + (float)day.DayHigh.temperature * degreeHeight;
-				string label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
-				bool isOnLeftEdge = x < 15;
-				bool isOnRightEdge = x > width - 15;
-				bool isNextToPrevious = previousDayHigh != null && Math.Abs(day.DayHigh.chartHour - previousDayHigh.DayHigh.chartHour) <= 3;
-				if (!isOnRightEdge && !isOnLeftEdge && !isNextToPrevious)
+				
+				// High
+				x = hourWidth * day.DayHigh.chartHour;
+				y = zeroDegPositionY + (float)day.DayHigh.temperature * degreeHeight;
+				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
+				isOnLeftEdge = x < 10;
+				isOnRightEdge = x > width - 15;
+				isNextToPrevious =
+					previousPrintedHigh != null && day.DayHigh.chartHour - previousPrintedHigh.DayHigh.chartHour <= 3 ||
+					previousPrintedLow != null && day.DayHigh.chartHour - previousPrintedLow.DayLow.chartHour <= 3;
+				printHigh = !isOnRightEdge && !isOnLeftEdge && !isNextToPrevious;
+				if (printHigh)
 					ds.DrawText(label, x, chart.Y(y + 12), mainColor, textFormatCentered);
-				previousDayHigh = day;
+				
+				if (printLow)
+					previousPrintedLow = day;
+				if (printHigh)
+					previousPrintedHigh = day;
 			}
 
 			// Condition icons
