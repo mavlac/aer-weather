@@ -228,7 +228,7 @@ namespace Aer.Drawing
 				float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 				return new Vector2(x, y);
 			}).ToList();
-			DrawSmoothLine(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, fillColor);
+			DrawSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, fillColor);
 
 			// Temperature readings
 			var dayExtremes = new List<DayExtremes>();
@@ -323,31 +323,35 @@ namespace Aer.Drawing
 		/// Draws a smooth curve through the given temperatureLinePoints using quadratic Beziers.
 		/// Points should be in “data coordinates” (before flipping Y).
 		/// </summary>
-		public static void DrawSmoothLine(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color lineColor, float thickness = 2f, Color? fillColor = null)
+		public static void DrawSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, Color? fillColor)
 		{
 			if (points.Count < 2)
 				return;
 
-			var spline = BuildSpline(ds, points, chart);
-			var strokeStyle = new CanvasStrokeStyle();
-			strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
-
-			// If fill is requested, copy path and extend to bottom corners
+			// Fill
 			if (fillColor.HasValue)
 			{
 				var fillArea = BuildSpline(ds, points, chart);
-
+				
 				// Extend to bottom corners
 				fillArea.AddLine(new Vector2(chart.XY(points[^1]).X, chart.Y(0)));
 				fillArea.AddLine(new Vector2(chart.XY(points[0]).X, chart.Y(0)));
 				fillArea.EndFigure(CanvasFigureLoop.Closed);
-
+				
 				ds.FillGeometry(CanvasGeometry.CreatePath(fillArea), fillColor.Value);
 			}
 
-			// Draw the line on top
-			spline.EndFigure(CanvasFigureLoop.Open);
-			ds.DrawGeometry(CanvasGeometry.CreatePath(spline), lineColor, thickness, strokeStyle);
+			// Spline
+			if (lineColor.HasValue)
+			{
+				var spline = BuildSpline(ds, points, chart);
+				
+				spline.EndFigure(CanvasFigureLoop.Open);
+				var strokeStyle = new CanvasStrokeStyle();
+				strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
+				
+				ds.DrawGeometry(CanvasGeometry.CreatePath(spline), lineColor.Value, lineThickness, strokeStyle);
+			}
 
 
 
