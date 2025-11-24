@@ -160,13 +160,13 @@ namespace Aer.Drawing
 			
 			for (int i = 0; i < hourly.Count; i++)
 			{
-				bool isLastPoint = i == hourly.Count - 1;
+				bool isLastGraphHour = i == hourly.Count - 1;
 
 				if (startSubZeroIndex == -1 && hourly[i].Temperature < 0)
 				{
-					startSubZeroIndex = i;
+					startSubZeroIndex = Math.Clamp(i - 1, 0, i); // Start from the previous hour
 				}
-				else if (startSubZeroIndex != -1 && (hourly[i].Temperature >= 0 || isLastPoint))
+				else if (startSubZeroIndex != -1 && (hourly[i].Temperature >= 0 || isLastGraphHour))
 				{
 					// A range to fill
 					var subZeroPoints = hourly.Skip(startSubZeroIndex).Take(i - startSubZeroIndex + 1).Select((h, idx) =>
