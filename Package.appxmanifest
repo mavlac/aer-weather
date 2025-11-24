@@ -10,7 +10,7 @@
   <Identity
     Name="mavlac.AerWeather"
     Publisher="CN=0B7387C1-460E-4B4D-A87D-728F87D671B5"
-    Version="1.0.13.0" />
+    Version="1.0.14.0" />
 
   <mp:PhoneIdentity PhoneProductId="fbe19408-b8c2-4233-98f7-afa6946ca79b" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
