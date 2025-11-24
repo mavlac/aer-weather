@@ -192,35 +192,6 @@ namespace Aer.Drawing
 				}
 			}
 
-			// Day and Time markers - grid of vertical lines and labels
-			var labels = new List<(string label, float x, float y)>();
-			for (int i = 0; i < hourly.Count; i++)
-			{
-				int hour = hourly[i].Time.Hour;
-				bool isNewDayMarker = hour is 0;
-				bool isTimeMarker = isWide ? hour is 6 or 12 or 18 : hour is 12;
-				float x = hourWidth * i;
-				float y = isNewDayMarker ? zeroDegPositionY + (float)hourly[i].Temperature * degreeHeight : 25;
-				if (isNewDayMarker || isTimeMarker)
-				{
-					bool isLineOnEdge = x < 10 || x > width - 10; // Skip vertical lines that would be on edge of chart, looks bad
-					if (!isLineOnEdge)
-						ds.DrawLine(x, chart.Y(y), x, chart.Y(0), gridColor, gridStrokeWidth);
-
-					string label =
-						isNewDayMarker
-						? culture.DateTimeFormat.GetAbbreviatedDayName(hourly[i].Time.DayOfWeek).ToUpper()
-						: hour.ToString();
-
-					bool isLabelOnRightEdge = x > width - 35; // Skip label shortly overlapping right edge
-					if (!isLabelOnRightEdge)
-						labels.Add((label, x + 8, chart.Y(0 + 22)));
-				}
-			}
-			// Labels need to be drawn on top of lines
-			foreach(var (label, x, y) in labels)
-				ds.DrawText(label, x, y, textColor, textFormat);
-
 			// Rain and snow bars
 			for (int i = 0; i < hourly.Count; i++)
 			{
@@ -265,6 +236,37 @@ namespace Aer.Drawing
 					float lineCapY = bottomLineY + snowBarHeight;
 					ds.FillCircle(x + barWidth / 2f, chart.Y(lineCapY), snowBarDotRadius, rainBarColor);
 				}
+			}
+
+			// Legend - Grid
+			var labels = new List<(string label, float x, float y)>();
+			for (int i = 0; i < hourly.Count; i++)
+			{
+				int hour = hourly[i].Time.Hour;
+				bool isNewDayMarker = hour is 0;
+				bool isTimeMarker = isWide ? hour is 6 or 12 or 18 : hour is 12;
+				float x = hourWidth * i;
+				float y = isNewDayMarker ? zeroDegPositionY + (float)hourly[i].Temperature * degreeHeight : 25;
+				if (isNewDayMarker || isTimeMarker)
+				{
+					bool isLineOnEdge = x < 10 || x > width - 10; // Skip vertical lines that would be on edge of chart, looks bad
+					if (!isLineOnEdge)
+						ds.DrawLine(x, chart.Y(y), x, chart.Y(0), gridColor, gridStrokeWidth);
+
+					string label =
+						isNewDayMarker
+						? culture.DateTimeFormat.GetAbbreviatedDayName(hourly[i].Time.DayOfWeek).ToUpper()
+						: hour.ToString();
+
+					bool isLabelOnRightEdge = x > width - 35; // Skip label shortly overlapping right edge
+					if (!isLabelOnRightEdge)
+						labels.Add((label, x + 8, chart.Y(0 + 22)));
+				}
+			}
+			// Legend - Labels on top of lines
+			foreach (var (label, x, y) in labels)
+			{
+				ds.DrawText(label, x, y, textColor, textFormat);
 			}
 
 			// Main temperature spline stroke
