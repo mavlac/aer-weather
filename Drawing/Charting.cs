@@ -134,6 +134,14 @@ namespace Aer.Drawing
 			float dataZeroY = (0 - minTemp) * degreeHeight + paddingBottom;
 			float zeroDegPositionY = dataZeroY;
 
+			// Main temperature line points
+			var temperatureLinePoints = hourly.Select((h, i) =>
+			{
+				float x = hourWidth * i;
+				float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
+				return new Vector2(x, y);
+			}).ToList();
+
 
 
 			// Drawing
@@ -148,6 +156,10 @@ namespace Aer.Drawing
 				strokeStyle.CustomDashStyle = [0.5f, 4f];
 				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), gridColor, mainLineStrokeWidth, strokeStyle);
 			}
+
+			// Main temperature spline fill
+			var fillBrush = new CanvasSolidColorBrush(ds, fillColor);
+			DrawSpline(ds, temperatureLinePoints, chart, null, 0f, fillBrush);
 
 			// Sub-zero fill
 			int startSubZeroIndex = -1;
@@ -255,15 +267,8 @@ namespace Aer.Drawing
 				}
 			}
 
-			// Main temperature spline
-			var temperatureLinePoints = hourly.Select((h, i) =>
-			{
-				float x = hourWidth * i;
-				float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
-				return new Vector2(x, y);
-			}).ToList();
-			var fillBrush = new CanvasSolidColorBrush(ds, fillColor);
-			DrawSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, fillBrush);
+			// Main temperature spline stroke
+			DrawSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
 
 			// Temperature readings
 			var dayExtremes = new List<DayExtremes>();
@@ -371,7 +376,7 @@ namespace Aer.Drawing
 		/// Draws a smooth curve through the given temperatureLinePoints using quadratic Beziers.
 		/// Points should be in “data coordinates” (before flipping Y).
 		/// </summary>
-		public static void DrawSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, ICanvasBrush fillBrush)
+		public static void DrawSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, ICanvasBrush? fillBrush)
 		{
 			if (points.Count < 2)
 				return;
