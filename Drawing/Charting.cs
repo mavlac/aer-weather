@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Windows.ApplicationModel.Background;
 using Windows.Devices.Power;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -89,6 +90,7 @@ namespace Aer.Drawing
 			// Visual
 			float mainLineStrokeWidth = Preferences.UseThickChartLine ? 1.6f : 1f;
 			const float gridStrokeWidth = 1f;
+			const float rainSnowBarGutter = 1f;
 			const float snowBarHeightMultiplier = 0.2f;
 			const float rainBarHeightMultiplier = 0.2f;
 			const float snowBarDotRadius = 1.667f;
@@ -162,14 +164,12 @@ namespace Aer.Drawing
 			DrawSpline(ds, temperatureLinePoints, chart, null, 0f, fillBrush);
 
 			// Sub-zero fill
+			var freezeFillBrush = new CanvasLinearGradientBrush(ds, freezeFillColor, freezeFillColor.WithAlpha(0))
+			{
+				StartPoint = new Vector2(0, chart.Y(zeroDegPositionY)), // Gradient brush construction
+				EndPoint = new Vector2(0, chart.Y(30f))
+			};
 			int startSubZeroIndex = -1;
-			var freezeFillBrush = new CanvasLinearGradientBrush(
-					ds,
-					freezeFillColor,
-					freezeFillColor.WithAlpha(0));
-			freezeFillBrush.StartPoint = new Vector2(0, chart.Y(zeroDegPositionY));
-			freezeFillBrush.EndPoint = new Vector2(0, chart.Y(30f));
-			
 			for (int i = 0; i < hourly.Count; i++)
 			{
 				bool isLastGraphHour = i == hourly.Count - 1;
@@ -183,7 +183,10 @@ namespace Aer.Drawing
 					// A range to fill
 					var subZeroPoints = hourly.Skip(startSubZeroIndex).Take(i - startSubZeroIndex + 1).Select((h, idx) =>
 					{
+						bool leftEdge = idx is 0;
+						bool rightEdge = idx == (i - startSubZeroIndex);
 						float x = hourWidth * (startSubZeroIndex + idx);
+						if (leftEdge) x += rainSnowBarGutter;
 						float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 						return new Vector2(x, y);
 					}).ToList();
@@ -201,8 +204,8 @@ namespace Aer.Drawing
 				float snowRounded = (float)Math.Round(snow, 1);
 				bool drawRainBar = rain > float.Epsilon;
 				bool drawSnowBar = snow > float.Epsilon;
-				float x = hourWidth * i + 1f;
-				float barWidth = hourWidth - 1f;
+				float x = hourWidth * i + rainSnowBarGutter;
+				float barWidth = hourWidth - rainSnowBarGutter;
 				const float bottomLineY = 60f;
 				const float minBarHeight = 0.15f;
 				float rainBarHeight = (rainRounded + minBarHeight) * (height * rainBarHeightMultiplier);
