@@ -59,8 +59,7 @@ namespace Aer.Utils
 					0f);
 				
 				var animation = compositor.CreateVector3KeyFrameAnimation();
-				animation.InsertKeyFrame(0f, new Vector3(1f));
-				animation.InsertKeyFrame(0.2f, new Vector3(1.05f));
+				animation.InsertKeyFrame(0f, new Vector3(1.1f));
 				animation.InsertKeyFrame(1f, new Vector3(1f));
 				animation.Duration = TimeSpan.FromSeconds(duration);
 				
