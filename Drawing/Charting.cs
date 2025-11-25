@@ -14,10 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using Windows.ApplicationModel.Background;
-using Windows.Devices.Power;
 using Windows.UI;
-using Windows.UI.ViewManagement;
 
 namespace Aer.Drawing
 {
@@ -161,7 +158,7 @@ namespace Aer.Drawing
 
 			// Main temperature spline fill
 			var fillBrush = new CanvasSolidColorBrush(ds, fillColor);
-			DrawSpline(ds, temperatureLinePoints, chart, null, 0f, fillBrush);
+			DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, null, 0f, fillBrush);
 
 			// Sub-zero fill
 			var freezeFillBrush = new CanvasLinearGradientBrush(ds, freezeFillColor, freezeFillColor.WithAlpha(0))
@@ -190,7 +187,7 @@ namespace Aer.Drawing
 						float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 						return new Vector2(x, y);
 					}).ToList();
-					DrawSpline(ds, subZeroPoints, chart, null, 0f, freezeFillBrush);
+					DrawMainTemperatureSpline(ds, subZeroPoints, chart, null, 0f, freezeFillBrush);
 					startSubZeroIndex = -1; // Reset
 				}
 			}
@@ -273,7 +270,7 @@ namespace Aer.Drawing
 			}
 
 			// Main temperature spline stroke
-			DrawSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
+			DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
 
 			// Temperature readings
 			var dayExtremes = new List<DayExtremes>();
@@ -361,12 +358,6 @@ namespace Aer.Drawing
 			}
 		}
 
-		private static Color GetAccentColor()
-		{
-			var uiSettings = new UISettings();
-			return uiSettings.GetColorValue(UIColorType.Accent);
-		}
-
 		public class ChartSpace(float height)
 		{
 			private readonly float _height = height;
@@ -381,7 +372,7 @@ namespace Aer.Drawing
 		/// Draws a smooth curve through the given temperatureLinePoints using quadratic Beziers.
 		/// Points should be in “data coordinates” (before flipping Y).
 		/// </summary>
-		public static void DrawSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, ICanvasBrush? fillBrush)
+		public static void DrawMainTemperatureSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, ICanvasBrush? fillBrush)
 		{
 			if (points.Count < 2)
 				return;
