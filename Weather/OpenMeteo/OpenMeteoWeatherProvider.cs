@@ -48,7 +48,6 @@ namespace Aer.Weather.OpenMeteo
 				IsDaytime = response.Current.IsDay == 1,
 				Temperature = response.Current.Temperature,
 				ConditionCode = response.Current.WeatherCode,
-				ObservationTime = response.Current.Time
 			};
 
 			// Map hourly
