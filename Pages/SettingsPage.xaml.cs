@@ -15,7 +15,7 @@ namespace Aer
 {
 	public sealed partial class SettingsPage : Page
 	{
-		private Dictionary<string, GeoNames.GeoNamesLocation> locationSuggestionsMap = new();
+		private Dictionary<string, GeoNames.GeoNamesLocation> _locationSuggestionsMap = new();
 
 		public string AppName => Package.Current.DisplayName;
 		public string Copyright => $"© {DateTime.Now.Year} {Package.Current.PublisherDisplayName}. All rights reserved.";
@@ -163,7 +163,7 @@ namespace Aer
 				.ToList();
 
 			// Dictionary of labels and location objects for easy lookup when suggestion is chosen
-			locationSuggestionsMap = new Dictionary<string, GeoNames.GeoNamesLocation>();
+			_locationSuggestionsMap = new Dictionary<string, GeoNames.GeoNamesLocation>();
 			foreach (var c in filteredGeoNames)
 			{
 				// Keep Admin1Code only if it present and not a digit
@@ -171,16 +171,16 @@ namespace Aer
 				string key = $"{c.Name}, {c.Country}{adminCode}";
 
 				// Only add if not present (or replace if population is higher), keys can repeat
-				if (!locationSuggestionsMap.TryGetValue(key, out var existing) || c.Population > existing.Population)
-					locationSuggestionsMap[key] = c;
+				if (!_locationSuggestionsMap.TryGetValue(key, out var existing) || c.Population > existing.Population)
+					_locationSuggestionsMap[key] = c;
 			}
 
-			sender.ItemsSource = locationSuggestionsMap.Keys.ToList();
+			sender.ItemsSource = _locationSuggestionsMap.Keys.ToList();
 		}
 
 		private void LocationAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
 		{
-			if (args.SelectedItem is string text && locationSuggestionsMap.TryGetValue(text, out var location))
+			if (args.SelectedItem is string text && _locationSuggestionsMap.TryGetValue(text, out var location))
 			{
 				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
 

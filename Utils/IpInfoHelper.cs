@@ -9,8 +9,9 @@ namespace Aer.Utils
 	public static class IpInfoHelper
 	{
 		private const string IpInfoUrl = "https://ipinfo.io/json";
+		private const double NetworkTimeoutSeconds = 5.0;
 
-		private static readonly HttpClient httpClient = new() { Timeout = TimeSpan.FromSeconds(5) };
+		private static HttpClient? _httpClient;
 
 		public record LocationResponse
 		{
@@ -24,7 +25,12 @@ namespace Aer.Utils
 		{
 			try
 			{
-				var response = await httpClient.GetStringAsync(IpInfoUrl);
+				_httpClient ??= new HttpClient
+				{
+					Timeout = TimeSpan.FromSeconds(NetworkTimeoutSeconds)
+				};
+
+				var response = await _httpClient.GetStringAsync(IpInfoUrl);
 				using var doc = JsonDocument.Parse(response);
 				var root = doc.RootElement;
 

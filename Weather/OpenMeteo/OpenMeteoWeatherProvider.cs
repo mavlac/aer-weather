@@ -11,27 +11,9 @@ using System.Threading.Tasks;
 
 namespace Aer.Weather.OpenMeteo
 {
-	public class OpenMeteoWeatherProvider : IWeatherProvider
+	public class OpenMeteoWeatherProvider : WeatherProvider
 	{
-		private static readonly HttpClient _sharedClient = CreateDefaultClient();
-		private readonly HttpClient _client;
-
-		public OpenMeteoWeatherProvider(HttpClient? client = null)
-		{
-			_client = client ?? _sharedClient;
-		}
-
-		private static HttpClient CreateDefaultClient()
-		{
-			var client = new HttpClient
-			{
-				Timeout = TimeSpan.FromSeconds(10)
-			};
-			client.DefaultRequestHeaders.UserAgent.ParseAdd("AerWeatherApp/1.0");
-			return client;
-		}
-
-		public async Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
+		public override async Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			var response = await OpenMeteoNetworkQuery(latitude, longitude, cancellationToken);
 			if (response == null || response.Current == null || response.Hourly == null)
@@ -77,7 +59,7 @@ namespace Aer.Weather.OpenMeteo
 				// Fetch weather data from Open-Meteo API
 				const int days = 7; // Number of forecast days to retrieve
 				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&timezone=GMT&temperature_unit=celsius&forecast_days={days}";
-				string json = await _client.GetStringAsync(url, cancellationToken);
+				string json = await _httpClient.GetStringAsync(url, cancellationToken);
 
 				return JsonSerializer.Deserialize<OpenMeteoResponse>(json);
 			}
@@ -99,7 +81,6 @@ namespace Aer.Weather.OpenMeteo
 		}
 
 		#region OpenMeteo JSON Models
-
 		public class OpenMeteoResponse
 		{
 			[JsonPropertyName("current_weather")] public OpenMeteoCurrent? Current { get; set; }
