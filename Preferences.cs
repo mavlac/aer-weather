@@ -1,4 +1,5 @@
 ﻿using Aer.Utils;
+using Aer.Weather;
 using Microsoft.UI.Xaml;
 using System.Diagnostics;
 using Windows.Storage;
@@ -9,16 +10,16 @@ namespace Aer
 	{
 		private static string SettingsPrefix => nameof(Preferences);
 
-		// TODO: public sttic int WeatherProviderId { get; private set; } = WeatherProviderIds.OpenMeteo;
-
-		public static TemperatureUtils.Unit TemperatureUnits { get; private set; } = TemperatureUtils.Unit.Celsius;
-		public static ElementTheme AppTheme { get; private set; } = ElementTheme.Default;
-		public static bool UseSystemAccentColor { get; private set; } = false;
-		public static bool UseThickChartLine { get; private set; } = true;
-		public static bool WasWelcomeShown { get; private set; } = false;
+		public static int WeatherProviderId { get; private set; }
+		public static TemperatureUtils.Unit TemperatureUnits { get; private set; }
+		public static ElementTheme AppTheme { get; private set; }
+		public static bool UseSystemAccentColor { get; private set; }
+		public static bool UseThickChartLine { get; private set; }
+		public static bool WasWelcomeShown { get; private set; }
 
 		public static void Load()
 		{
+			WeatherProviderId = GetValueOrDefault(nameof(WeatherProviderId), WeatherProvider.GetPreferredProviderId());
 			TemperatureUnits = (TemperatureUtils.Unit)GetValueOrDefault(nameof(TemperatureUnits), (int)LocalizationUtils.GetPreferredTemperatureUnit());
 			AppTheme = (ElementTheme)GetValueOrDefault(nameof(AppTheme), (int)ElementTheme.Default);
 			UseThickChartLine = GetValueOrDefault(nameof(UseThickChartLine), true);
@@ -38,11 +39,19 @@ namespace Aer
 		{
 			var settings = ApplicationData.Current.LocalSettings;
 
+			settings.Values[$"{SettingsPrefix}_{nameof(WeatherProviderId)}"] = WeatherProviderId;
 			settings.Values[$"{SettingsPrefix}_{nameof(TemperatureUnits)}"] = (int)TemperatureUnits;
 			settings.Values[$"{SettingsPrefix}_{nameof(AppTheme)}"] = (int)AppTheme;
 			settings.Values[$"{SettingsPrefix}_{nameof(UseSystemAccentColor)}"] = UseSystemAccentColor;
 			settings.Values[$"{SettingsPrefix}_{nameof(UseThickChartLine)}"] = UseThickChartLine;
 			settings.Values[$"{SettingsPrefix}_{nameof(WasWelcomeShown)}"] = WasWelcomeShown;
+		}
+
+		public static void SetWeatherProviderId(int providerId)
+		{
+			Debug.WriteLine($"Preferences: Setting weather provider ID to {providerId}");
+			WeatherProviderId = providerId;
+			Save();
 		}
 
 		public static void SetTemperatureUnits(TemperatureUtils.Unit unit)

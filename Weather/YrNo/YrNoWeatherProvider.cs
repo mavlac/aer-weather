@@ -6,7 +6,8 @@ namespace Aer.Weather.YrNo
 {
 	public class YrNoWeatherProvider : WeatherProvider
 	{
-		public override int ProviderId => 1;
+		public const int ProviderStaticId = 0;
+		public override int ProviderId => ProviderStaticId;
 
 		public override async Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{

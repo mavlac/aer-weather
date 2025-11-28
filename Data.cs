@@ -96,8 +96,7 @@ namespace Aer
 			if (AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheWeatherProviderID)}", out int cacheWeatherProviderID))
 			{
 				CacheWeatherProviderID = cacheWeatherProviderID;
-				int selectedWeatherProviderID = -1; // TODO: Will be a "preference"
-				isCachedDataMatchingWeatherProvider = CacheWeatherProviderID == selectedWeatherProviderID;
+				isCachedDataMatchingWeatherProvider = CacheWeatherProviderID == Preferences.WeatherProviderId;
 			}
 			else
 			{

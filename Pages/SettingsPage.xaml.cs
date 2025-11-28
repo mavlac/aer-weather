@@ -109,12 +109,12 @@ namespace Aer
 			{
 				button.IsEnabled = false;
 
-				var location = await Utils.IpInfoHelper.GetLocationAsync();
+				var location = await IpInfoHelper.GetLocationAsync();
 				if (location != null
 					&& !string.IsNullOrWhiteSpace(location.City)
 					&& !string.IsNullOrWhiteSpace(location.Country))
 				{
-					Data.SetLocation(location.City!, location.Country!, location.Latitude, location.Longitude);
+					Data.SetLocation(location.City, location.Country, location.Latitude, location.Longitude);
 					
 					UpdateLocationSectionFromData(true);
 				}

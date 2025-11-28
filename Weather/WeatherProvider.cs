@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Aer.Weather.OpenMeteo;
+using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;
 using System.Net.Http;
@@ -15,10 +16,10 @@ namespace Aer.Weather
 	{
 		private const double NetworkTimeoutSeconds = 10.0;
 
-		public abstract int ProviderId { get; }
-
 		private static readonly HttpClient _sharedClient = CreateDefaultClient();
 		protected readonly HttpClient _httpClient;
+
+		public abstract int ProviderId { get; }
 
 		public WeatherProvider()
 		{
@@ -38,6 +39,11 @@ namespace Aer.Weather
 			Debug.WriteLine($"Created shared HttpClient with user agent: {client.DefaultRequestHeaders.UserAgent}");
 
 			return client;
+		}
+
+		public static int GetPreferredProviderId()
+		{
+			return OpenMeteoWeatherProvider.ProviderStaticId;
 		}
 
 
