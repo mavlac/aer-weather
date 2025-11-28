@@ -40,6 +40,7 @@ namespace Aer
 		public static double? LocationLongitude { get; private set; }
 
 		public static int? CacheLocationID { get; private set; }
+		public static int? CacheWeatherProviderID { get; private set; }
 		public static int? CachedConditionCode { get; private set; }
 		public static bool? CachedIsDaytime { get; private set; }
 		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
@@ -60,6 +61,7 @@ namespace Aer
 			var settings = ApplicationData.Current.LocalSettings;
 			bool isSavedLocationLoadSuccessful;
 			bool isCachedDataMatchingLocation;
+			bool isCachedDataMatchingWeatherProvider;
 
 			// Loading the saved location details
 			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationID)}", out var locationIDObj) &&
@@ -90,9 +92,22 @@ namespace Aer
 				isCachedDataMatchingLocation = false;
 			}
 
+			// Getting the cached weather provider ID to compare with current provider (in case provider changed)
+			if (AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheWeatherProviderID)}", out int cacheWeatherProviderID))
+			{
+				CacheWeatherProviderID = cacheWeatherProviderID;
+				int selectedWeatherProviderID = -1; // TODO: Will be a "preference"
+				isCachedDataMatchingWeatherProvider = CacheWeatherProviderID == selectedWeatherProviderID;
+			}
+			else
+			{
+				isCachedDataMatchingWeatherProvider = false;
+			}
+
 			// Loading the saved weather data, only if the location was loaded successfully and cache location matches
 			if (isSavedLocationLoadSuccessful &&
 				isCachedDataMatchingLocation &&
+				isCachedDataMatchingWeatherProvider &&
 				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedConditionCode)}", out int cachedConditionCode) &&
 				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
 				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedTemperature)}", out double cachedTemperature) &&
@@ -167,6 +182,7 @@ namespace Aer
 
 				// On success
 				CacheLocationID = LocationID;
+				CacheWeatherProviderID = provider.ProviderId;
 				CachedConditionCode = result.Current.ConditionCode;
 				CachedIsDaytime = result.Current.IsDaytime;
 				CachedTemperature = result.Current.Temperature;
@@ -204,11 +220,12 @@ namespace Aer
 			Debug.Assert(IsUpdatingFromNetwork is false, "SaveWeatherData called while an update is in progress.");
 			Debug.Assert(IsCacheDataValid, "SaveWeatherData called while weather data is not valid.");
 
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", CacheLocationID);
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheWeatherProviderID)}", CacheWeatherProviderID);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedConditionCode)}", CachedConditionCode);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", CachedIsDaytime);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", CachedTemperature);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", CachedHourly);
-			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", CacheLocationID);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", CacheLastUpdateTime);
 			AppStorage.Flush();
 		}

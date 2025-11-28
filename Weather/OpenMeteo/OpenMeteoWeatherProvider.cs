@@ -13,6 +13,8 @@ namespace Aer.Weather.OpenMeteo
 {
 	public class OpenMeteoWeatherProvider : WeatherProvider
 	{
+		public override int ProviderId => 0;
+
 		public override async Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			var response = await OpenMeteoNetworkQuery(latitude, longitude, cancellationToken);

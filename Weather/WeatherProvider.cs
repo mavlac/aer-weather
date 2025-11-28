@@ -15,6 +15,8 @@ namespace Aer.Weather
 	{
 		private const double NetworkTimeoutSeconds = 10.0;
 
+		public abstract int ProviderId { get; }
+
 		private static readonly HttpClient _sharedClient = CreateDefaultClient();
 		protected readonly HttpClient _httpClient;
 

@@ -9,6 +9,8 @@ namespace Aer
 	{
 		private static string SettingsPrefix => nameof(Preferences);
 
+		// TODO: public sttic int WeatherProviderId { get; private set; } = WeatherProviderIds.OpenMeteo;
+
 		public static TemperatureUtils.Unit TemperatureUnits { get; private set; } = TemperatureUtils.Unit.Celsius;
 		public static ElementTheme AppTheme { get; private set; } = ElementTheme.Default;
 		public static bool UseSystemAccentColor { get; private set; } = false;
