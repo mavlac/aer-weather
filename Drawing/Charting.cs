@@ -85,7 +85,7 @@ namespace Aer.Drawing
 			}
 
 			// Visual
-			float mainLineStrokeWidth = Preferences.UseThickChartLine ? 1.6f : 1f;
+			float mainLineStrokeWidth = Preferences.UseThickChartLine ? 1.7f : 1f;
 			const float gridStrokeWidth = 1f;
 			const float rainSnowBarGutter = 1f;
 			const float snowBarHeightMultiplier = 0.2f;
