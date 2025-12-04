@@ -66,7 +66,7 @@
 									IsOpen="False"
 									IsLightDismissEnabled="True">
 									<TeachingTip.IconSource>
-										<SymbolIconSource Symbol="Keyboard" />
+										<FontIconSource Glyph="&#xE92E;" /><!-- KeyboardStandard Icon -->
 									</TeachingTip.IconSource>
 								</TeachingTip>
 							</AutoSuggestBox>
