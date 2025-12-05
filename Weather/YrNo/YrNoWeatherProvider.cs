@@ -9,7 +9,7 @@ namespace Aer.Weather.YrNo
 		public const int ProviderStaticId = 0;
 		public override int ProviderId => ProviderStaticId;
 
-		public override async Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
+		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
 		}

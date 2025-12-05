@@ -16,44 +16,46 @@ namespace Aer.Weather.OpenMeteo
 		public const int ProviderStaticId = 0;
 		public override int ProviderId => ProviderStaticId;
 
-		public override async Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
+		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			var response = await OpenMeteoNetworkQuery(latitude, longitude, cancellationToken);
-			if (response == null || response.Current == null || response.Hourly == null)
+			if (response.openMeteoResponse == null ||
+				response.openMeteoResponse.Current == null ||
+				response.openMeteoResponse.Hourly == null)
 			{
 				Debug.WriteLine("Response is null or something went wrong when parsing it.");
-				return null;
+				return (null, response.errorMessage);
 			}
 
-			Debug.WriteLine($"Got response '{response.Current.Time}' UTC → '{DateTimeUtils.ConvertUtcIsoToLocal(response.Current.Time)}' {TimeZoneInfo.Local.DisplayName}, {TimeZoneInfo.Local.DaylightName}");
+			Debug.WriteLine($"Got response '{response.openMeteoResponse.Current.Time}' UTC → '{DateTimeUtils.ConvertUtcIsoToLocal(response.openMeteoResponse.Current.Time)}' {TimeZoneInfo.Local.DisplayName}, {TimeZoneInfo.Local.DaylightName}");
 
 			// Map current
 			var current = new CurrentWeatherData
 			{
-				IsDaytime = response.Current.IsDay == 1,
-				Temperature = response.Current.Temperature,
-				ConditionCode = response.Current.WeatherCode,
+				IsDaytime = response.openMeteoResponse.Current.IsDay == 1,
+				Temperature = response.openMeteoResponse.Current.Temperature,
+				ConditionCode = response.openMeteoResponse.Current.WeatherCode,
 			};
 
 			// Map hourly
 			var hourly = new List<HourlyForecast>();
-			for (int i = 0; i < response.Hourly.Time.Count; i++)
+			for (int i = 0; i < response.openMeteoResponse.Hourly.Time.Count; i++)
 			{
 				hourly.Add(new HourlyForecast
 				{
-					Time = DateTimeUtils.ConvertUtcIsoToLocal(response.Hourly.Time[i]), // Convert Open-Meteo's UTC time to local OS time
-					IsDaytime = response.Hourly.IsDay[i] == 1,
-					Temperature = response.Hourly.Temperature[i],
-					ConditionCode = response.Hourly.WeatherCode[i],
-					Rain = response.Hourly.Rain[i],
-					Snowfall = response.Hourly.Snowfall[i]
+					Time = DateTimeUtils.ConvertUtcIsoToLocal(response.openMeteoResponse.Hourly.Time[i]), // Convert Open-Meteo's UTC time to local OS time
+					IsDaytime = response.openMeteoResponse.Hourly.IsDay[i] == 1,
+					Temperature = response.openMeteoResponse.Hourly.Temperature[i],
+					ConditionCode = response.openMeteoResponse.Hourly.WeatherCode[i],
+					Rain = response.openMeteoResponse.Hourly.Rain[i],
+					Snowfall = response.openMeteoResponse.Hourly.Snowfall[i]
 				});
 			}
 
-			return new WeatherResult { Current = current, Hourly = hourly };
+			return (new WeatherResult { Current = current, Hourly = hourly }, string.Empty);
 		}
 
-		private async Task<OpenMeteoResponse?> OpenMeteoNetworkQuery(double latitude, double longitude, CancellationToken cancellationToken)
+		private async Task<(OpenMeteoResponse? openMeteoResponse, string errorMessage)> OpenMeteoNetworkQuery(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -63,23 +65,20 @@ namespace Aer.Weather.OpenMeteo
 				const int days = 7; // Number of forecast days to retrieve
 				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&timezone=GMT&temperature_unit=celsius&forecast_days={days}";
 				string json = await _httpClient.GetStringAsync(url, cancellationToken);
-
-				return JsonSerializer.Deserialize<OpenMeteoResponse>(json);
+				
+				return (JsonSerializer.Deserialize<OpenMeteoResponse>(json), string.Empty);
 			}
 			catch (OperationCanceledException)
 			{
-				Debug.WriteLine("Cancelled");
-				return null;
+				return (null, "Operation cancelled");
 			}
 			catch (HttpRequestException ex)
 			{
-				Debug.WriteLine($"Network error: {ex.Message}");
-				return null;
+				return (null, $"Network error: {ex.Message}");
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine($"Unexpected error: {ex}");
-				return null;
+				return (null, $"Unexpected error: {ex.Message}");
 			}
 		}
 

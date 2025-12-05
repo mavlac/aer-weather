@@ -18,7 +18,7 @@ namespace Aer
 
 		private readonly MinuteTimer _minuteTimer = new();
 
-		private Task<bool>? _updateTask;
+		private Task<(bool status, string message)>? _updateTask;
 		private CancellationTokenSource? _updateTaskCts;
 
 		public HomePage()
@@ -133,7 +133,7 @@ namespace Aer
 			}
 
 			// Await completion (still necessary to observe exceptions etc.)
-			bool didUpdateSucceed = await _updateTask;
+			var (didUpdateSucceed, message) = await _updateTask;
 
 			// Whatever happened, does not matter, hide loader
 			LoadingOverlay.Visibility = Visibility.Collapsed;
@@ -143,7 +143,7 @@ namespace Aer
 			{
 				await MessageBoxEx.ShowAsync(
 					"Unable to update weather data",
-					$"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.\r\n\r\n{Data.LastNetworkUpdateResult}",
+					$"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.\r\n\r\n{message}",
 					"Oh dear");
 			}
 

@@ -50,6 +50,6 @@ namespace Aer.Weather
 		/// <summary>
 		/// Fetch current weather and hourly forecast in a single call.
 		/// </summary>
-		public abstract Task<WeatherResult?> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken);
+		public abstract Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken);
 	}
 }

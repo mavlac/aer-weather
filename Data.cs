@@ -32,7 +32,6 @@ namespace Aer
 		private static string AppStorageKeyPrefix => nameof(Data);
 
 		private static bool IsUpdatingFromNetwork { get; set; }
-		public static string? LastNetworkUpdateResult { get; private set; }
 
 		public static int? LocationID { get; private set; }
 		public static string? LocationLabel { get; private set; }
@@ -151,14 +150,13 @@ namespace Aer
 			IsCacheDataValid = false; // New data must be loaded always after location change
 		}
 
-		public static async Task<bool> UpdateWeatherDataFromNetwork(bool skipCache, CancellationToken cancellationToken)
+		public static async Task<(bool status, string message)> UpdateWeatherDataFromNetwork(bool skipCache, CancellationToken cancellationToken)
 		{
 			Debug.Assert(IsUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
 
 			if (IsCacheDataValid && IsCachedDataRecentEnough() && !skipCache)
 			{
-				LastNetworkUpdateResult = "Using cached data.";
-				return true; // OK: no network update performed, because wasn't needed
+				return (true, "Using cached data."); // OK: no network update performed, because wasn't needed
 			}
 
 			IsUpdatingFromNetwork = true;
@@ -172,40 +170,39 @@ namespace Aer
 
 				cancellationToken.ThrowIfCancellationRequested();
 
-				if (result == null)
+				if (result.weatherResult == null)
 				{
-					Debug.WriteLine("Weather update failed: network or data parsing error.");
-					LastNetworkUpdateResult = "Network or data parsing error.";
-					return false; // ERROR: network error or something went wrong
+					string errorMessage = $"Weather update failed: {result.errorMessage}";
+					Debug.WriteLine(errorMessage);
+					return (false, errorMessage); // ERROR: network error or something went wrong
 				}
 
 				// On success
 				CacheLocationID = LocationID;
 				CacheWeatherProviderID = provider.ProviderId;
-				CachedConditionCode = result.Current.ConditionCode;
-				CachedIsDaytime = result.Current.IsDaytime;
-				CachedTemperature = result.Current.Temperature;
-				CachedHourly = result.Hourly;
+				CachedConditionCode = result.weatherResult.Current.ConditionCode;
+				CachedIsDaytime = result.weatherResult.Current.IsDaytime;
+				CachedTemperature = result.weatherResult.Current.Temperature;
+				CachedHourly = result.weatherResult.Hourly;
 				CacheLastUpdateTime = DateTime.Now;
 
 				IsUpdatingFromNetwork = false;
 				IsCacheDataValid = true;
 				SaveWeatherData();
 
-				LastNetworkUpdateResult = "OK";
-				return true; // OK: data was updated from network
+				return (true, "OK"); // OK: data was updated from network
 			}
 			catch (OperationCanceledException)
 			{
-				Debug.WriteLine("Weather data update canceled.");
-				LastNetworkUpdateResult = "Update canceled.";
-				return true; // OK: was canceled, but no error
+				string message = "Weather data update canceled.";
+				Debug.WriteLine(message);
+				return (true, message); // OK: was canceled, but no error
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine($"Weather update failed: {ex}");
-				LastNetworkUpdateResult = ex.ToString();
-				return false; // ERROR: failed with unexpected exception
+				string message = $"Weather update failed: {ex}";
+				Debug.WriteLine(message);
+				return (false, message); // ERROR: failed with unexpected exception
 			}
 			finally
 			{
