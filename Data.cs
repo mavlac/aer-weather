@@ -172,9 +172,8 @@ namespace Aer
 
 				if (result.weatherResult == null)
 				{
-					string errorMessage = $"Weather update failed: {result.errorMessage}";
-					Debug.WriteLine(errorMessage);
-					return (false, errorMessage); // ERROR: network error or something went wrong
+					Debug.WriteLine($"Weather update failed: {result.errorMessage}");
+					return (false, result.errorMessage); // ERROR: network error or something went wrong
 				}
 
 				// On success
@@ -190,19 +189,17 @@ namespace Aer
 				IsUpdatingFromNetwork = false; // Needs to be set here and not in finally, because SaveWeatherData asserts this
 				SaveWeatherData();
 
-				return (true, "OK"); // OK: data was updated from network
+				return (true, string.Empty); // OK: data was updated from network
 			}
 			catch (OperationCanceledException ex)
 			{
-				string message = $"Weather update canceled: {ex}";
-				Debug.WriteLine(message);
-				return (true, message); // OK: was canceled, but no error
+				Debug.WriteLine($"Weather update canceled: {ex}");
+				return (true, ex.Message); // OK: was canceled, but no error
 			}
 			catch (Exception ex)
 			{
-				string message = $"Weather update failed: {ex}";
-				Debug.WriteLine(message);
-				return (false, message); // ERROR: failed with unexpected exception
+				Debug.WriteLine($"Weather update failed: {ex}");
+				return (false, ex.Message); // ERROR: failed with unexpected exception
 			}
 			finally
 			{

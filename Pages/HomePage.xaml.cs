@@ -133,7 +133,7 @@ namespace Aer
 			}
 
 			// Await completion (still necessary to observe exceptions etc.)
-			var (didUpdateSucceed, message) = await _updateTask;
+			var (didUpdateSucceed, updateErrorMessage) = await _updateTask;
 
 			// Whatever happened, does not matter, hide loader
 			LoadingOverlay.Visibility = Visibility.Collapsed;
@@ -143,7 +143,7 @@ namespace Aer
 			{
 				await MessageBoxEx.ShowAsync(
 					"Unable to update weather data",
-					$"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.\r\n\r\n{message}",
+					$"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.\r\n\r\n{updateErrorMessage}",
 					"Oh dear");
 			}
 

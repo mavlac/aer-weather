@@ -63,7 +63,7 @@ namespace Aer.Utils
 				await new Microsoft.UI.Xaml.Controls.ContentDialog
 				{
 					Title = "Location Error",
-					Content = $"Unable to retrieve location information.\n\nDetails:\n{ex.Message}",
+					Content = $"Unable to retrieve location information.\n\n{ex.Message}",
 					CloseButtonText = "OK",
 					XamlRoot = App.MainWindow.Content.XamlRoot
 				}.ShowAsync();
