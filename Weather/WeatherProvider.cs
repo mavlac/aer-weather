@@ -1,7 +1,10 @@
 ﻿using Aer.Weather.OpenMeteo;
+using Aer.Weather.YrNo;
 using Microsoft.UI.Xaml;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +23,14 @@ namespace Aer.Weather
 		protected readonly HttpClient _httpClient;
 
 		public abstract int ProviderId { get; }
+		public abstract string ProviderName { get; }
+
+		// Hand-maintain this Dictionary of weather providers, they do not subscribe dynamically
+		private static readonly Dictionary<int, WeatherProvider> _providers = new()
+		{
+			{ OpenMeteoWeatherProvider.ProviderStaticId, new OpenMeteoWeatherProvider() },
+			{ YrNoWeatherProvider.ProviderStaticId,      new YrNoWeatherProvider() }
+		};
 
 		public WeatherProvider()
 		{
@@ -41,11 +52,29 @@ namespace Aer.Weather
 			return client;
 		}
 
+		/// <summary>
+		/// Returns the preferred weather provider's ID, that is used as a default on application first start.
+		/// </summary>
 		public static int GetPreferredProviderId()
 		{
 			return OpenMeteoWeatherProvider.ProviderStaticId;
 		}
 
+		public static WeatherProvider Get(int id)
+		{
+			if (_providers.TryGetValue(id, out var provider))
+				return provider;
+			
+			throw new ArgumentException($"Unknown weather provider with Id: {id}");
+		}
+
+		// TODO: All values for dropdown in settings
+		public static Dictionary<int, string> GetAllProviderNames()
+		{
+			return _providers.ToDictionary(
+				keyValuePair => keyValuePair.Key,
+				keyValuePair => keyValuePair.Value.ProviderName);
+		}
 
 		/// <summary>
 		/// Fetch current weather and hourly forecast in a single call.

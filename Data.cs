@@ -165,7 +165,7 @@ namespace Aer
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 
-				var provider = new Weather.OpenMeteo.OpenMeteoWeatherProvider();
+				var provider = WeatherProvider.Get(Preferences.WeatherProviderId);
 				var result = await provider.GetWeatherAsync(LocationLatitude!.Value, LocationLongitude!.Value, cancellationToken);
 
 				cancellationToken.ThrowIfCancellationRequested();
