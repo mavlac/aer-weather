@@ -84,6 +84,22 @@
 						</StackPanel>
 					</controls:SettingsCard>
 					
+					
+					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+							   Text="Data" />
+
+					<controls:SettingsCard Header="Weather forecasts provider"
+										   Description="Open-Meteo works worldwide; Yr.no is Europe-focused">
+						<controls:SettingsCard.HeaderIcon>
+							<FontIcon Glyph="&#xE968;" /><!-- Network Icon -->
+						</controls:SettingsCard.HeaderIcon>
+						<ComboBox x:Name="WeatherProviderSelector"
+								  SelectionChanged="WeatherProviderSelector_SelectionChanged"
+								  Width="200">
+						</ComboBox>
+					</controls:SettingsCard>
+					
+					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="Appearance &amp; behavior" />
 					
@@ -151,6 +167,7 @@
 									  OnContent="On"
 									  OffContent="Off"/>
 					</controls:SettingsCard>
+					
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="About" />

@@ -68,8 +68,7 @@ namespace Aer.Weather
 			throw new ArgumentException($"Unknown weather provider with Id: {id}");
 		}
 
-		// TODO: All values for dropdown in settings
-		public static Dictionary<int, string> GetAllProviderNames()
+		public static Dictionary<int, string> GetAllProviders()
 		{
 			return _providers.ToDictionary(
 				keyValuePair => keyValuePair.Key,

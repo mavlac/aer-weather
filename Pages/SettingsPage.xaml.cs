@@ -37,6 +37,7 @@ namespace Aer
 		private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
 		{
 			UpdateLocationSectionFromData();
+			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
 		}
 
@@ -192,6 +193,42 @@ namespace Aer
 		}
 		#endregion
 
+		#region Data
+		private void WeatherProviderSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (((ComboBox)sender).SelectedItem is ComboBoxItem selectedItem)
+			{
+				int providerId = (int)selectedItem.Tag;
+				Preferences.SetWeatherProviderId(providerId);
+			}
+		}
+
+		private void UpdateDataUIControls()
+		{
+			// Clear any existing items
+			WeatherProviderSelector.Items.Clear();
+
+			// Populate Segmented control
+			var providers = Weather.WeatherProvider.GetAllProviders();
+			foreach (var keyValuePair in providers)
+			{
+				var comboItem = new ComboBoxItem
+				{
+					Content = keyValuePair.Value, // Display name
+					Tag = keyValuePair.Key // Provider Id
+				};
+				WeatherProviderSelector.Items.Add(comboItem);
+			}
+
+			var selectedItem = WeatherProviderSelector.Items
+				.OfType<ComboBoxItem>()
+				.FirstOrDefault(i => (int)i.Tag == Preferences.WeatherProviderId);
+
+			if (selectedItem != null)
+				WeatherProviderSelector.SelectedItem = selectedItem;
+		}
+		#endregion
+
 		#region Preferences
 		private void TempUnitSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -306,6 +343,7 @@ namespace Aer
 
 			// 5. Refresh UI with default values
 			UpdateLocationSectionFromData(true);
+			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
 		}
 		#endregion

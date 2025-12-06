@@ -15,7 +15,7 @@ namespace Aer.Weather.OpenMeteo
 	{
 		public const int ProviderStaticId = 0;
 		public override int ProviderId => ProviderStaticId;
-		public override string ProviderName => "Open Meteo";
+		public override string ProviderName => "Open-Meteo";
 
 		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
