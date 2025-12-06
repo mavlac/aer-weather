@@ -24,6 +24,7 @@ namespace Aer.Weather
 
 		public abstract int ProviderId { get; }
 		public abstract string ProviderName { get; }
+		public abstract string ProviderDescription { get; }
 
 		// Hand-maintain this Dictionary of weather providers, they do not subscribe dynamically
 		private static readonly Dictionary<int, WeatherProvider> _providers = new()
@@ -68,11 +69,12 @@ namespace Aer.Weather
 			throw new ArgumentException($"Unknown weather provider with Id: {id}");
 		}
 
-		public static Dictionary<int, string> GetAllProviders()
+		public static Dictionary<int, string> GetAllProviderOptions()
 		{
-			return _providers.ToDictionary(
-				keyValuePair => keyValuePair.Key,
-				keyValuePair => keyValuePair.Value.ProviderName);
+			return
+				_providers.ToDictionary(
+					keyValuePair => keyValuePair.Key,
+					keyValuePair => $"{keyValuePair.Value.ProviderName} ({keyValuePair.Value.ProviderDescription})");
 		}
 
 		/// <summary>

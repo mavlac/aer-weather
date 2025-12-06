@@ -86,16 +86,16 @@
 					
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-							   Text="Data" />
+							   Text="Data source" />
 
 					<controls:SettingsCard Header="Weather forecasts provider"
-										   Description="Open-Meteo works worldwide; Yr.no is Europe-focused">
+										   Description="Select a service for getting weather forecasts">
 						<controls:SettingsCard.HeaderIcon>
 							<FontIcon Glyph="&#xE968;" /><!-- Network Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<ComboBox x:Name="WeatherProviderSelector"
 								  SelectionChanged="WeatherProviderSelector_SelectionChanged"
-								  Width="200">
+								  Width="320">
 						</ComboBox>
 					</controls:SettingsCard>
 					
