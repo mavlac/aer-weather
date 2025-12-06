@@ -192,9 +192,9 @@ namespace Aer
 
 				return (true, "OK"); // OK: data was updated from network
 			}
-			catch (OperationCanceledException)
+			catch (OperationCanceledException ex)
 			{
-				string message = "Weather data update canceled.";
+				string message = $"Weather update canceled: {ex}";
 				Debug.WriteLine(message);
 				return (true, message); // OK: was canceled, but no error
 			}
