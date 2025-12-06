@@ -18,37 +18,37 @@ namespace Aer.Weather.OpenMeteo
 
 		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
-			var response = await OpenMeteoNetworkQuery(latitude, longitude, cancellationToken);
-			if (response.openMeteoResponse == null ||
-				response.openMeteoResponse.Current == null ||
-				response.openMeteoResponse.Hourly == null)
+			var (openMeteoResponse, errorMessage) = await OpenMeteoNetworkQuery(latitude, longitude, cancellationToken);
+			if (openMeteoResponse == null ||
+				openMeteoResponse.Current == null ||
+				openMeteoResponse.Hourly == null)
 			{
 				Debug.WriteLine("Response is null or something went wrong when parsing it.");
-				return (null, response.errorMessage);
+				return (null, errorMessage);
 			}
 
-			Debug.WriteLine($"Got response '{response.openMeteoResponse.Current.Time}' UTC → '{DateTimeUtils.ConvertUtcIsoToLocal(response.openMeteoResponse.Current.Time)}' {TimeZoneInfo.Local.DisplayName}, {TimeZoneInfo.Local.DaylightName}");
+			Debug.WriteLine($"Got response '{openMeteoResponse.Current.Time}' UTC → '{DateTimeUtils.ConvertUtcIsoToLocal(openMeteoResponse.Current.Time)}' {TimeZoneInfo.Local.DisplayName}, {TimeZoneInfo.Local.DaylightName}");
 
 			// Map current
 			var current = new CurrentWeatherData
 			{
-				IsDaytime = response.openMeteoResponse.Current.IsDay == 1,
-				Temperature = response.openMeteoResponse.Current.Temperature,
-				ConditionCode = response.openMeteoResponse.Current.WeatherCode,
+				IsDaytime = openMeteoResponse.Current.IsDay == 1,
+				Temperature = openMeteoResponse.Current.Temperature,
+				ConditionCode = openMeteoResponse.Current.WeatherCode,
 			};
 
 			// Map hourly
 			var hourly = new List<HourlyForecast>();
-			for (int i = 0; i < response.openMeteoResponse.Hourly.Time.Count; i++)
+			for (int i = 0; i < openMeteoResponse.Hourly.Time.Count; i++)
 			{
 				hourly.Add(new HourlyForecast
 				{
-					Time = DateTimeUtils.ConvertUtcIsoToLocal(response.openMeteoResponse.Hourly.Time[i]), // Convert Open-Meteo's UTC time to local OS time
-					IsDaytime = response.openMeteoResponse.Hourly.IsDay[i] == 1,
-					Temperature = response.openMeteoResponse.Hourly.Temperature[i],
-					ConditionCode = response.openMeteoResponse.Hourly.WeatherCode[i],
-					Rain = response.openMeteoResponse.Hourly.Rain[i],
-					Snowfall = response.openMeteoResponse.Hourly.Snowfall[i]
+					Time = DateTimeUtils.ConvertUtcIsoToLocal(openMeteoResponse.Hourly.Time[i]), // Convert Open-Meteo's UTC time to local OS time
+					IsDaytime = openMeteoResponse.Hourly.IsDay[i] == 1,
+					Temperature = openMeteoResponse.Hourly.Temperature[i],
+					ConditionCode = openMeteoResponse.Hourly.WeatherCode[i],
+					Rain = openMeteoResponse.Hourly.Rain[i],
+					Snowfall = openMeteoResponse.Hourly.Snowfall[i]
 				});
 			}
 
@@ -78,7 +78,7 @@ namespace Aer.Weather.OpenMeteo
 			}
 			catch (Exception ex)
 			{
-				return (null, $"Unexpected error: {ex.Message}");
+				return (null, $"Unexpected Open-Meteo API error: {ex.Message}");
 			}
 		}
 

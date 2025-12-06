@@ -186,8 +186,8 @@ namespace Aer
 				CachedHourly = result.weatherResult.Hourly;
 				CacheLastUpdateTime = DateTime.Now;
 
-				IsUpdatingFromNetwork = false;
 				IsCacheDataValid = true;
+				IsUpdatingFromNetwork = false; // Needs to be set here and not in finally, because SaveWeatherData asserts this
 				SaveWeatherData();
 
 				return (true, "OK"); // OK: data was updated from network
