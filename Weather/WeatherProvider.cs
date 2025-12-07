@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -31,6 +32,11 @@ namespace Aer.Weather
 		{
 			{ OpenMeteoWeatherProvider.ProviderStaticId, new OpenMeteoWeatherProvider() },
 			{ YrNoWeatherProvider.ProviderStaticId,      new YrNoWeatherProvider() }
+		};
+
+		protected readonly JsonSerializerOptions _jsonOptions = new()
+		{
+			PropertyNameCaseInsensitive = true
 		};
 
 		public WeatherProvider()

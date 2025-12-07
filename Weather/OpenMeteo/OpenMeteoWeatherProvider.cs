@@ -67,8 +67,9 @@ namespace Aer.Weather.OpenMeteo
 				const int days = 7; // Number of forecast days to retrieve
 				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&timezone=GMT&temperature_unit=celsius&forecast_days={days}";
 				string json = await _httpClient.GetStringAsync(url, cancellationToken);
-				
-				return (JsonSerializer.Deserialize<OpenMeteoResponse>(json), string.Empty);
+
+				var response = JsonSerializer.Deserialize<OpenMeteoResponse>(json, _jsonOptions);
+				return (response, string.Empty);
 			}
 			catch (OperationCanceledException)
 			{
