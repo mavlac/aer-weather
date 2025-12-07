@@ -210,6 +210,11 @@
 												   DataContext="https://open-meteo.com/"/>
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click">
+										<TextBlock Text="Yr Weather Service"
+												   TextDecorations="Underline"
+												   DataContext="https://www.yr.no/"/>
+									</HyperlinkButton>
+									<HyperlinkButton Click="HyperlinkButton_Click">
 										<TextBlock Text="GeoNames Geographical Database"
 												   TextDecorations="Underline"
 												   DataContext="https://www.geonames.org/"/>
