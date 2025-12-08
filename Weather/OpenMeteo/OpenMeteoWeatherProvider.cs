@@ -25,7 +25,6 @@ namespace Aer.Weather.OpenMeteo
 				openMeteoResponse.Current == null ||
 				openMeteoResponse.Hourly == null)
 			{
-				Debug.WriteLine("Response is null or something went wrong when parsing it.");
 				return (null, errorMessage);
 			}
 
@@ -57,6 +56,9 @@ namespace Aer.Weather.OpenMeteo
 			return (new WeatherResult { Current = current, Hourly = hourly }, string.Empty);
 		}
 
+		/// <summary>
+		/// The network call
+		/// </summary>
 		private async Task<(OpenMeteoResponse? openMeteoResponse, string errorMessage)> OpenMeteoNetworkQuery(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			try
@@ -64,10 +66,15 @@ namespace Aer.Weather.OpenMeteo
 				cancellationToken.ThrowIfCancellationRequested();
 				
 				// Fetch weather data from Open-Meteo API
-				const int days = 7; // Number of forecast days to retrieve
-				string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude.ToString(CultureInfo.InvariantCulture)}&longitude={longitude.ToString(CultureInfo.InvariantCulture)}&current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&timezone=GMT&temperature_unit=celsius&forecast_days={days}";
+				string url =
+					$"https://api.open-meteo.com/v1/forecast?" +
+					$"latitude={latitude.ToString(CultureInfo.InvariantCulture)}&" +
+					$"longitude={longitude.ToString(CultureInfo.InvariantCulture)}&" +
+					$"current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&" +
+					$"timezone=GMT&temperature_unit=celsius&" +
+					$"forecast_days=7"; // Number of forecast days to retrieve
 				string json = await _httpClient.GetStringAsync(url, cancellationToken);
-
+				
 				var response = JsonSerializer.Deserialize<OpenMeteoResponse>(json, _jsonOptions);
 				return (response, string.Empty);
 			}

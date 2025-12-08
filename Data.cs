@@ -173,7 +173,7 @@ namespace Aer
 				if (result.weatherResult == null)
 				{
 					Debug.WriteLine($"Weather update failed: {result.errorMessage}");
-					return (false, result.errorMessage); // ERROR: network error or something went wrong
+					return (false, result.errorMessage); // ERROR: network error, parsing error or something went wrong
 				}
 
 				// On success

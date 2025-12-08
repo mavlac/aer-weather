@@ -1,7 +1,6 @@
 ﻿using Aer.Utils;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
 using System.Text.Json;
@@ -18,20 +17,17 @@ namespace Aer.Weather.YrNo
 		public override string ProviderName => "Yr MET/NRK Norway";
 		public override string ProviderDescription => "Europe-focused";
 
-		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(
-			double latitude,
-			double longitude,
-			CancellationToken cancellationToken)
+		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
-			var (yrResponse, error) = await QueryYrNoAsync(latitude, longitude, cancellationToken);
+			var (yrResponse, errorMessage) = await QueryYrNoAsync(latitude, longitude, cancellationToken);
 			if (yrResponse == null)
-				return (null, error);
+			{
+				return (null, errorMessage);
+			}
 
 			try
 			{
-				// -----------------------------
-				// Current weather (instant data)
-				// -----------------------------
+				// Map current
 				var first = yrResponse.Properties?.Timeseries?[0];
 				var instant = first?.Data?.Instant?.Details;
 
@@ -47,9 +43,7 @@ namespace Aer.Weather.YrNo
 					IsDaytime = IsSymbolDaytime(symbol)
 				};
 
-				// -----------------------------
-				// Hourly forecast
-				// -----------------------------
+				// Map hourly
 				var hourly = new List<HourlyForecast>();
 
 				foreach (var ts in yrResponse.Properties.Timeseries)
@@ -79,27 +73,21 @@ namespace Aer.Weather.YrNo
 			}
 		}
 
-		// -----------------------------------------------------
-		// Network call
-		// -----------------------------------------------------
-		private async Task<(YrResponse? yrResponse, string errorMessage)> QueryYrNoAsync(
-			double latitude,
-			double longitude,
-			CancellationToken cancellationToken)
+		/// <summary>
+		/// The network call
+		/// </summary>
+		private async Task<(YrResponse? yrResponse, string errorMessage)> QueryYrNoAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			try
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-
+				
 				string url =
 					$"https://api.met.no/weatherapi/locationforecast/2.0/compact?" +
 					$"lat={latitude.ToString(CultureInfo.InvariantCulture)}&" +
 					$"lon={longitude.ToString(CultureInfo.InvariantCulture)}";
-
-				Debug.WriteLine($"Yr.no → {url}");
-
 				string json = await _httpClient.GetStringAsync(url, cancellationToken);
-
+				
 				var response = JsonSerializer.Deserialize<YrResponse>(json, _jsonOptions);
 				return (response, string.Empty);
 			}
@@ -117,9 +105,6 @@ namespace Aer.Weather.YrNo
 			}
 		}
 
-		// -----------------------------------------------------
-		// Symbol conversion helpers
-		// -----------------------------------------------------
 		private static int ConditionCodeFromSymbol(string? symbol)
 		{
 			if (string.IsNullOrEmpty(symbol))
@@ -144,9 +129,7 @@ namespace Aer.Weather.YrNo
 			return symbol.EndsWith("_day");
 		}
 
-		// -----------------------------------------------------
-		// Yr.no Compact 2.0 API JSON models
-		// -----------------------------------------------------
+		#region Yr.no JSON Models
 		public class YrResponse
 		{
 			[JsonPropertyName("properties")] public YrProperties? Properties { get; set; }
@@ -196,5 +179,6 @@ namespace Aer.Weather.YrNo
 		{
 			[JsonPropertyName("precipitation_amount")] public double PrecipitationAmount { get; set; }
 		}
+		#endregion
 	}
 }
