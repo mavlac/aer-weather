@@ -68,8 +68,8 @@ namespace Aer.Weather.OpenMeteo
 				// Fetch weather data from Open-Meteo API
 				string url =
 					$"https://api.open-meteo.com/v1/forecast?" +
-					$"latitude={latitude.ToString(CultureInfo.InvariantCulture)}&" +
-					$"longitude={longitude.ToString(CultureInfo.InvariantCulture)}&" +
+					$"latitude={latitude.ToString("F4", CultureInfo.InvariantCulture)}&" +
+					$"longitude={longitude.ToString("F4", CultureInfo.InvariantCulture)}&" +
 					$"current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&" +
 					$"timezone=GMT&temperature_unit=celsius&" +
 					$"forecast_days=7"; // Number of forecast days to retrieve

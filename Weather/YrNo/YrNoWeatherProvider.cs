@@ -84,8 +84,8 @@ namespace Aer.Weather.YrNo
 				
 				string url =
 					$"https://api.met.no/weatherapi/locationforecast/2.0/compact?" +
-					$"lat={latitude.ToString(CultureInfo.InvariantCulture)}&" +
-					$"lon={longitude.ToString(CultureInfo.InvariantCulture)}";
+					$"lat={latitude.ToString("F4", CultureInfo.InvariantCulture)}&" +
+					$"lon={longitude.ToString("F4", CultureInfo.InvariantCulture)}";
 				string json = await _httpClient.GetStringAsync(url, cancellationToken);
 				
 				var response = JsonSerializer.Deserialize<YrResponse>(json, _jsonOptions);
