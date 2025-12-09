@@ -253,8 +253,8 @@ namespace Aer
 		private static int GetLocationId(double latitude, double longitude)
 		{
 			// Round to avoid floating noise
-			var lat = Math.Round(latitude, 4);
-			var lon = Math.Round(longitude, 4);
+			var lat = Math.Round(latitude, 3);
+			var lon = Math.Round(longitude, 3);
 
 			// Convert to long bits (stable numeric representation)
 			long latBits = BitConverter.DoubleToInt64Bits(lat);
