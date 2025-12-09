@@ -106,11 +106,11 @@ namespace Aer
 			if (isSavedLocationLoadSuccessful &&
 				isCachedDataMatchingLocation &&
 				isCachedDataMatchingWeatherProvider &&
-				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedConditionCode)}", out int cachedConditionCode) &&
-				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
-				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedTemperature)}", out double cachedTemperature) &&
-				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CachedHourly)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
-				AppStorage.TryLoad($"{SettingsPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime))
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedConditionCode)}", out int cachedConditionCode) &&
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", out double cachedTemperature) &&
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime))
 			{
 				CachedConditionCode = cachedConditionCode;
 				CachedIsDaytime = cachedIsDaytime;
