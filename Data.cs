@@ -45,7 +45,9 @@ namespace Aer
 		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
 		public static List<HourlyForecast> CachedHourly { get; private set; } = new();
 		public static DateTime? CacheLastUpdateTime { get; private set; }
+		public static DateTime? CacheValidUntil { get; private set; }
 		public static bool IsCacheDataValid { get; private set; }
+		public static bool IsCachedDataRecentEnough => CacheValidUntil is not null && DateTime.Now < CacheValidUntil;
 
 		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString("F4", CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString("F4", CultureInfo.InvariantCulture)}";
 		public static string ReadableTemperature => CachedTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedTemperature.Value, " ");
@@ -110,13 +112,15 @@ namespace Aer
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", out double cachedTemperature) &&
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
-				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime))
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime) &&
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", out DateTime cacheValidUntil))
 			{
 				CachedConditionCode = cachedConditionCode;
 				CachedIsDaytime = cachedIsDaytime;
 				CachedTemperature = cachedTemperature;
 				CachedHourly = cachedHourly;
 				CacheLastUpdateTime = cacheLastUpdateTime;
+				CacheValidUntil = cacheValidUntil;
 				IsCacheDataValid = true;
 			}
 			else
@@ -125,6 +129,7 @@ namespace Aer
 				// or cached data from another location
 				// or no success loading the cache
 				CacheLastUpdateTime = null;
+				CacheValidUntil = null;
 				IsCacheDataValid = false;
 			}
 
@@ -154,7 +159,7 @@ namespace Aer
 		{
 			Debug.Assert(IsUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
 
-			if (IsCacheDataValid && IsCachedDataRecentEnough())
+			if (IsCacheDataValid && IsCachedDataRecentEnough)
 			{
 				return (true, "Using cached data."); // OK: no network update performed, because wasn't needed
 			}
@@ -166,24 +171,26 @@ namespace Aer
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var provider = WeatherProvider.Get(Preferences.WeatherProviderId);
-				var result = await provider.GetWeatherAsync(LocationLatitude!.Value, LocationLongitude!.Value, cancellationToken);
+				var (weatherResult, errorMessage) = await provider.GetWeatherAsync(LocationLatitude!.Value, LocationLongitude!.Value, cancellationToken);
 
 				cancellationToken.ThrowIfCancellationRequested();
 
-				if (result.weatherResult == null)
+				if (weatherResult == null)
 				{
-					Debug.WriteLine($"Weather update failed: {result.errorMessage}");
-					return (false, result.errorMessage); // ERROR: network error, parsing error or something went wrong
+					Debug.WriteLine($"Weather update failed: {errorMessage}");
+					return (false, errorMessage); // ERROR: network error, parsing error or something went wrong
 				}
 
 				// On success
 				CacheLocationID = LocationID;
 				CacheWeatherProviderID = provider.ProviderId;
-				CachedConditionCode = result.weatherResult.Current.ConditionCode;
-				CachedIsDaytime = result.weatherResult.Current.IsDaytime;
-				CachedTemperature = result.weatherResult.Current.Temperature;
-				CachedHourly = result.weatherResult.Hourly;
+				CachedConditionCode = weatherResult.Current.ConditionCode;
+				CachedIsDaytime = weatherResult.Current.IsDaytime;
+				CachedTemperature = weatherResult.Current.Temperature;
+				CachedHourly = weatherResult.Hourly;
 				CacheLastUpdateTime = DateTime.Now;
+				// TODO: Will be a value that may be returned by provider (yr), not just +30m from now
+				CacheValidUntil = DateTime.Now.AddMinutes(CacheValidityMinutes);
 
 				IsCacheDataValid = true;
 				IsUpdatingFromNetwork = false; // Needs to be set here and not in finally, because SaveWeatherData asserts this
@@ -220,18 +227,8 @@ namespace Aer
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", CachedTemperature);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", CachedHourly);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", CacheLastUpdateTime);
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", CacheValidUntil);
 			AppStorage.Flush();
-		}
-
-		private static bool IsCachedDataRecentEnough()
-		{
-			if (CacheLastUpdateTime is not null)
-			{
-				var timeSinceLastUpdate = DateTime.Now - CacheLastUpdateTime.Value;
-				if (timeSinceLastUpdate.TotalMinutes <= CacheValidityMinutes)
-					return true;
-			}
-			return false;
 		}
 
 		public static List<HourlyForecast> GetHourlyDataSinceNow()
