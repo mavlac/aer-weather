@@ -59,7 +59,7 @@ namespace Aer
 			// Can be default location with no weather data, can be old cached data, can be valid current data
 			UpdatePageContent();
 
-			UpdateDataFromNetwork(forceNetworkUpdate: false);
+			UpdateDataFromNetwork();
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -96,10 +96,10 @@ namespace Aer
 
 			// Data Update
 			// If cache is still valid, no network call will be made.
-			UpdateDataFromNetwork(false);
+			UpdateDataFromNetwork();
 		}
 
-		private async void UpdateDataFromNetwork(bool forceNetworkUpdate)
+		private async void UpdateDataFromNetwork()
 		{
 			if (_updateTask != null)
 				return;
@@ -112,7 +112,7 @@ namespace Aer
 			var cancellationToken = _updateTaskCts.Token;
 
 			// Kick off the network update, but don't await it yet
-			_updateTask = Data.UpdateWeatherDataFromNetwork(forceNetworkUpdate, cancellationToken);
+			_updateTask = Data.UpdateWeatherDataFromNetwork(cancellationToken);
 
 			// Wait briefly before deciding to show loader, cancellable
 			try
@@ -165,6 +165,10 @@ namespace Aer
 				ContentData.Text = string.Join(Environment.NewLine, Data.GetHourlyDataSinceNow());
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
+				ToolTipService.SetToolTip(
+					LastUpdateTimeText,
+					$"Exact time: {Data.CacheLastUpdateTime:G}" // TODO: Tooltip
+				);
 			}
 			else
 			{
@@ -182,6 +186,7 @@ namespace Aer
 				ContentData.Text = string.Empty;
 				// Last updated - unknown
 				LastUpdateTimeText.Text = string.Empty;
+				ToolTipService.SetToolTip(LastUpdateTimeText, null);
 			}
 		}
 
@@ -219,11 +224,6 @@ namespace Aer
 				ContentData.Visibility = Visibility.Visible;
 				Scroller.IsEnabled = true;
 			}
-		}
-
-		private void LastUpdateTimeTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
-		{
-			UpdateDataFromNetwork(forceNetworkUpdate: true);
 		}
 		#endregion
 

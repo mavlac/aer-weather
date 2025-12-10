@@ -150,11 +150,11 @@ namespace Aer
 			IsCacheDataValid = false; // New data must be loaded always after location change
 		}
 
-		public static async Task<(bool status, string message)> UpdateWeatherDataFromNetwork(bool skipCache, CancellationToken cancellationToken)
+		public static async Task<(bool status, string message)> UpdateWeatherDataFromNetwork(CancellationToken cancellationToken)
 		{
 			Debug.Assert(IsUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
 
-			if (IsCacheDataValid && IsCachedDataRecentEnough() && !skipCache)
+			if (IsCacheDataValid && IsCachedDataRecentEnough())
 			{
 				return (true, "Using cached data."); // OK: no network update performed, because wasn't needed
 			}

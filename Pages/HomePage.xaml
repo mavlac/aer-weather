@@ -69,7 +69,8 @@
 							   IsTextSelectionEnabled="True"/>
 				</Grid>
 			</ScrollViewer>
-
+			
+			<!-- Footer -->
 			<Grid Grid.Row="2"
 				  HorizontalAlignment="Stretch"
 				  Padding="8, 2, 0, 8">
@@ -84,20 +85,15 @@
 					<SelectorBarItem x:Name="ContentSelectorBar_DataCard" Text="Data" FontSize="12" Padding="16,8,16,2" />
 				</SelectorBar>
 				<TextBlock
+					   x:Name="LastUpdateTimeText"
 					   Grid.Column="1"
 					   Style="{StaticResource CaptionTextBlockStyle}"
 					   VerticalAlignment="Bottom"
 					   HorizontalAlignment="Right"
 					   HorizontalTextAlignment="Right"
 					   Padding="0,0,24,8"
-					   ToolTipService.ToolTip="Click to force-update from network">
-					<Hyperlink Click="LastUpdateTimeTextHyperlink_Click"
-							   TextDecorations="None"
-							   IsTabStop="False">
-						<Run x:Name="LastUpdateTimeText"
-							 Text="Hello Footer"
-							 TextDecorations="None" />
-					</Hyperlink>
+					   Text="Hello footer"
+					   ToolTipService.ToolTip="Hello footer tooltip">
 				</TextBlock>
 			</Grid>
 		</Grid>
