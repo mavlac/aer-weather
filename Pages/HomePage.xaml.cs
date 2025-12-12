@@ -213,14 +213,14 @@ namespace Aer
 		{
 			var tabContent = new StringBuilder();
 
-			tabContent.AppendLine($"Last update: {Data.CacheLastUpdateTime} ({Data.CacheLastUpdateTime?.ToLocalTime().ToString("G")})");
-			tabContent.AppendLine($"Valid until: {Data.CacheValidUntil} ({Data.CacheValidUntil?.ToLocalTime().ToString("G")})");
+			tabContent.AppendLine($"Last update: {Data.CacheLastUpdateTime?.ToLocalTime().ToString("G")} ({Data.CacheLastUpdateTime?.UtcDateTime.ToString("u")})");
+			tabContent.AppendLine($"Valid until: {Data.CacheValidUntil?.ToLocalTime().ToString("G")} ({Data.CacheValidUntil?.UtcDateTime.ToString("u")})");
 			tabContent.AppendLine($"Location ID: {Data.CacheLocationID}");
 			tabContent.AppendLine($"Provider ID: {Data.CacheWeatherProviderID}");
 			tabContent.AppendLine();
 
 			var hourlyData = Data.GetHourlyDataSinceNow();
-			tabContent.Append(string.Join(Environment.NewLine, hourlyData.ToString()));
+			tabContent.Append(string.Join(Environment.NewLine, Data.GetHourlyDataSinceNow()));
 
 			return tabContent.ToString();
 		}
