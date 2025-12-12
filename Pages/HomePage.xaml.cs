@@ -219,7 +219,6 @@ namespace Aer
 			tabContent.AppendLine($"Provider ID: {Data.CacheWeatherProviderID}");
 			tabContent.AppendLine();
 
-			var hourlyData = Data.GetHourlyDataSinceNow();
 			tabContent.Append(string.Join(Environment.NewLine, Data.GetHourlyDataSinceNow()));
 
 			return tabContent.ToString();
