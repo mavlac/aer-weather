@@ -18,7 +18,8 @@ namespace Aer.Weather
 	/// </summary>
 	public abstract class WeatherProvider
 	{
-		private const double NetworkTimeoutSeconds = 10.0;
+		protected const double NetworkTimeoutSeconds = 10.0;
+		protected const int DefaultCacheValidityMinutes = 30; // Used when provider does not return validity in the data
 
 		private static readonly HttpClient _sharedClient = CreateDefaultClient();
 		protected readonly HttpClient _httpClient;

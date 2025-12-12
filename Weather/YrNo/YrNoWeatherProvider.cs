@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using static Aer.Weather.YrNo.YrNoWeatherProvider;
 
 namespace Aer.Weather.YrNo
 {
@@ -19,7 +20,7 @@ namespace Aer.Weather.YrNo
 
 		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
-			var (yrResponse, errorMessage) = await QueryYrNoAsync(latitude, longitude, cancellationToken);
+			var (yrResponse, expires, errorMessage) = await QueryYrNoAsync(latitude, longitude, cancellationToken);
 			if (yrResponse == null)
 			{
 				return (null, errorMessage);
@@ -65,7 +66,10 @@ namespace Aer.Weather.YrNo
 					});
 				}
 
-				return (new WeatherResult { Current = current, Hourly = hourly }, string.Empty);
+				// Validity (from HTTP header)
+				var validUntil = (DateTimeOffset)expires!;
+
+				return (new WeatherResult(current, hourly, validUntil), string.Empty);
 			}
 			catch (Exception ex)
 			{
@@ -76,7 +80,7 @@ namespace Aer.Weather.YrNo
 		/// <summary>
 		/// The network call
 		/// </summary>
-		private async Task<(YrResponse? yrResponse, string errorMessage)> QueryYrNoAsync(double latitude, double longitude, CancellationToken cancellationToken)
+		private async Task<(YrResponse? yrResponse, DateTimeOffset? expires, string errorMessage)> QueryYrNoAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -86,22 +90,25 @@ namespace Aer.Weather.YrNo
 					$"https://api.met.no/weatherapi/locationforecast/2.0/compact?" +
 					$"lat={latitude.ToString("F4", CultureInfo.InvariantCulture)}&" +
 					$"lon={longitude.ToString("F4", CultureInfo.InvariantCulture)}";
-				string json = await _httpClient.GetStringAsync(url, cancellationToken);
-				
-				var response = JsonSerializer.Deserialize<YrResponse>(json, _jsonOptions);
-				return (response, string.Empty);
+				var response = await _httpClient.GetAsync(url, cancellationToken);
+
+				var expires = response.Content.Headers.Expires;
+				string json = await response.Content.ReadAsStringAsync(cancellationToken);
+
+				var yrResponse = JsonSerializer.Deserialize<YrResponse>(json, _jsonOptions);
+				return (yrResponse, expires, string.Empty);
 			}
 			catch (OperationCanceledException)
 			{
-				return (null, "Operation cancelled");
+				return (null, null, "Operation cancelled");
 			}
 			catch (HttpRequestException ex)
 			{
-				return (null, $"Network error: {ex.Message}");
+				return (null, null, $"Network error: {ex.Message}");
 			}
 			catch (Exception ex)
 			{
-				return (null, $"Unexpected Yr.no API error: {ex.Message}");
+				return (null, null, $"Unexpected Yr.no API error: {ex.Message}");
 			}
 		}
 

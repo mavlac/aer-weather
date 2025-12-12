@@ -18,8 +18,6 @@ namespace Aer
 	/// </summary>
 	public static class Data
 	{
-		private const float CacheValidityMinutes = 30f;
-
 		private const string LocationLabelFormat = "{0}, {1}"; // Name, Country
 		private const string DefaultLocationName = "Prague";
 		private const string DefaultLocationCountry = "CZ";
@@ -44,10 +42,10 @@ namespace Aer
 		public static bool? CachedIsDaytime { get; private set; }
 		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
 		public static List<HourlyForecast> CachedHourly { get; private set; } = new();
-		public static DateTime? CacheLastUpdateTime { get; private set; }
-		public static DateTime? CacheValidUntil { get; private set; }
+		public static DateTimeOffset? CacheValidUntil { get; private set; }
+		public static DateTimeOffset? CacheLastUpdateTime { get; private set; }
 		public static bool IsCacheDataValid { get; private set; }
-		public static bool IsCachedDataRecentEnough => CacheValidUntil is not null && DateTime.Now < CacheValidUntil;
+		public static bool IsCachedDataRecentEnough => CacheValidUntil is not null && DateTimeOffset.UtcNow < CacheValidUntil;
 
 		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString("F4", CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString("F4", CultureInfo.InvariantCulture)}";
 		public static string ReadableTemperature => CachedTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedTemperature.Value, " ");
@@ -112,15 +110,15 @@ namespace Aer
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", out double cachedTemperature) &&
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
-				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime) &&
-				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", out DateTime cacheValidUntil))
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", out DateTime cacheValidUntil) &&
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime))
 			{
 				CachedConditionCode = cachedConditionCode;
 				CachedIsDaytime = cachedIsDaytime;
 				CachedTemperature = cachedTemperature;
 				CachedHourly = cachedHourly;
-				CacheLastUpdateTime = cacheLastUpdateTime;
 				CacheValidUntil = cacheValidUntil;
+				CacheLastUpdateTime = cacheLastUpdateTime;
 				IsCacheDataValid = true;
 			}
 			else
@@ -128,8 +126,8 @@ namespace Aer
 				// Location set to defaults
 				// or cached data from another location
 				// or no success loading the cache
-				CacheLastUpdateTime = null;
 				CacheValidUntil = null;
+				CacheLastUpdateTime = null;
 				IsCacheDataValid = false;
 			}
 
@@ -188,9 +186,8 @@ namespace Aer
 				CachedIsDaytime = weatherResult.Current.IsDaytime;
 				CachedTemperature = weatherResult.Current.Temperature;
 				CachedHourly = weatherResult.Hourly;
-				CacheLastUpdateTime = DateTime.Now;
-				// TODO: Will be a value that may be returned by provider (yr), not just +30m from now
-				CacheValidUntil = DateTime.Now.AddMinutes(CacheValidityMinutes);
+				CacheValidUntil = weatherResult.ValidUntil;
+				CacheLastUpdateTime = DateTimeOffset.UtcNow;
 
 				IsCacheDataValid = true;
 				IsUpdatingFromNetwork = false; // Needs to be set here and not in finally, because SaveWeatherData asserts this
@@ -226,8 +223,8 @@ namespace Aer
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", CachedIsDaytime);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", CachedTemperature);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", CachedHourly);
-			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", CacheLastUpdateTime);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", CacheValidUntil);
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", CacheLastUpdateTime);
 			AppStorage.Flush();
 		}
 

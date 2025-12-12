@@ -27,13 +27,13 @@ namespace Aer.Utils
 			return utc.ToLocalTime();
 		}
 
-		public static string GetRelativeTimeString(DateTime? dateTime)
+		public static string GetRelativeTimeString(DateTimeOffset? dateTimeOffset)
 		{
-			if (dateTime is null)
+			if (dateTimeOffset is null)
 				return "never";
 
-			var now = DateTime.Now;
-			var ts = now - dateTime.Value;
+			var now = DateTimeOffset.UtcNow;
+			var ts = now - dateTimeOffset.Value;
 
 			if (ts.TotalSeconds < 60)
 			{
@@ -58,7 +58,7 @@ namespace Aer.Utils
 			if (ts.TotalDays < 7)
 				return $"{(int)ts.TotalDays} days ago";
 
-			return dateTime.Value.ToString("MMM d");
+			return dateTimeOffset.Value.ToString("MMM d");
 		}
 	}
 }

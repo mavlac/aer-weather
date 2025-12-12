@@ -53,7 +53,10 @@ namespace Aer.Weather.OpenMeteo
 				});
 			}
 
-			return (new WeatherResult { Current = current, Hourly = hourly }, string.Empty);
+			// Validity (calculated)
+			var validUntil = DateTimeOffset.Now.AddMinutes(DefaultCacheValidityMinutes);
+
+			return (new WeatherResult(current, hourly, validUntil), string.Empty);
 		}
 
 		/// <summary>
@@ -73,10 +76,11 @@ namespace Aer.Weather.OpenMeteo
 					$"current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&" +
 					$"timezone=GMT&temperature_unit=celsius&" +
 					$"forecast_days=7"; // Number of forecast days to retrieve
-				string json = await _httpClient.GetStringAsync(url, cancellationToken);
-				
-				var response = JsonSerializer.Deserialize<OpenMeteoResponse>(json, _jsonOptions);
-				return (response, string.Empty);
+
+				var response = await _httpClient.GetAsync(url, cancellationToken);
+				string json = await response.Content.ReadAsStringAsync(cancellationToken);
+				var openMeteoResponse = JsonSerializer.Deserialize<OpenMeteoResponse>(json, _jsonOptions);
+				return (openMeteoResponse, string.Empty);
 			}
 			catch (OperationCanceledException)
 			{
