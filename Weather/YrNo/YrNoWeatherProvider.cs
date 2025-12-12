@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using static Aer.Weather.YrNo.YrNoWeatherProvider;
 
 namespace Aer.Weather.YrNo
 {
@@ -21,9 +20,12 @@ namespace Aer.Weather.YrNo
 		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			var (yrResponse, expires, errorMessage) = await QueryYrNoAsync(latitude, longitude, cancellationToken);
-			if (yrResponse == null)
+			if (yrResponse == null ||
+				yrResponse.Properties == null ||
+				yrResponse.Properties.Timeseries == null ||
+				expires == null)
 			{
-				return (null, errorMessage);
+				return (null, errorMessage ?? "Response parsed incomplete");
 			}
 
 			try
@@ -67,7 +69,7 @@ namespace Aer.Weather.YrNo
 				}
 
 				// Validity (from HTTP header)
-				var validUntil = (DateTimeOffset)expires!;
+				var validUntil = (DateTimeOffset)expires;
 
 				return (new WeatherResult(current, hourly, validUntil), string.Empty);
 			}

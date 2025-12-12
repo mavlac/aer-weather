@@ -25,7 +25,7 @@ namespace Aer.Weather.OpenMeteo
 				openMeteoResponse.Current == null ||
 				openMeteoResponse.Hourly == null)
 			{
-				return (null, errorMessage);
+				return (null, errorMessage ?? "Response parsed incomplete");
 			}
 
 			Debug.WriteLine($"Got response '{openMeteoResponse.Current.Time}' UTC → '{DateTimeUtils.ConvertUtcIsoToLocal(openMeteoResponse.Current.Time)}' {TimeZoneInfo.Local.DisplayName}, {TimeZoneInfo.Local.DaylightName}");

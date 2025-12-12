@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -160,18 +161,14 @@ namespace Aer
 				SubHeaderText.Text = Data.LocationLabel;
 				CurrentConditionIcon.Visibility = Visibility.Visible;
 				CurrentConditionIcon.Glyph = Data.ConditionWeatherIconsGlyph;
-				// Content
+				// Content tabs: Chart / Data
 				ContentChart.Invalidate();
-				ContentData.Text = string.Join(Environment.NewLine, Data.GetHourlyDataSinceNow());
+				ContentData.Text = GetContentDataTabText();
 				// Last updated
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
 				ToolTipService.SetToolTip(
 					LastUpdateTimeText,
-					$"Exact time: {(Data.CacheLastUpdateTime?.ToLocalTime().ToString("G")) ?? "-"}\n" +
-					$"Valid until: {(Data.CacheValidUntil?.ToLocalTime().ToString("G")) ?? "-"}\n" +
-					$"LID: {Data.CacheLocationID}\n" +
-					$"PID: {Data.CacheWeatherProviderID}"
-				);
+					Data.CacheLastUpdateTime?.ToLocalTime().ToString("G"));
 			}
 			else
 			{
@@ -184,7 +181,7 @@ namespace Aer
 				// Location - always known
 				SubHeaderText.Text = Data.LocationLabel;
 				CurrentConditionIcon.Visibility = Visibility.Collapsed;
-				// Content
+				// Content tabs: Chart / Data
 				ContentChart.Invalidate();
 				ContentData.Text = string.Empty;
 				// Last updated - unknown
@@ -210,6 +207,22 @@ namespace Aer
 
 			// Call Charting class to do the actual drawing
 			Charting.DrawHomePageChart(sender, ds, hourlyData);
+		}
+
+		private static string GetContentDataTabText()
+		{
+			var tabContent = new StringBuilder();
+
+			tabContent.AppendLine($"Last update: {Data.CacheLastUpdateTime} ({Data.CacheLastUpdateTime?.ToLocalTime().ToString("G")})");
+			tabContent.AppendLine($"Valid until: {Data.CacheValidUntil} ({Data.CacheValidUntil?.ToLocalTime().ToString("G")})");
+			tabContent.AppendLine($"Location ID: {Data.CacheLocationID}");
+			tabContent.AppendLine($"Provider ID: {Data.CacheWeatherProviderID}");
+			tabContent.AppendLine();
+
+			var hourlyData = Data.GetHourlyDataSinceNow();
+			tabContent.Append(string.Join(Environment.NewLine, hourlyData.ToString()));
+
+			return tabContent.ToString();
 		}
 
 		#region User Interface
