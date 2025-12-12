@@ -27,6 +27,10 @@ namespace Aer.Utils
 			return utc.ToLocalTime();
 		}
 
+		/// <summary>
+		/// Returns a human-friendly relative time string for the given DateTimeOffset.
+		/// Relative time span, or a date converted to a local time if more than a week ago.
+		/// </summary>
 		public static string GetRelativeTimeString(DateTimeOffset? dateTimeOffset)
 		{
 			if (dateTimeOffset is null)
@@ -58,7 +62,7 @@ namespace Aer.Utils
 			if (ts.TotalDays < 7)
 				return $"{(int)ts.TotalDays} days ago";
 
-			return dateTimeOffset.Value.ToString("MMM d");
+			return dateTimeOffset.Value.ToLocalTime().ToString("MMM d");
 		}
 	}
 }

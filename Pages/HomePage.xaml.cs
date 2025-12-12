@@ -167,8 +167,8 @@ namespace Aer
 				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Data.CacheLastUpdateTime));
 				ToolTipService.SetToolTip(
 					LastUpdateTimeText,
-					$"Exact time: {Data.CacheLastUpdateTime:G}\n" +
-					$"Valid until: {Data.CacheValidUntil:G}\n" +
+					$"Exact time: {(Data.CacheLastUpdateTime?.ToLocalTime().ToString("G")) ?? "-"}\n" +
+					$"Valid until: {(Data.CacheValidUntil?.ToLocalTime().ToString("G")) ?? "-"}\n" +
 					$"LID: {Data.CacheLocationID}\n" +
 					$"PID: {Data.CacheWeatherProviderID}"
 				);
