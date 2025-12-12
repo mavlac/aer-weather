@@ -14,6 +14,7 @@ namespace Aer.Weather.OpenMeteo
 	public class OpenMeteoWeatherProvider : WeatherProvider
 	{
 		public const int ProviderStaticId = 0;
+
 		public override int ProviderId => ProviderStaticId;
 		public override string ProviderName => "Open-Meteo";
 		public override string ProviderDescription => "Fast with global coverage";

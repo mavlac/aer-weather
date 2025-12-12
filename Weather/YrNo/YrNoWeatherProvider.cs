@@ -13,6 +13,7 @@ namespace Aer.Weather.YrNo
 	public class YrNoWeatherProvider : WeatherProvider
 	{
 		public const int ProviderStaticId = 1;
+
 		public override int ProviderId => ProviderStaticId;
 		public override string ProviderName => "Yr MET/NRK Norway";
 		public override string ProviderDescription => "Europe-focused";

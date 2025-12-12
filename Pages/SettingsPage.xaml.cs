@@ -209,7 +209,7 @@ namespace Aer
 			WeatherProviderSelector.Items.Clear();
 
 			// Populate Segmented control
-			var providers = Weather.WeatherProvider.GetAllProviderOptions();
+			var providers = Weather.WeatherProvider.GetAllProvidersForUserSelection();
 			foreach (var keyValuePair in providers)
 			{
 				var comboItem = new ComboBoxItem

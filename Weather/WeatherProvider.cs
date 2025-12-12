@@ -24,15 +24,17 @@ namespace Aer.Weather
 		private static readonly HttpClient _sharedClient = CreateDefaultClient();
 		protected readonly HttpClient _httpClient;
 
-		public abstract int ProviderId { get; }
-		public abstract string ProviderName { get; }
-		public abstract string ProviderDescription { get; }
-
 		// Hand-maintain this Dictionary of weather providers, they do not subscribe dynamically
 		private static readonly Dictionary<int, WeatherProvider> _providers = new()
 		{
-			{ OpenMeteoWeatherProvider.ProviderStaticId, new OpenMeteoWeatherProvider() },
-			{ YrNoWeatherProvider.ProviderStaticId,      new YrNoWeatherProvider() }
+			{
+				OpenMeteoWeatherProvider.ProviderStaticId,
+				new OpenMeteoWeatherProvider()
+			},
+			{
+				YrNoWeatherProvider.ProviderStaticId,
+				new YrNoWeatherProvider()
+			}
 		};
 
 		protected readonly JsonSerializerOptions _jsonOptions = new()
@@ -76,7 +78,7 @@ namespace Aer.Weather
 			throw new ArgumentException($"Unknown weather provider with Id: {id}");
 		}
 
-		public static Dictionary<int, string> GetAllProviderOptions()
+		public static Dictionary<int, string> GetAllProvidersForUserSelection()
 		{
 			return
 				_providers.ToDictionary(
@@ -84,8 +86,15 @@ namespace Aer.Weather
 					keyValuePair => $"{keyValuePair.Value.ProviderName} ({keyValuePair.Value.ProviderDescription})");
 		}
 
+
+
+		public abstract int ProviderId { get; }
+		public abstract string ProviderName { get; }
+		public abstract string ProviderDescription { get; }
+
 		/// <summary>
 		/// Fetch current weather and hourly forecast in a single call.
+		/// This is the API a provider must implement.
 		/// </summary>
 		public abstract Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken);
 	}
