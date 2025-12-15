@@ -1,6 +1,7 @@
 using Aer.Drawing;
 using Aer.Utils;
 using Aer.Utils.Extensions;
+using Aer.Weather;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -216,7 +217,7 @@ namespace Aer
 			tabContent.AppendLine($"Last update: {Data.CacheLastUpdateTime?.ToLocalTime().ToString("G")} ({Data.CacheLastUpdateTime?.UtcDateTime.ToString("u")})");
 			tabContent.AppendLine($"Valid until: {Data.CacheValidUntil?.ToLocalTime().ToString("G")} ({Data.CacheValidUntil?.UtcDateTime.ToString("u")})");
 			tabContent.AppendLine($"Location ID: {Data.CacheLocationID}");
-			tabContent.AppendLine($"Provider ID: {Data.CacheWeatherProviderID}");
+			tabContent.AppendLine($"Provider ID: {Data.CacheWeatherProviderID} ({WeatherProvider.Get(Data.CacheWeatherProviderID ?? -1).ProviderName})");
 			tabContent.AppendLine();
 
 			tabContent.Append(string.Join(Environment.NewLine, Data.GetHourlyDataSinceNow()));
