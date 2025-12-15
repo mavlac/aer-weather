@@ -271,7 +271,7 @@
 						</controls:SettingsExpander.Items>
 					</controls:SettingsExpander>
 
-					<HyperlinkButton Content="Share this app..."
+					<HyperlinkButton Content="Share this app"
 									 Click="ShareButton_Click" />
 				</StackPanel>
 			</Grid>
