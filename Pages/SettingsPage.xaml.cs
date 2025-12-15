@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.System;
 
@@ -347,5 +348,14 @@ namespace Aer
 			UpdatePreferenceUIControls();
 		}
 		#endregion
+
+		private void ShareButton_Click(object sender, RoutedEventArgs e)
+		{
+			ShareHelper.ShowShare(
+				App.MainWindow,
+				AppName,
+				(string)Application.Current.Resources["AppDescription"],
+				new Uri((string)Application.Current.Resources["WebStoreURL"]));
+		}
 	}
 }

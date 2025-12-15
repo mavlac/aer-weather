@@ -16,8 +16,11 @@
 			<FontFamily x:Key="FluentIconsFont">ms-appx:///Assets/Fonts/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular</FontFamily>
 			
 			<!--  Constants  -->
+			<x:String x:Key="AppDescription">"A minimalistic WinUI 3 weather app for Windows"</x:String>
 			<x:String x:Key="GitHubRepositoryUrl">https://github.com/mavlac/aer-weather</x:String>
 			<x:String x:Key="PrivacyStatementUrl">https://github.com/mavlac/aer-weather/blob/main/PRIVACY.md</x:String>
+			<x:String x:Key="StoreID">9NFLN708XZLH</x:String>
+			<x:String x:Key="WebStoreURL">https://apps.microsoft.com/detail/9NFLN708XZLH</x:String>
 			
 			<!--  Breakpoints  -->
 			<x:Double x:Key="Breakpoint1008Plus">1008</x:Double>
