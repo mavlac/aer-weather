@@ -271,8 +271,19 @@
 						</controls:SettingsExpander.Items>
 					</controls:SettingsExpander>
 
+					
 					<HyperlinkButton Content="Share this app"
 									 Click="ShareButton_Click" />
+
+					<HyperlinkButton Click="HyperlinkButton_Click">
+						<TextBlock Text="Report a bug / request feature"
+								   DataContext="https://github.com/mavlac/aer-weather/issues/new" />
+					</HyperlinkButton>
+
+					<HyperlinkButton Click="HyperlinkButton_Click">
+						<TextBlock Text="Say hi / leave a note"
+								   DataContext="https://mavlac.com/" />
+					</HyperlinkButton>
 				</StackPanel>
 			</Grid>
 		</ScrollViewer>
