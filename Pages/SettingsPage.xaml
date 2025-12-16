@@ -12,15 +12,25 @@
 	mc:Ignorable="d">
 
 	<Page.Resources>
-		<!--  These styles can be referenced to create a consistent SettingsPage layout  -->
+		<!-- These styles can be referenced to create a consistent SettingsPage layout -->
 
-		<!--  Style (inc. the correct spacing) of a section header  -->
+		<!-- Section header style (inc. the correct spacing) -->
 		<Style x:Key="SettingsSectionHeaderTextBlockStyle"
 			   BasedOn="{StaticResource BodyStrongTextBlockStyle}"
 			   TargetType="TextBlock">
 			<Style.Setters>
 				<Setter Property="Margin" Value="1,30,0,6" />
 			</Style.Setters>
+		</Style>
+
+		<!-- HyperlinkButton, but without button paddings, so it looks like a text -->
+		<Style x:Key="HyperlinkButtonTextStyle" TargetType="HyperlinkButton">
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="HorizontalAlignment" Value="Left" />
+			<Setter Property="Foreground"
+					Value="{ThemeResource TextFillColorSecondary}" />
 		</Style>
 	</Page.Resources>
 
@@ -270,35 +280,39 @@
 							</controls:SettingsCard>
 						</controls:SettingsExpander.Items>
 					</controls:SettingsExpander>
-
-
-					<HyperlinkButton Click="ShareButton_Click">
-						<StackPanel Orientation="Horizontal">
-							<!-- Share Icon -->
-							<FontIcon Glyph="&#xE72D;"
+					
+					
+					<StackPanel Orientation="Vertical"
+								Margin="0,10,0,0"
+								Spacing="10">
+						<HyperlinkButton Click="ShareButton_Click"
+										 Style="{StaticResource HyperlinkButtonTextStyle}">
+							<StackPanel Orientation="Horizontal">
+								<!-- Share Icon -->
+								<FontIcon Glyph="&#xE72D;"
 									  FontSize="15"
 									  Margin="0,0,8,0"/>
-							<TextBlock Text="Share this app" />
-						</StackPanel>
-					</HyperlinkButton>
-
-					<HyperlinkButton Click="HyperlinkButton_Click"
-									 DataContext="https://github.com/mavlac/aer-weather/issues/new">
-						<StackPanel Orientation="Horizontal">
-							<!-- Bug Icon -->
-							<FontIcon Glyph="&#xEBE8;"
+								<TextBlock Text="Share this app" />
+							</StackPanel>
+						</HyperlinkButton>
+						<HyperlinkButton Click="HyperlinkButton_Click"
+										 DataContext="https://github.com/mavlac/aer-weather/issues/new"
+										 Style="{StaticResource HyperlinkButtonTextStyle}">
+							<StackPanel Orientation="Horizontal">
+								<!-- Bug Icon -->
+								<FontIcon Glyph="&#xEBE8;"
 									  FontSize="15"
 									  Margin="0,0,8,0"/>
-							<TextBlock Text="Report a bug" />
-						</StackPanel>
-					</HyperlinkButton>
-
-					<!--
-					<HyperlinkButton Click="HyperlinkButton_Click"
-									 DataContext="https://mavlac.com/">
-						<TextBlock Text="Leave a note" />
-					</HyperlinkButton>
-					-->
+								<TextBlock Text="Report a bug" />
+							</StackPanel>
+						</HyperlinkButton>
+						<!--
+						<HyperlinkButton Click="HyperlinkButton_Click"
+										 DataContext="https://mavlac.com/">
+							<TextBlock Text="Leave a note" />
+						</HyperlinkButton>
+						-->
+					</StackPanel>
 				</StackPanel>
 			</Grid>
 		</ScrollViewer>
