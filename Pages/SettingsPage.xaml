@@ -204,30 +204,30 @@
 												   Header="References &amp; Resources">
 								<StackPanel Margin="-12,0,0,0"
 											Orientation="Vertical">
-									<HyperlinkButton Click="HyperlinkButton_Click">
+									<HyperlinkButton Click="HyperlinkButton_Click"
+												   DataContext="https://open-meteo.com/">
 										<TextBlock Text="Open-Meteo weather API"
-												   TextDecorations="Underline"
-												   DataContext="https://open-meteo.com/"/>
+												   TextDecorations="Underline" />
 									</HyperlinkButton>
-									<HyperlinkButton Click="HyperlinkButton_Click">
+									<HyperlinkButton Click="HyperlinkButton_Click"
+												   DataContext="https://www.yr.no/">
 										<TextBlock Text="Yr Weather Service"
-												   TextDecorations="Underline"
-												   DataContext="https://www.yr.no/"/>
+												   TextDecorations="Underline" />
 									</HyperlinkButton>
-									<HyperlinkButton Click="HyperlinkButton_Click">
+									<HyperlinkButton Click="HyperlinkButton_Click"
+												   DataContext="https://www.geonames.org/">
 										<TextBlock Text="GeoNames Geographical Database"
-												   TextDecorations="Underline"
-												   DataContext="https://www.geonames.org/"/>
+												   TextDecorations="Underline" />
 									</HyperlinkButton>
-									<HyperlinkButton Click="HyperlinkButton_Click">
+									<HyperlinkButton Click="HyperlinkButton_Click"
+												   DataContext="https://github.com/erikflowers/weather-icons">
 										<TextBlock Text="Weather Icons"
-												   TextDecorations="Underline"
-												   DataContext="https://github.com/erikflowers/weather-icons"/>
+												   TextDecorations="Underline" />
 									</HyperlinkButton>
-									<HyperlinkButton Click="HyperlinkButton_Click">
+									<HyperlinkButton Click="HyperlinkButton_Click"
+												   DataContext="https://github.com/microsoft/fluentui-system-icons">
 										<TextBlock Text="Fluent UI System Icons"
-												   TextDecorations="Underline"
-												   DataContext="https://github.com/microsoft/fluentui-system-icons"/>
+												   TextDecorations="Underline" />
 									</HyperlinkButton>
 								</StackPanel>
 							</controls:SettingsCard>
@@ -236,20 +236,20 @@
 												   Header="Dependencies">
 								<StackPanel Margin="-12,0,0,0"
 											Orientation="Vertical">
-									<HyperlinkButton Click="HyperlinkButton_Click">
+									<HyperlinkButton Click="HyperlinkButton_Click"
+												   DataContext="https://github.com/microsoft/Win2D/">
 										<TextBlock Text="Win2D"
-												   TextDecorations="Underline"
-												   DataContext="https://github.com/microsoft/Win2D/"/>
+												   TextDecorations="Underline" />
 									</HyperlinkButton>
-									<HyperlinkButton Click="HyperlinkButton_Click">
+									<HyperlinkButton Click="HyperlinkButton_Click"
+													 DataContext="https://github.com/CommunityToolkit/Windows">
 										<TextBlock Text="Windows Community Toolkit"
-												   TextDecorations="Underline"
-												   DataContext="https://github.com/CommunityToolkit/Windows"/>
+												   TextDecorations="Underline" />
 									</HyperlinkButton>
-									<HyperlinkButton Click="HyperlinkButton_Click">
+									<HyperlinkButton Click="HyperlinkButton_Click"
+													 DataContext="https://github.com/microsoft/WindowsAppSDK">
 										<TextBlock Text="Windows App SDK"
-												   TextDecorations="Underline"
-												   DataContext="https://github.com/microsoft/WindowsAppSDK"/>
+												   TextDecorations="Underline" />
 									</HyperlinkButton>
 								</StackPanel>
 							</controls:SettingsCard>
@@ -271,19 +271,34 @@
 						</controls:SettingsExpander.Items>
 					</controls:SettingsExpander>
 
-					
-					<HyperlinkButton Content="Share this app"
-									 Click="ShareButton_Click" />
 
-					<HyperlinkButton Click="HyperlinkButton_Click">
-						<TextBlock Text="Report a bug / request feature"
-								   DataContext="https://github.com/mavlac/aer-weather/issues/new" />
+					<HyperlinkButton Click="ShareButton_Click">
+						<StackPanel Orientation="Horizontal">
+							<!-- Share Icon -->
+							<FontIcon Glyph="&#xE72D;"
+									  FontSize="15"
+									  Margin="0,0,8,0"/>
+							<TextBlock Text="Share this app" />
+						</StackPanel>
 					</HyperlinkButton>
 
-					<HyperlinkButton Click="HyperlinkButton_Click">
-						<TextBlock Text="Say hi / leave a note"
-								   DataContext="https://mavlac.com/" />
+					<HyperlinkButton Click="HyperlinkButton_Click"
+									 DataContext="https://github.com/mavlac/aer-weather/issues/new">
+						<StackPanel Orientation="Horizontal">
+							<!-- Bug Icon -->
+							<FontIcon Glyph="&#xEBE8;"
+									  FontSize="15"
+									  Margin="0,0,8,0"/>
+							<TextBlock Text="Report a bug" />
+						</StackPanel>
 					</HyperlinkButton>
+
+					<!--
+					<HyperlinkButton Click="HyperlinkButton_Click"
+									 DataContext="https://mavlac.com/">
+						<TextBlock Text="Leave a note" />
+					</HyperlinkButton>
+					-->
 				</StackPanel>
 			</Grid>
 		</ScrollViewer>

@@ -65,9 +65,9 @@ namespace Aer
 		// Generic handler for all HyperlinkButton clicks
 		private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
 		{
-			if (sender is HyperlinkButton button && button.Content is TextBlock textBlock)
+			if (sender is HyperlinkButton button)
 			{
-				if (textBlock.DataContext is string url && !string.IsNullOrEmpty(url))
+				if (button.DataContext is string url && !string.IsNullOrEmpty(url))
 				{
 					// Open the URL in default browser
 					var uri = new Uri(url);
