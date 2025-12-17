@@ -30,7 +30,7 @@
 			<Setter Property="BorderThickness" Value="0" />
 			<Setter Property="HorizontalAlignment" Value="Left" />
 			<Setter Property="Foreground"
-					Value="{ThemeResource TextFillColorSecondary}" />
+					Value="{ThemeResource TextFillColorPrimary}" />
 		</Style>
 	</Page.Resources>
 
@@ -283,7 +283,7 @@
 					
 					
 					<StackPanel Orientation="Vertical"
-								Margin="0,12,0,0"
+								Margin="2,12,0,0"
 								Spacing="12">
 						<HyperlinkButton Click="ShareButton_Click"
 										 Style="{StaticResource HyperlinkButtonTextStyle}">
