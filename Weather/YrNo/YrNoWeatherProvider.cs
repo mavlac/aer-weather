@@ -43,8 +43,8 @@ namespace Aer.Weather.YrNo
 				var current = new CurrentWeatherData
 				{
 					Temperature = instant.AirTemperature,
-					ConditionCode = ConditionCodeFromSymbol(symbol),
-					IsDaytime = IsSymbolDaytime(symbol)
+					WeatherCode = GetWeatherCodeFromSymbol(symbol),
+					IsDaytime = GetIsDaytimeFromSymbol(symbol)
 				};
 
 				// Map hourly
@@ -62,8 +62,8 @@ namespace Aer.Weather.YrNo
 					{
 						Time = DateTimeUtils.ConvertUtcIsoToLocal(ts.Time),
 						Temperature = hourInstant.AirTemperature,
-						ConditionCode = ConditionCodeFromSymbol(sym),
-						IsDaytime = IsSymbolDaytime(sym),
+						WeatherCode = GetWeatherCodeFromSymbol(sym),
+						IsDaytime = GetIsDaytimeFromSymbol(sym),
 						Rain = ts.Data.Next1Hours?.Details?.PrecipitationAmount ?? 0,
 						Snowfall = 0 // Yr.no compact API does not expose separate snowfall here
 					});
@@ -115,7 +115,7 @@ namespace Aer.Weather.YrNo
 			}
 		}
 
-		private static int ConditionCodeFromSymbol(string? symbol)
+		private static int GetWeatherCodeFromSymbol(string? symbol)
 		{
 			if (string.IsNullOrEmpty(symbol))
 				return 0;
@@ -133,7 +133,7 @@ namespace Aer.Weather.YrNo
 			return 99;
 		}
 
-		private static bool IsSymbolDaytime(string? symbol)
+		private static bool GetIsDaytimeFromSymbol(string? symbol)
 		{
 			if (symbol == null) return true;
 			return symbol.EndsWith("_day");

@@ -3,7 +3,13 @@
 	public record CurrentWeatherData
 	{
 		public bool IsDaytime { get; set; }
-		public double Temperature { get; set; } // The value is stored in Celsius and converted if needed on display
-		public int ConditionCode { get; set; } // World Meteorological Organization standard
+		/// <summary>
+		/// Stored in Celsius. If shown as Fahrenheit to the user, conversion is done on display.
+		/// </summary>
+		public double Temperature { get; set; }
+		/// <summary>
+		/// WMO Code - World Meteorological Organization standard
+		/// </summary>
+		public int WeatherCode { get; set; }
 	}
 }

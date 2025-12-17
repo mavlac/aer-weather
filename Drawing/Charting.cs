@@ -352,7 +352,7 @@ namespace Aer.Drawing
 				bool isOnRightEdge = x > width - 35;
 				if (!isOnRightEdge)
 				{
-					var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].ConditionCode, hourly[i].IsDaytime);
+					var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].WeatherCode, hourly[i].IsDaytime);
 					ds.DrawText(glyph, x + 15f, chart.Y(40f), textColor, iconFormat);
 				}
 			}

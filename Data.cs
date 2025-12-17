@@ -38,7 +38,7 @@ namespace Aer
 
 		public static int? CacheLocationID { get; private set; }
 		public static int? CacheWeatherProviderID { get; private set; }
-		public static int? CachedConditionCode { get; private set; }
+		public static int? CachedWeatherCode { get; private set; }
 		public static bool? CachedIsDaytime { get; private set; }
 		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
 		public static List<HourlyForecast> CachedHourly { get; private set; } = new();
@@ -49,8 +49,8 @@ namespace Aer
 
 		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString("F4", CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString("F4", CultureInfo.InvariantCulture)}";
 		public static string ReadableTemperature => CachedTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedTemperature.Value, " ");
-		public static string ConditionDescription => CachedConditionCode is null ? "—" : WeatherDescriptions.GetDescription(CachedConditionCode.Value, CachedIsDaytime!.Value);
-		public static string ConditionWeatherIconsGlyph => CachedConditionCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedConditionCode!.Value, CachedIsDaytime!.Value);
+		public static string ConditionDescription => CachedWeatherCode is null ? "—" : WeatherDescriptions.GetDescription(CachedWeatherCode.Value, CachedIsDaytime!.Value);
+		public static string ConditionWeatherIconsGlyph => CachedWeatherCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedWeatherCode!.Value, CachedIsDaytime!.Value);
 
 		public static void LoadCacheOrDefaults()
 		{
@@ -106,14 +106,14 @@ namespace Aer
 			if (isSavedLocationLoadSuccessful &&
 				isCachedDataMatchingLocation &&
 				isCachedDataMatchingWeatherProvider &&
-				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedConditionCode)}", out int cachedConditionCode) &&
+				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedWeatherCode)}", out int cachedWeatherCode) &&
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", out double cachedTemperature) &&
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", out DateTime cacheValidUntil) &&
 				AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime))
 			{
-				CachedConditionCode = cachedConditionCode;
+				CachedWeatherCode = cachedWeatherCode;
 				CachedIsDaytime = cachedIsDaytime;
 				CachedTemperature = cachedTemperature;
 				CachedHourly = cachedHourly;
@@ -182,7 +182,7 @@ namespace Aer
 				// On success
 				CacheLocationID = LocationID;
 				CacheWeatherProviderID = provider.ProviderId;
-				CachedConditionCode = weatherResult.Current.ConditionCode;
+				CachedWeatherCode = weatherResult.Current.WeatherCode;
 				CachedIsDaytime = weatherResult.Current.IsDaytime;
 				CachedTemperature = weatherResult.Current.Temperature;
 				CachedHourly = weatherResult.Hourly;
@@ -219,7 +219,7 @@ namespace Aer
 
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", CacheLocationID);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CacheWeatherProviderID)}", CacheWeatherProviderID);
-			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedConditionCode)}", CachedConditionCode);
+			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedWeatherCode)}", CachedWeatherCode);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", CachedIsDaytime);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", CachedTemperature);
 			AppStorage.Save($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", CachedHourly);

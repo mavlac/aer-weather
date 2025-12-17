@@ -36,7 +36,7 @@ namespace Aer.Weather.OpenMeteo
 			{
 				IsDaytime = openMeteoResponse.Current.IsDay == 1,
 				Temperature = openMeteoResponse.Current.Temperature,
-				ConditionCode = openMeteoResponse.Current.WeatherCode,
+				WeatherCode = openMeteoResponse.Current.WeatherCode,
 			};
 
 			// Map hourly
@@ -48,7 +48,7 @@ namespace Aer.Weather.OpenMeteo
 					Time = DateTimeUtils.ConvertUtcIsoToLocal(openMeteoResponse.Hourly.Time[i]), // Convert Open-Meteo's UTC time to local OS time
 					IsDaytime = openMeteoResponse.Hourly.IsDay[i] == 1,
 					Temperature = openMeteoResponse.Hourly.Temperature[i],
-					ConditionCode = openMeteoResponse.Hourly.WeatherCode[i],
+					WeatherCode = openMeteoResponse.Hourly.WeatherCode[i],
 					Rain = openMeteoResponse.Hourly.Rain[i],
 					Snowfall = openMeteoResponse.Hourly.Snowfall[i]
 				});
