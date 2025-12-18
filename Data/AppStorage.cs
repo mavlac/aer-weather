@@ -9,32 +9,38 @@ namespace Aer.Data
 	public static class AppStorage
 	{
 		private const string AppDataFileName = "appdata.json";
-
+		
 		private static readonly string _filePath = Path.Combine(ApplicationData.Current.LocalFolder.Path, AppDataFileName);
+		
 		private static readonly Dictionary<string, JsonElement> _store = new();
 
 		static AppStorage()
 		{
-			_store = File.Exists(_filePath)
-				? JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(File.ReadAllText(_filePath)) ?? new()
-				: new();
+			_store =
+				File.Exists(_filePath)
+					? JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(File.ReadAllText(_filePath)) ?? new()
+					: new();
 		}
 
-		#region Save, Load, Delete
 		/// <summary>
-		/// Saves the specified value under the given key in the persistent store.
+		/// Saves the value under the given key in the persistent store.
 		/// </summary>
 		/// <remarks>
-		/// This method does not automatically persist changes to storage. To ensure that all saved data is
-		/// written, call the Flush method after completing all Save operations. Multiple Save calls can be batched together
-		/// before flushing to improve performance.
+		/// This method does not automatically write changes to storage.
+		/// To ensure that all saved data is written, call the Flush after all SaveValue operations.
+		/// This way SaveValue calls can be batched together before flushing, to improve performance.
 		/// </remarks>
-		public static void Save<T>(string key, T value)
+		public static void SaveValue<T>(string key, T value)
 		{
 			_store[key] = JsonSerializer.SerializeToElement(value);
 		}
 
-		public static bool TryLoad<T>(string key, out T? deserializedValue)
+		public static void Flush()
+		{
+			File.WriteAllText(_filePath, JsonSerializer.Serialize(_store));
+		}
+
+		public static bool TryGetValue<T>(string key, out T? deserializedValue)
 		{
 			if (_store.TryGetValue(key, out var value))
 			{
@@ -55,11 +61,6 @@ namespace Aer.Data
 			return false;
 		}
 
-		public static void Flush()
-		{
-			File.WriteAllText(_filePath, JsonSerializer.Serialize(_store));
-		}
-
 		public static void Delete()
 		{
 			if (File.Exists(_filePath))
@@ -68,9 +69,7 @@ namespace Aer.Data
 			}
 			_store.Clear();
 		}
-		#endregion
 
-		#region Helpers
 		/// <summary>
 		/// Opens the local folder where the app data is stored in File Explorer.
 		/// </summary>
@@ -84,6 +83,5 @@ namespace Aer.Data
 				UseShellExecute = true
 			});
 		}
-		#endregion
 	}
 }
