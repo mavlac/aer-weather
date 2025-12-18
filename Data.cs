@@ -13,7 +13,7 @@ using Windows.Storage;
 namespace Aer
 {
 	/// <summary>
-	/// Holds the set location and cached weather data.
+	/// Holds the set location (LocalSettings) and cached weather data (AppStorage).
 	/// Able to update itself from network using the IWeatherProvider
 	/// </summary>
 	public static class Data
@@ -26,15 +26,15 @@ namespace Aer
 
 		private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
 
-		private static string SettingsPrefix => nameof(Data);
+		private static string LocalSettingsPrefix => nameof(Data);
 		private static string AppStorageKeyPrefix => nameof(Data);
 
 		private static bool IsUpdatingFromNetwork { get; set; }
 
-		public static int? LocationID { get; private set; }
 		public static string? LocationLabel { get; private set; }
 		public static double? LocationLatitude { get; private set; }
 		public static double? LocationLongitude { get; private set; }
+		public static int? LocationID { get; private set; }
 
 		public static int? CacheLocationID { get; private set; }
 		public static int? CacheWeatherProviderID { get; private set; }
@@ -57,26 +57,28 @@ namespace Aer
 			// Will load location, and if loaded and matching the location of cached data, will load cache.
 			// If location is not valid, will load default location and invalidate cached data flag IsCacheDataValid
 
-			var settings = ApplicationData.Current.LocalSettings;
+			var localSettings = ApplicationData.Current.LocalSettings;
 			bool isSavedLocationLoadSuccessful;
 			bool isCachedDataMatchingLocation;
 			bool isCachedDataMatchingWeatherProvider;
 
 			// Loading the saved location details
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationID)}", out var locationIDObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLabel)}", out var locationLabelObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLatitude)}", out var locationLatitudeObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_{nameof(LocationLongitude)}", out var locationLongitudeObj))
+			if (localSettings.Values.TryGetValue($"{LocalSettingsPrefix}_{nameof(LocationLabel)}", out var locationLabelObj) &&
+				localSettings.Values.TryGetValue($"{LocalSettingsPrefix}_{nameof(LocationLatitude)}", out var locationLatitudeObj) &&
+				localSettings.Values.TryGetValue($"{LocalSettingsPrefix}_{nameof(LocationLongitude)}", out var locationLongitudeObj) &&
+				localSettings.Values.TryGetValue($"{LocalSettingsPrefix}_{nameof(LocationID)}", out var locationIDObj))
 			{
-				LocationID = (int)locationIDObj;
 				LocationLabel = (string)locationLabelObj;
 				LocationLatitude = (double)locationLatitudeObj;
 				LocationLongitude = (double)locationLongitudeObj;
+				LocationID = (int)locationIDObj;
+				
 				isSavedLocationLoadSuccessful = true;
 			}
 			else
 			{
 				SetLocation(DefaultLocationName, DefaultLocationCountry, DefaultLocationLatitude, DefaultLocationLongitude);
+				
 				isSavedLocationLoadSuccessful = false;
 			}
 
@@ -84,6 +86,7 @@ namespace Aer
 			if (AppStorage.TryLoad($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", out int cacheLocationID))
 			{
 				CacheLocationID = cacheLocationID;
+				
 				isCachedDataMatchingLocation = CacheLocationID == LocationID;
 			}
 			else
@@ -138,17 +141,17 @@ namespace Aer
 
 		public static void SetLocation(string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
 		{
-			LocationID = GetLocationId(newLocationLatitude, newLocationLongitude);
 			LocationLabel = string.Format(LocationLabelFormat, newLocationName, newLocationCountry);
 			LocationLatitude = newLocationLatitude;
 			LocationLongitude = newLocationLongitude;
+			LocationID = GetLocationId(LocationLatitude.Value, LocationLongitude.Value);
 
-			var settings = ApplicationData.Current.LocalSettings;
+			var localSettings = ApplicationData.Current.LocalSettings;
 
-			settings.Values[$"{SettingsPrefix}_{nameof(LocationID)}"] = LocationID;
-			settings.Values[$"{SettingsPrefix}_{nameof(LocationLabel)}"] = LocationLabel;
-			settings.Values[$"{SettingsPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
-			settings.Values[$"{SettingsPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
+			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(LocationLabel)}"] = LocationLabel;
+			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
+			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
+			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(LocationID)}"] = LocationID;
 
 			IsCacheDataValid = false; // New data must be loaded always after location change
 		}
