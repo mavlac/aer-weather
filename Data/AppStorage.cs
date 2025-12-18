@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using Windows.Storage;
 
-namespace Aer
+namespace Aer.Data
 {
 	public static class AppStorage
 	{
@@ -21,12 +21,17 @@ namespace Aer
 		}
 
 		#region Save, Load, Delete
+		/// <summary>
+		/// Saves the specified value under the given key in the persistent store.
+		/// </summary>
+		/// <remarks>
+		/// This method does not automatically persist changes to storage. To ensure that all saved data is
+		/// written, call the Flush method after completing all Save operations. Multiple Save calls can be batched together
+		/// before flushing to improve performance.
+		/// </remarks>
 		public static void Save<T>(string key, T value)
 		{
 			_store[key] = JsonSerializer.SerializeToElement(value);
-			
-			// Flush needs to be called after all data had been saved.
-			// Is not automatically called, so that multiple Save calls can be batched together
 		}
 
 		public static bool TryLoad<T>(string key, out T? deserializedValue)

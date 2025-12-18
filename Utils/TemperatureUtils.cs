@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Aer.Data;
+using System;
 using Windows.Globalization;
 
 namespace Aer.Utils

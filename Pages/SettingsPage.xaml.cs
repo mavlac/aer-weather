@@ -1,3 +1,4 @@
+using Aer.Data;
 using Aer.Utils;
 using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
@@ -8,7 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Windows.ApplicationModel;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.System;
 
@@ -90,8 +90,8 @@ namespace Aer
 		#region Location
 		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
 		{
-			LocationSettingsCard.Header = Data.LocationLabel!;
-			LocationSettingsCard.Description = Data.LocationCoordinates!;
+			LocationSettingsCard.Header = LocationAndCacheData.LocationLabel!;
+			LocationSettingsCard.Description = LocationAndCacheData.LocationCoordinates!;
 			
 			if (acknowlidgeAChange)
 			{
@@ -116,7 +116,7 @@ namespace Aer
 					&& !string.IsNullOrWhiteSpace(location.City)
 					&& !string.IsNullOrWhiteSpace(location.Country))
 				{
-					Data.SetLocation(location.City, location.Country, location.Latitude, location.Longitude);
+					LocationAndCacheData.SetLocation(location.City, location.Country, location.Latitude, location.Longitude);
 					
 					UpdateLocationSectionFromData(true);
 				}
@@ -141,7 +141,7 @@ namespace Aer
 				await GeoNames.Load(); // Wait for it to finish
 				LocationLoadingProgressRing.IsActive = false; // disable the ring
 				
-				// Data ready - continue with creating options
+				// LocationAndCacheData ready - continue with creating options
 			}
 
 			string query = sender.Text;
@@ -186,10 +186,10 @@ namespace Aer
 			{
 				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
 
-				Data.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
+				LocationAndCacheData.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
 
-				// Data will update when showing the HomePage
+				// LocationAndCacheData will update when showing the HomePage
 			}
 		}
 		#endregion
@@ -339,7 +339,7 @@ namespace Aer
 			AppStorage.Delete();
 
 			// 4. Reload default values into data and preferences
-			Data.LoadCacheOrDefaults();
+			LocationAndCacheData.LoadCacheOrDefaults();
 			Preferences.Load();
 
 			// 5. Refresh UI with default values

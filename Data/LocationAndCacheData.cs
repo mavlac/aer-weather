@@ -10,13 +10,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace Aer
+namespace Aer.Data
 {
 	/// <summary>
 	/// Holds the set location (LocalSettings) and cached weather data (AppStorage).
 	/// Able to update itself from network using the IWeatherProvider
 	/// </summary>
-	public static class Data
+	public static class LocationAndCacheData // TODO: Will be separated
 	{
 		private const string LocationLabelFormat = "{0}, {1}"; // Name, Country
 		private const string DefaultLocationName = "Prague";
@@ -26,8 +26,8 @@ namespace Aer
 
 		private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
 
-		private static string LocalSettingsPrefix => nameof(Data);
-		private static string AppStorageKeyPrefix => nameof(Data);
+		private static string LocalSettingsPrefix => nameof(LocationAndCacheData);
+		private static string AppStorageKeyPrefix => nameof(LocationAndCacheData);
 
 		private static bool IsUpdatingFromNetwork { get; set; }
 
