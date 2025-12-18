@@ -9,12 +9,15 @@ using WinRT.Interop;
 
 namespace Aer.Utils
 {
+	/// <summary>
+	/// Window position and size, saved in LocalSettings
+	/// </summary>
 	public static class WindowPlacementManager
 	{
+		private const string LocalSettingsKeyPrefix = nameof(WindowPlacementManager);
+
 		[DllImport("User32.dll")]
 		private static extern int GetDpiForWindow(IntPtr hwnd);
-		
-		public static string SettingsPrefix => nameof(WindowPlacementManager);
 
 		public static void Save(Window window)
 		{
@@ -30,13 +33,13 @@ namespace Aer.Utils
 			var pos = appWindow.Position;
 			var size = appWindow.Size;
 
-			settings.Values[$"{SettingsPrefix}_X"] = (int)(pos.X / scale);
-			settings.Values[$"{SettingsPrefix}_Y"] = (int)(pos.Y / scale);
-			settings.Values[$"{SettingsPrefix}_W"] = (int)(size.Width / scale);
-			settings.Values[$"{SettingsPrefix}_H"] = (int)(size.Height / scale);
+			settings.Values[$"{LocalSettingsKeyPrefix}_X"] = (int)(pos.X / scale);
+			settings.Values[$"{LocalSettingsKeyPrefix}_Y"] = (int)(pos.Y / scale);
+			settings.Values[$"{LocalSettingsKeyPrefix}_W"] = (int)(size.Width / scale);
+			settings.Values[$"{LocalSettingsKeyPrefix}_H"] = (int)(size.Height / scale);
 
 			// SaveWeatherData maximized state (ignore minimized)
-			settings.Values[$"{SettingsPrefix}_IsMaximized"] =
+			settings.Values[$"{LocalSettingsKeyPrefix}_IsMaximized"] =
 				appWindow.Presenter is OverlappedPresenter o &&
 				o.State == OverlappedPresenterState.Maximized;
 		}
@@ -53,10 +56,10 @@ namespace Aer.Utils
 			var settings = ApplicationData.Current.LocalSettings;
 
 			// try size + position
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_W", out var wObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_H", out var hObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_X", out var xObj) &&
-				settings.Values.TryGetValue($"{SettingsPrefix}_Y", out var yObj))
+			if (settings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_W", out var wObj) &&
+				settings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_H", out var hObj) &&
+				settings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_X", out var xObj) &&
+				settings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_Y", out var yObj))
 			{
 				int x = (int)((int)xObj * scale);
 				int y = (int)((int)yObj * scale);
@@ -80,7 +83,7 @@ namespace Aer.Utils
 			}
 
 			// try maximized
-			if (settings.Values.TryGetValue($"{SettingsPrefix}_IsMaximized", out var maxObj) &&
+			if (settings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_IsMaximized", out var maxObj) &&
 				maxObj is bool isMaximized &&
 				isMaximized &&
 				appWindow.Presenter is OverlappedPresenter overlapped)

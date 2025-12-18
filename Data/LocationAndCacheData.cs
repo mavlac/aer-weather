@@ -18,6 +18,9 @@ namespace Aer.Data
 	/// </summary>
 	public static class LocationAndCacheData // TODO: Will be separated
 	{
+		private const string LocalSettingsKeyPrefix = nameof(LocationAndCacheData);
+		private const string AppStorageKeyPrefix = nameof(LocationAndCacheData);
+
 		private const string LocationLabelFormat = "{0}, {1}"; // Name, Country
 		private const string DefaultLocationName = "Prague";
 		private const string DefaultLocationCountry = "CZ";
@@ -25,9 +28,6 @@ namespace Aer.Data
 		private const double DefaultLocationLongitude = 14.42076;
 
 		private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
-
-		private static string LocalSettingsPrefix => nameof(LocationAndCacheData);
-		private static string AppStorageKeyPrefix => nameof(LocationAndCacheData);
 
 		private static bool IsUpdatingFromNetwork { get; set; }
 
@@ -63,10 +63,10 @@ namespace Aer.Data
 			bool isCachedDataMatchingWeatherProvider;
 
 			// Loading the saved location details
-			if (localSettings.Values.TryGetValue($"{LocalSettingsPrefix}_{nameof(LocationLabel)}", out var locationLabelObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsPrefix}_{nameof(LocationLatitude)}", out var locationLatitudeObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsPrefix}_{nameof(LocationLongitude)}", out var locationLongitudeObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsPrefix}_{nameof(LocationID)}", out var locationIDObj))
+			if (localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(LocationLabel)}", out var locationLabelObj) &&
+				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(LocationLatitude)}", out var locationLatitudeObj) &&
+				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(LocationLongitude)}", out var locationLongitudeObj) &&
+				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(LocationID)}", out var locationIDObj))
 			{
 				LocationLabel = (string)locationLabelObj;
 				LocationLatitude = (double)locationLatitudeObj;
@@ -148,10 +148,10 @@ namespace Aer.Data
 
 			var localSettings = ApplicationData.Current.LocalSettings;
 
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(LocationLabel)}"] = LocationLabel;
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(LocationID)}"] = LocationID;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(LocationLabel)}"] = LocationLabel;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(LocationID)}"] = LocationID;
 
 			IsCacheDataValid = false; // New data must be loaded always after location change
 		}

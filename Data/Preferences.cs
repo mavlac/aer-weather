@@ -11,7 +11,7 @@ namespace Aer.Data
 	/// </summary>
 	public static class Preferences
 	{
-		private static string LocalSettingsPrefix => nameof(Preferences);
+		private const string LocalSettingsKeyPrefix = nameof(Preferences);
 
 		public static int WeatherProviderId { get; private set; }
 		public static TemperatureUtils.Unit TemperatureUnits { get; private set; }
@@ -31,7 +31,7 @@ namespace Aer.Data
 			
 			static T GetValueOrDefault<T>(string key, T defaultValue)
 			{
-				if (ApplicationData.Current.LocalSettings.Values.TryGetValue($"{LocalSettingsPrefix}_{key}", out var obj) && obj is T value)
+				if (ApplicationData.Current.LocalSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{key}", out var obj) && obj is T value)
 					return value;
 				
 				return defaultValue;
@@ -42,12 +42,12 @@ namespace Aer.Data
 		{
 			var localSettings = ApplicationData.Current.LocalSettings;
 			
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(WeatherProviderId)}"] = WeatherProviderId;
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(TemperatureUnits)}"] = (int)TemperatureUnits;
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(AppTheme)}"] = (int)AppTheme;
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(UseSystemAccentColor)}"] = UseSystemAccentColor;
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(UseThickChartLine)}"] = UseThickChartLine;
-			localSettings.Values[$"{LocalSettingsPrefix}_{nameof(WasWelcomeShown)}"] = WasWelcomeShown;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(WeatherProviderId)}"] = WeatherProviderId;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(TemperatureUnits)}"] = (int)TemperatureUnits;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(AppTheme)}"] = (int)AppTheme;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(UseSystemAccentColor)}"] = UseSystemAccentColor;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(UseThickChartLine)}"] = UseThickChartLine;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(WasWelcomeShown)}"] = WasWelcomeShown;
 		}
 
 		public static void SetWeatherProviderId(int providerId)
