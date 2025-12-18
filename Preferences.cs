@@ -20,7 +20,7 @@ namespace Aer
 		public static void Load()
 		{
 			WeatherProviderId = GetValueOrDefault(nameof(WeatherProviderId), WeatherProvider.GetPreferredProviderId());
-			TemperatureUnits = (TemperatureUtils.Unit)GetValueOrDefault(nameof(TemperatureUnits), (int)LocalizationUtils.GetPreferredTemperatureUnit());
+			TemperatureUnits = (TemperatureUtils.Unit)GetValueOrDefault(nameof(TemperatureUnits), (int)TemperatureUtils.GetPreferredTemperatureUnit());
 			AppTheme = (ElementTheme)GetValueOrDefault(nameof(AppTheme), (int)ElementTheme.Default);
 			UseThickChartLine = GetValueOrDefault(nameof(UseThickChartLine), true);
 			UseSystemAccentColor = GetValueOrDefault(nameof(UseSystemAccentColor), false);

@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Globalization;
 
 namespace Aer.Utils
 {
@@ -28,20 +29,37 @@ namespace Aer.Utils
 				: CelsiusToFahrenheit(celsiusTemperature);
 		}
 
-		public static double CelsiusToFahrenheit(double celsius)
+		public static double CelsiusToFahrenheit(double celsiusTemperature)
 		{
-			return (celsius * 9.0 / 5.0) + 32.0;
+			return (celsiusTemperature * 9.0 / 5.0) + 32.0;
+		}
+
+		public static Unit GetPreferredTemperatureUnit()
+		{
+			var region = new GeographicRegion();
+			var code = region.CodeTwoLetter; // e.g. "US", "GB", "DE"
+			
+			// Fahrenheit countries
+			string[] fahrenheitRegions = ["US", "BS", "BZ", "KY", "PW"];
+			
+			if (Array.Exists(fahrenheitRegions, r => r == code))
+			{
+				return Unit.Fahrenheit;
+			}
+			
+			return Unit.Celsius;
 		}
 
 
 
+		// Enum extension
 		public static string UnitString(this Unit unit)
 		{
 			return unit switch
 			{
 				Unit.Celsius => "°C",
 				Unit.Fahrenheit => "°F",
-				_ => throw new System.NotImplementedException()
+				_ => throw new NotImplementedException()
 			};
 		}
 	}
