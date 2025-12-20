@@ -3,38 +3,21 @@ using Aer.Weather;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Storage;
 
 namespace Aer.Data
 {
 	/// <summary>
-	/// Holds the set location (LocalSettings) and cached weather data (AppStorage).
+	/// Cached weather data, saved using AppStorage
 	/// Able to update itself from network using the IWeatherProvider
 	/// </summary>
-	public static class LocationAndCacheData // TODO: Will be separated
+	internal class WeatherData
 	{
-		private const string LocalSettingsKeyPrefix = nameof(LocationAndCacheData);
-		private const string AppStorageKeyPrefix = nameof(LocationAndCacheData);
-
-		private const string LocationLabelFormat = "{0}, {1}"; // Name, Country
-		private const string DefaultLocationName = "Prague";
-		private const string DefaultLocationCountry = "CZ";
-		private const double DefaultLocationLatitude = 50.08804;
-		private const double DefaultLocationLongitude = 14.42076;
-
-		private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
+		private const string AppStorageKeyPrefix = nameof(WeatherData);
 
 		private static bool IsUpdatingFromNetwork { get; set; }
-
-		public static string? LocationLabel { get; private set; }
-		public static double? LocationLatitude { get; private set; }
-		public static double? LocationLongitude { get; private set; }
-		public static int? LocationID { get; private set; }
 
 		public static int? CacheLocationID { get; private set; }
 		public static int? CacheWeatherProviderID { get; private set; }
@@ -44,61 +27,35 @@ namespace Aer.Data
 		public static List<HourlyForecast> CachedHourly { get; private set; } = new();
 		public static DateTimeOffset? CacheValidUntil { get; private set; }
 		public static DateTimeOffset? CacheLastUpdateTime { get; private set; }
-		public static bool IsCacheDataValid { get; private set; }
-		public static bool IsCachedDataRecentEnough => CacheValidUntil is not null && DateTimeOffset.UtcNow < CacheValidUntil;
+		
+		public static bool IsCachedDataLoaded => CacheValidUntil is not null;
+		public static bool IsCachedDataRecentEnough => IsCachedDataLoaded && DateTimeOffset.UtcNow < CacheValidUntil;
 
-		public static string? LocationCoordinates => LocationLatitude is null || LocationLongitude is null ? null : $"{LocationLatitude.Value.ToString("F4", CultureInfo.InvariantCulture)}, {LocationLongitude.Value.ToString("F4", CultureInfo.InvariantCulture)}";
 		public static string ReadableTemperature => CachedTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedTemperature.Value, " ");
 		public static string ConditionDescription => CachedWeatherCode is null ? "—" : WeatherDescriptions.GetDescription(CachedWeatherCode.Value, CachedIsDaytime!.Value);
 		public static string ConditionWeatherIconsGlyph => CachedWeatherCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedWeatherCode!.Value, CachedIsDaytime!.Value);
 
-		public static void LoadCacheOrDefaults()
+		public static void LoadOrSetDefaults()
 		{
-			// Will load location, and if loaded and matching the location of cached data, will load cache.
-			// If location is not valid, will load default location and invalidate cached data flag IsCacheDataValid
-
-			var localSettings = ApplicationData.Current.LocalSettings;
-			bool isSavedLocationLoadSuccessful;
 			bool isCachedDataMatchingLocation;
 			bool isCachedDataMatchingWeatherProvider;
 
-			// Loading the saved location details
-			if (localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(LocationLabel)}", out var locationLabelObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(LocationLatitude)}", out var locationLatitudeObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(LocationLongitude)}", out var locationLongitudeObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(LocationID)}", out var locationIDObj))
-			{
-				LocationLabel = (string)locationLabelObj;
-				LocationLatitude = (double)locationLatitudeObj;
-				LocationLongitude = (double)locationLongitudeObj;
-				LocationID = (int)locationIDObj;
-				
-				isSavedLocationLoadSuccessful = true;
-			}
-			else
-			{
-				SetLocation(DefaultLocationName, DefaultLocationCountry, DefaultLocationLatitude, DefaultLocationLongitude);
-				
-				isSavedLocationLoadSuccessful = false;
-			}
-
-			// Getting the cached location to compare with loaded location (cache can be fine, but location changed meanwhile)
+			// Getting the cached location to compare with current location
 			if (AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", out int cacheLocationID))
 			{
 				CacheLocationID = cacheLocationID;
-				
-				isCachedDataMatchingLocation = CacheLocationID == LocationID;
+				isCachedDataMatchingLocation = (CacheLocationID == LocationData.LocationID);
 			}
 			else
 			{
 				isCachedDataMatchingLocation = false;
 			}
 
-			// Getting the cached weather provider ID to compare with current provider (in case provider changed)
+			// Getting the cached weather provider ID to compare with current provider
 			if (AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CacheWeatherProviderID)}", out int cacheWeatherProviderID))
 			{
 				CacheWeatherProviderID = cacheWeatherProviderID;
-				isCachedDataMatchingWeatherProvider = CacheWeatherProviderID == Preferences.WeatherProviderId;
+				isCachedDataMatchingWeatherProvider = (CacheWeatherProviderID == Preferences.WeatherProviderId);
 			}
 			else
 			{
@@ -106,8 +63,7 @@ namespace Aer.Data
 			}
 
 			// Loading the saved weather data, only if the location was loaded successfully and cache location matches
-			if (isSavedLocationLoadSuccessful &&
-				isCachedDataMatchingLocation &&
+			if (isCachedDataMatchingLocation &&
 				isCachedDataMatchingWeatherProvider &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedWeatherCode)}", out int cachedWeatherCode) &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
@@ -122,45 +78,24 @@ namespace Aer.Data
 				CachedHourly = cachedHourly;
 				CacheValidUntil = cacheValidUntil;
 				CacheLastUpdateTime = cacheLastUpdateTime;
-				IsCacheDataValid = true;
 			}
 			else
 			{
-				// Location set to defaults
-				// or cached data from another location
-				// or no success loading the cache
+				// Cached data load failed, or cached from another location/provider
 				CacheValidUntil = null;
 				CacheLastUpdateTime = null;
-				IsCacheDataValid = false;
 			}
-
-			Debug.WriteLineIf(IsCacheDataValid, $"Cache loaded and valid. All OK.");
-			Debug.WriteLineIf(!IsCacheDataValid, $"Loading from the cache failed. isSavedLocationLoadSuccessful = {isSavedLocationLoadSuccessful}, isCachedDataMatchingLocation = {isCachedDataMatchingLocation}");
-			Debug.WriteLineIf(!isCachedDataMatchingLocation, $"Cache location not matching selected location. '{CacheLocationID}' vs '{LocationID}'");
-		}
-
-		public static void SetLocation(string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
-		{
-			LocationLabel = string.Format(LocationLabelFormat, newLocationName, newLocationCountry);
-			LocationLatitude = newLocationLatitude;
-			LocationLongitude = newLocationLongitude;
-			LocationID = GetLocationId(LocationLatitude.Value, LocationLongitude.Value);
-
-			var localSettings = ApplicationData.Current.LocalSettings;
-
-			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(LocationLabel)}"] = LocationLabel;
-			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(LocationLatitude)}"] = LocationLatitude;
-			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(LocationLongitude)}"] = LocationLongitude;
-			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(LocationID)}"] = LocationID;
-
-			IsCacheDataValid = false; // New data must be loaded always after location change
+			
+			Debug.WriteLineIf(IsCachedDataLoaded, $"WeatherData loaded and valid. All OK.");
+			Debug.WriteLineIf(!IsCachedDataLoaded, $"Loading from the cache failed.");
+			Debug.WriteLineIf(!isCachedDataMatchingLocation, $"WeatherData location not matching selected location. '{CacheLocationID}' vs '{LocationData.LocationID}'");
 		}
 
 		public static async Task<(bool status, string message)> UpdateWeatherDataFromNetwork(CancellationToken cancellationToken)
 		{
 			Debug.Assert(IsUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
 
-			if (IsCacheDataValid && IsCachedDataRecentEnough)
+			if (IsCachedDataLoaded && IsCachedDataRecentEnough)
 			{
 				return (true, "Using cached data."); // OK: no network update performed, because wasn't needed
 			}
@@ -172,7 +107,7 @@ namespace Aer.Data
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var provider = WeatherProvider.Get(Preferences.WeatherProviderId);
-				var (weatherResult, errorMessage) = await provider.GetWeatherAsync(LocationLatitude!.Value, LocationLongitude!.Value, cancellationToken);
+				var (weatherResult, errorMessage) = await provider.GetWeatherAsync(LocationData.LocationLatitude!.Value, LocationData.LocationLongitude!.Value, cancellationToken);
 
 				cancellationToken.ThrowIfCancellationRequested();
 
@@ -183,7 +118,7 @@ namespace Aer.Data
 				}
 
 				// On success
-				CacheLocationID = LocationID;
+				CacheLocationID = LocationData.LocationID;
 				CacheWeatherProviderID = provider.ProviderId;
 				CachedWeatherCode = weatherResult.Current.WeatherCode;
 				CachedIsDaytime = weatherResult.Current.IsDaytime;
@@ -192,7 +127,6 @@ namespace Aer.Data
 				CacheValidUntil = weatherResult.ValidUntil;
 				CacheLastUpdateTime = DateTimeOffset.UtcNow;
 
-				IsCacheDataValid = true;
 				IsUpdatingFromNetwork = false; // Needs to be set here and not in finally, because SaveWeatherData asserts this
 				SaveWeatherData();
 
@@ -214,11 +148,10 @@ namespace Aer.Data
 			}
 		}
 
-
 		private static void SaveWeatherData()
 		{
 			Debug.Assert(IsUpdatingFromNetwork is false, "SaveWeatherData called while an update is in progress.");
-			Debug.Assert(IsCacheDataValid, "SaveWeatherData called while weather data is not valid.");
+			Debug.Assert(IsCachedDataLoaded, "SaveWeatherData called while weather data is not loaded.");
 
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", CacheLocationID);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheWeatherProviderID)}", CacheWeatherProviderID);
@@ -233,35 +166,11 @@ namespace Aer.Data
 
 		public static List<HourlyForecast> GetHourlyDataSinceNow()
 		{
-			Debug.Assert(IsCacheDataValid, "GetHourlyDataSinceNow called while weather data is not valid.");
+			Debug.Assert(IsCachedDataLoaded, "GetHourlyDataSinceNow called while no weather data is loaded.");
 
 			var now = DateTime.Now;
 
-			return CachedHourly
-				.Where(f => f.Time >= now)
-				.ToList();
-		}
-
-		/// <summary>
-		/// Location ID is a hash calculated from lat/long
-		/// and used to determine if the correct location is data is cached.
-		/// This way locations got from GeoData and from IPInfo can be kind-of compared.
-		/// </summary>
-		private static int GetLocationId(double latitude, double longitude)
-		{
-			// Round to avoid floating noise
-			var lat = Math.Round(latitude, 3);
-			var lon = Math.Round(longitude, 3);
-
-			// Convert to long bits (stable numeric representation)
-			long latBits = BitConverter.DoubleToInt64Bits(lat);
-			long lonBits = BitConverter.DoubleToInt64Bits(lon);
-
-			// Combine deterministically
-			long hash = latBits ^ (lonBits * 31);
-
-			// Compress to int
-			return (int)(hash ^ (hash >> 32));
+			return CachedHourly.Where(f => f.Time >= now).ToList();
 		}
 	}
 }

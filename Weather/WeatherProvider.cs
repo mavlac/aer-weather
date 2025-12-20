@@ -54,7 +54,7 @@ namespace Aer.Weather
 				Timeout = TimeSpan.FromSeconds(NetworkTimeoutSeconds)
 			};
 
-			string userAgent = $"{Package.Current.DisplayName}/{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build} ({Application.Current.Resources["GitHubRepositoryUrl"]})";
+			string userAgent = $"{Package.Current.DisplayName}/{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build} ({Application.Current.Resources["GitHubRepositoryURL"]})";
 			client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
 
 			Debug.WriteLine($"Created shared HttpClient with user agent: {client.DefaultRequestHeaders.UserAgent}");

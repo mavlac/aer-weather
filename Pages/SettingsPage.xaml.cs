@@ -90,8 +90,8 @@ namespace Aer
 		#region Location
 		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
 		{
-			LocationSettingsCard.Header = LocationAndCacheData.LocationLabel!;
-			LocationSettingsCard.Description = LocationAndCacheData.LocationCoordinates!;
+			LocationSettingsCard.Header = LocationData.LocationLabel!;
+			LocationSettingsCard.Description = LocationData.ReadableLocationCoordinates!;
 			
 			if (acknowlidgeAChange)
 			{
@@ -116,7 +116,7 @@ namespace Aer
 					&& !string.IsNullOrWhiteSpace(location.City)
 					&& !string.IsNullOrWhiteSpace(location.Country))
 				{
-					LocationAndCacheData.SetLocation(location.City, location.Country, location.Latitude, location.Longitude);
+					LocationData.SetLocation(location.City, location.Country, location.Latitude, location.Longitude);
 					
 					UpdateLocationSectionFromData(true);
 				}
@@ -185,10 +185,10 @@ namespace Aer
 			if (args.SelectedItem is string text && _locationSuggestionsMap.TryGetValue(text, out var location))
 			{
 				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
-
-				LocationAndCacheData.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
+				
+				LocationData.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
-
+				
 				// LocationAndCacheData will update when showing the HomePage
 			}
 		}
@@ -338,11 +338,14 @@ namespace Aer
 			// 3. Delete app storage file
 			AppStorage.Delete();
 
-			// 4. Reload default values into data and preferences
-			LocationAndCacheData.LoadCacheOrDefaults();
+			// 4. Reload default data
+			LocationData.LoadOrSetDefaults();
+			WeatherData.LoadOrSetDefaults();
+
+			// 5. Reload default preferences
 			Preferences.Load();
 
-			// 5. Refresh UI with default values
+			// 6. Refresh UI with default values
 			UpdateLocationSectionFromData(true);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();

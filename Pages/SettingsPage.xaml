@@ -196,7 +196,7 @@
 							<controls:SettingsCard Click="HyperlinkSettingsCard_Click"
 												   IsClickEnabled="True"
 												   Header="GitHub repository"
-												   DataContext="{StaticResource GitHubRepositoryUrl}">
+												   DataContext="{StaticResource GitHubRepositoryURL}">
 								<controls:SettingsCard.ActionIcon>
 									<FontIcon Glyph="&#xE8A7;" /><!-- OpenInNewWindow Icon -->
 								</controls:SettingsCard.ActionIcon>
@@ -204,7 +204,7 @@
 							<controls:SettingsCard Click="HyperlinkSettingsCard_Click"
 												   IsClickEnabled="True"
 												   Header="Privacy statement"
-												   DataContext="{StaticResource PrivacyStatementUrl}">
+												   DataContext="{StaticResource PrivacyStatementURL}">
 								<controls:SettingsCard.ActionIcon>
 									<FontIcon Glyph="&#xE8A7;" /><!-- OpenInNewWindow Icon -->
 								</controls:SettingsCard.ActionIcon>

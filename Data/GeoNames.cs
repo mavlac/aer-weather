@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Aer.Utils
+namespace Aer.Data
 {
 	internal static class GeoNames
 	{
@@ -24,13 +24,30 @@ namespace Aer.Utils
 
 			await Task.Run(() =>
 			{
-				string path = Path.Combine(AppContext.BaseDirectory, "Assets", "LocationAndCacheData", "cities500.txt");
+				string baseDir = AppContext.BaseDirectory;
+				string assetsDir = Path.Combine(baseDir, "Assets", "Data");
+				string filePath = Path.Combine(assetsDir, "cities500.txt");
 
+				// Validate directory
+				if (!Directory.Exists(assetsDir))
+				{
+					Debug.WriteLine($"GeoNames load failed: Directory not found: {assetsDir}");
+					IsLoading = false;
+					return;
+				}
+
+				// Validate file
+				if (!File.Exists(filePath))
+				{
+					Debug.WriteLine($"GeoNames load failed: File not found: {filePath}");
+					IsLoading = false;
+					return;
+				}
+
+				Debug.WriteLine($"GeoNames loading locations from {filePath}...");
+				
 				allGeoNamesLocations = new();
-
-				Debug.WriteLine($"Loading GeoNames locations from {path}...");
-
-				foreach (var line in File.ReadLines(path))
+				foreach (var line in File.ReadLines(filePath))
 				{
 					var parts = line.Split('\t');
 					if (parts.Length < 9) continue;
@@ -48,7 +65,7 @@ namespace Aer.Utils
 					allGeoNamesLocations.Add(new GeoNamesLocation(id, name, nameASCII, alternatenames, country, admin1Code, latitude, longitude, population));
 				}
 				
-				Debug.WriteLine($"Loaded {allGeoNamesLocations.Count} locations from {path}");
+				Debug.WriteLine($"GeoNames loaded {allGeoNamesLocations.Count} locations");
 			});
 			
 			IsLoading = false;
