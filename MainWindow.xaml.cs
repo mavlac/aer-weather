@@ -72,7 +72,7 @@ namespace Aer
 			WindowUtils.UpdateTitleBarDraggableArea(this);
 
 			// Nav Pane Responsivity
-			if (e.Size.Width < (double)Application.Current.Resources["Breakpoint840Plus"])
+			if (e.Size.Width < (double)Application.Current.Resources["Breakpoint1008Plus"])
 			{
 				NavView.OpenPaneLength = (double)Application.Current.Resources["NavPaneNarrowWidth"];
 			}
