@@ -36,7 +36,7 @@
 						  FontFamily="{StaticResource WeatherIconsFont}"
 						  Glyph="&#xF00D;"
 						  FontSize="21"
-						  Margin="18,4,2,0"
+						  Margin="16,4,2,0"
 						  VerticalAlignment="Top"/>
 				</StackPanel>
 				<TextBlock x:Name="SubHeaderText"
