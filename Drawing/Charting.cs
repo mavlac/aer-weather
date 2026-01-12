@@ -81,7 +81,7 @@ namespace Aer.Drawing
 					gridColor = Color.FromArgb(255, 65, 65, 65);
 					textColor = Colors.Gray;
 					rainBarColor = Color.FromArgb(255, 19, 130, 197);
-					snowBarColor = Color.FromArgb(255, 224, 224, 224);
+					snowBarColor = Colors.White;
 					break;
 			}
 
