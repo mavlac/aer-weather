@@ -88,6 +88,7 @@ namespace Aer.Drawing
 			// Visual
 			float mainLineStrokeWidth = Preferences.UseThickChartLine ? 1.7f : 1f;
 			const float gridStrokeWidth = 1f;
+			const float rainSnowBarCornerRadius = 1.5f;
 			const float rainSnowBarGutter = 1f;
 			const float snowBarHeightMultiplier = 0.2f;
 			const float rainBarHeightMultiplier = 0.2f;
@@ -211,11 +212,11 @@ namespace Aer.Drawing
 				bool drawSnowBarDot = !isDarkTheme && drawSnowBar;
 				if (drawRainBar && !drawSnowBar)
 				{
-					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -rainBarHeight, rainBarColor);
+					ds.FillRoundedRectangle(x, chart.Y(bottomLineY), barWidth, -rainBarHeight, rainSnowBarCornerRadius, rainSnowBarCornerRadius, rainBarColor);
 				}
 				else if (drawSnowBar && !drawRainBar)
 				{
-					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -snowBarHeight, snowBarColor);
+					ds.FillRoundedRectangle(x, chart.Y(bottomLineY), barWidth, -snowBarHeight, rainSnowBarCornerRadius, rainSnowBarCornerRadius, snowBarColor);
 				}
 				else if (drawRainBar && drawSnowBar)
 				{
@@ -223,9 +224,9 @@ namespace Aer.Drawing
 					(float height, Color color) backBar = rain > snow ? (rainBarHeight, rainBarColor) : (snowBarHeight, snowBarColor);
 					(float height, Color color) frontBar = rain > snow ? (snowBarHeight, snowBarColor) : (rainBarHeight, rainBarColor);
 					// Higher back one
-					ds.FillRectangle(x, chart.Y(bottomLineY), barWidth, -backBar.height, backBar.color);
+					ds.FillRoundedRectangle(x, chart.Y(bottomLineY), barWidth, -backBar.height, rainSnowBarCornerRadius, rainSnowBarCornerRadius, backBar.color);
 					// And the smaller front one is striped
-					DrawStripedBar(ds, x, chart.Y(bottomLineY), barWidth, -frontBar.height, rainBarColor, snowBarColor);
+					DrawStripedBar(ds, x, chart.Y(bottomLineY), barWidth, -frontBar.height, rainSnowBarCornerRadius, rainBarColor, snowBarColor);
 					
 					// Snow bar dot only if both bar overlaying and snow is back and significantly higher than rain
 					drawSnowBarDot = drawSnowBarDot && snowBarHeight > rainBarHeight + 4;
@@ -423,7 +424,7 @@ namespace Aer.Drawing
 			}
 		}
 
-		public static void DrawStripedBar(CanvasDrawingSession ds, float x, float y, float width, float height, Color color1, Color color2)
+		public static void DrawStripedBar(CanvasDrawingSession ds, float x, float y, float width, float height, float cornerRadius, Color color1, Color color2)
 		{
 			// Create a small off-screen pattern (tile)
 			int patternSize = 4;
@@ -444,7 +445,7 @@ namespace Aer.Drawing
 			brush.Transform = Matrix3x2.CreateRotation((float)(-Math.PI / 4.5f));
 
 			// Fill the bar area
-			ds.FillRectangle(x, y, width, height, brush);
+			ds.FillRoundedRectangle(x, y, width, height, cornerRadius, cornerRadius, brush);
 		}
 
 		private record DayExtremes
