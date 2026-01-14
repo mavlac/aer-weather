@@ -1,5 +1,6 @@
 ﻿using Aer.Data;
 using System;
+using System.Globalization;
 using Windows.Globalization;
 
 namespace Aer.Utils
@@ -15,12 +16,18 @@ namespace Aer.Utils
 		/// <summary>
 		/// Returns a readable temperature string in the user's preferred units, including unit symbol.
 		/// </summary>
-		public static string GetReadableTemperature(double celsiusTemperature, string separator)
+		public static string GetReadableTemperature(double celsiusTemperature, string separator, int decimals)
 		{
 			double t = GetTemperatureInPreferredUnit(celsiusTemperature);
-			int value = (int)Math.Round(t); // Eliminates -0 automatically
-
-			return $"{value}{separator}{Preferences.TemperatureUnits.UnitString()}";
+			
+			// Round explicitly to avoid cases like -0.00
+			double rounded = Math.Round(t, decimals, MidpointRounding.AwayFromZero);
+			// Normalize negative zero
+			rounded = Math.Abs(rounded) < double.Epsilon ? 0 : rounded;
+			
+			string format = $"F{decimals}";
+			
+			return $"{rounded.ToString(format, CultureInfo.InvariantCulture)}{separator}{Preferences.TemperatureUnits.UnitString()}";
 		}
 
 		public static double GetTemperatureInPreferredUnit(double celsiusTemperature)

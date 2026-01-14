@@ -26,7 +26,7 @@ namespace Aer.Weather
 
 			const string separator = " ";
 			string formattedTime = Time.ToString(culture.DateTimeFormat.ShortDatePattern) + " " + Time.ToString("HH:mm");
-			string formattedTemperature = TemperatureUtils.GetReadableTemperature(Temperature, string.Empty);
+			string formattedTemperature = TemperatureUtils.GetReadableTemperature(Temperature, string.Empty, 1);
 
 			return
 				$"{formattedTime}{separator}" +
