@@ -6,6 +6,7 @@ using Aer.Weather;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Text;
@@ -227,6 +228,52 @@ namespace Aer
 		}
 
 		#region User Interface
+		private void SubHeaderTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
+		{
+			var flyout = new MenuFlyout();
+
+			var currentItem = new RadioMenuFlyoutItem
+			{
+				Text = "Prague, CZ",
+				GroupName = "RecentLocations",
+				IsChecked = true
+			};
+			currentItem.Click += MenuItem_Click;
+			flyout.Items.Add(currentItem);
+
+			// Other items
+			var berlin = new RadioMenuFlyoutItem
+			{
+				Text = "Berlin, DE",
+				GroupName = "RecentLocations"
+			};
+			berlin.Click += MenuItem_Click;
+			flyout.Items.Add(berlin);
+
+			var vienna = new RadioMenuFlyoutItem
+			{
+				Text = "Vienna, AU",
+				GroupName = "RecentLocations"
+			};
+			vienna.Click += MenuItem_Click;
+			flyout.Items.Add(vienna);
+
+			flyout.ShowAt(
+				SubHeaderTextBlock,
+				new FlyoutShowOptions
+				{
+					Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft
+				});
+		}
+		private void MenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			if (sender is RadioMenuFlyoutItem item)
+			{
+				// PROOF it works
+				System.Diagnostics.Debug.WriteLine($"Clicked: {item.Text}");
+			}
+		}
+
 		private void ContentSelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
 		{
 			if (sender.SelectedItem == ContentSelectorBar_ChartCard)

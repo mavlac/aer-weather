@@ -31,18 +31,29 @@
 							   Text="HeaderText"
 							   Padding="1,0,0,0"
 							   FontFamily="Segoe UI"
-							   FontWeight="Light"/>
+							   FontWeight="Light" />
 					<FontIcon x:Name="CurrentConditionIcon"
-						  FontFamily="{StaticResource WeatherIconsFont}"
-						  Glyph="&#xF00D;"
-						  FontSize="21"
-						  Margin="16,4,2,0"
-						  VerticalAlignment="Top"/>
+							  FontFamily="{StaticResource WeatherIconsFont}"
+							  Glyph="&#xF00D;"
+							  FontSize="21"
+							  Margin="16,4,2,0"
+							  VerticalAlignment="Top" />
 				</StackPanel>
-				<TextBlock x:Name="SubHeaderText"
-						   Style="{StaticResource BodyTextBlockStyle}"
-						   Padding="0,6,0,0"
-						   Text="SubHeaderText" />
+				<StackPanel Orientation="Horizontal">
+					<TextBlock x:Name="SubHeaderTextBlock"
+							   Style="{StaticResource BodyTextBlockStyle}"
+							   Padding="0,6,0,0"
+							   Width="auto"
+							   ToolTipService.ToolTip="Quickly switch to a recently viewed location">
+						<Hyperlink Click="SubHeaderTextHyperlink_Click"
+								   TextDecorations="None"
+								   IsTabStop="False">
+							<Run x:Name="SubHeaderText"
+								 Text="SubHeaderText"
+								 TextDecorations="None" />
+						</Hyperlink>
+					</TextBlock>
+				</StackPanel>
 			</StackPanel>
 
 			<ScrollViewer x:Name="Scroller"
