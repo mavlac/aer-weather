@@ -158,7 +158,6 @@ namespace Aer
 
 		public void NavigateToSettingsPage(bool focusLocationSearch = false)
 		{
-			// TODO: Param to focus the LocationData AutoSuggestBox
 			ContentFrame.Navigate(typeof(SettingsPage), new SettingsNavigationArgs { FocusLocationSearch = focusLocationSearch });
 		}
 

@@ -232,6 +232,8 @@ namespace Aer
 		{
 			var flyout = new MenuFlyout();
 
+			// TODO: The FlyOut content
+
 			var currentItem = new RadioMenuFlyoutItem
 			{
 				Text = "Prague, CZ",
@@ -257,6 +259,24 @@ namespace Aer
 			};
 			vienna.Click += MenuItem_Click;
 			flyout.Items.Add(vienna);
+
+			flyout.Items.Add(new MenuFlyoutSeparator());
+
+			var openSettingsItem = new MenuFlyoutItem
+			{
+				Text = "Settings",
+				KeyboardAccelerators =
+				{
+					new Microsoft.UI.Xaml.Input.KeyboardAccelerator
+					{
+						Key = Windows.System.VirtualKey.S,
+						Modifiers = Windows.System.VirtualKeyModifiers.Control |
+									Windows.System.VirtualKeyModifiers.Menu // Menu is the Alt key
+					}
+				}
+			};
+
+			flyout.Items.Add(openSettingsItem);
 
 			flyout.ShowAt(
 				SubHeaderTextBlock,
