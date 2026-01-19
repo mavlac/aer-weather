@@ -44,14 +44,13 @@ namespace Aer
 			{
 				Preferences.SetWelcomeShown(true);
 
-				bool goToSettings = await MessageBoxEx.ShowAsync(
+				bool proceedToSettings = await MessageBoxEx.ShowAsync(
 					$"Welcome to {Package.Current.DisplayName}!",
 					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now.\r\nSet your preferred location in Settings.",
 					primaryButtonText: "Open Settings");
 
-				if (goToSettings)
+				if (proceedToSettings)
 				{
-					// Navigate to Settings page
 					App.MainWindow.NavigateToSettingsPage(true);
 				}
 			}
@@ -88,9 +87,15 @@ namespace Aer
 
 		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey obj)
 		{
-			if (obj == MainWindow.GlobalHotkey.DarkThemeToggle)
+			switch(obj)
 			{
-				ToggleDarkAndLightTheme();
+				case MainWindow.GlobalHotkey.OpenSettings:
+					App.MainWindow.NavigateToSettingsPage(false);
+					break;
+
+				case MainWindow.GlobalHotkey.DarkThemeToggle:
+					ToggleDarkAndLightTheme();
+					break;
 			}
 		}
 
@@ -264,17 +269,18 @@ namespace Aer
 
 			var openSettingsItem = new MenuFlyoutItem
 			{
-				Text = "Location settings…",
+				Text = "Location Settings...",
 				KeyboardAccelerators =
 				{
 					new Microsoft.UI.Xaml.Input.KeyboardAccelerator
 					{
 						Key = Windows.System.VirtualKey.S,
 						Modifiers = Windows.System.VirtualKeyModifiers.Control |
-									Windows.System.VirtualKeyModifiers.Menu // Menu is the Alt key
+									Windows.System.VirtualKeyModifiers.Menu // Alt
 					}
 				}
 			};
+			openSettingsItem.Click += (_, _) => App.MainWindow.NavigateToSettingsPage(true);
 
 			flyout.Items.Add(openSettingsItem);
 

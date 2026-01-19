@@ -19,7 +19,7 @@ namespace Aer
 		private const int DefaultWindowWidth = 1850;
 		private const int DefaultWindowHeight = 1040;
 
-		public enum GlobalHotkey { DarkThemeToggle }
+		public enum GlobalHotkey { OpenSettings, DarkThemeToggle }
 
 		private bool _isKeyHandlerAdded;
 
@@ -170,8 +170,18 @@ namespace Aer
 		#region Hotkeys
 		private void OnKeyDown(object sender, KeyRoutedEventArgs e)
 		{
+			// Ctrl + Alt + S
+			if (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) &&
+				InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Menu).HasFlag(CoreVirtualKeyStates.Down) &&
+				e.Key == VirtualKey.S)
+			{
+				e.Handled = true;
+				GlobalHotkeyPressed?.Invoke(GlobalHotkey.OpenSettings);
+			}
+
 			// Ctrl + D
-			if (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) && e.Key == VirtualKey.D)
+			if (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) &&
+				e.Key == VirtualKey.D)
 			{
 				e.Handled = true;
 				GlobalHotkeyPressed?.Invoke(GlobalHotkey.DarkThemeToggle);
