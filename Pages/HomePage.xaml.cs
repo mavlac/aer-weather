@@ -264,7 +264,7 @@ namespace Aer
 
 			var openSettingsItem = new MenuFlyoutItem
 			{
-				Text = "Settings",
+				Text = "Location settings…",
 				KeyboardAccelerators =
 				{
 					new Microsoft.UI.Xaml.Input.KeyboardAccelerator
