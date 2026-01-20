@@ -148,8 +148,8 @@ namespace Aer.Drawing
 			// Drawing
 
 			// Zero degree horizontal line
-			// Draw only if not above paddings (can go a bit under the bottom one)
-			if (zeroDegPositionY > (paddingBottom - 15) && zeroDegPositionY < height - paddingTop)
+			// Draw only if not above paddings (can go a bit under)
+			if (zeroDegPositionY > (paddingBottom - 15f) && zeroDegPositionY < (height - paddingTop + 15f))
 			{
 				var strokeStyle = new CanvasStrokeStyle();
 				strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
