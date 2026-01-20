@@ -29,7 +29,7 @@ namespace Aer
 		{
 			InitializeComponent();
 			
-			LocationData.LoadOrSetDefaults();
+			Location.LoadOrSetDefaults();
 			WeatherData.LoadOrSetDefaults();
 			
 			Loading += HomePage_Loading;
@@ -165,8 +165,8 @@ namespace Aer
 			{
 				// CachedTemperature, CachedCondition
 				HeaderText.Text = string.Format("{0}, {1}", WeatherData.ReadableTemperature, WeatherData.ConditionDescription);
-				// LocationData
-				SubHeaderText.Text = LocationData.LocationLabel;
+				// Location
+				SubHeaderText.Text = Location.Label;
 				CurrentConditionIcon.Visibility = Visibility.Visible;
 				CurrentConditionIcon.Glyph = WeatherData.ConditionWeatherIconsGlyph;
 				// Content tabs: Chart / LocationAndCacheData
@@ -186,8 +186,8 @@ namespace Aer
 
 				// CachedCondition - unknown
 				HeaderText.Text = "No data";
-				// LocationData - always known
-				SubHeaderText.Text = LocationData.LocationLabel;
+				// Location - always known
+				SubHeaderText.Text = Location.Label;
 				CurrentConditionIcon.Visibility = Visibility.Collapsed;
 				// Content tabs: Chart / LocationAndCacheData
 				ContentChart.Invalidate();
@@ -223,7 +223,7 @@ namespace Aer
 
 			tabContent.AppendLine($"Last update: {WeatherData.CacheLastUpdateTime?.ToLocalTime().ToString("G")} ({WeatherData.CacheLastUpdateTime?.UtcDateTime.ToString("u")})");
 			tabContent.AppendLine($"Valid until: {WeatherData.CacheValidUntil?.ToLocalTime().ToString("G")} ({WeatherData.CacheValidUntil?.UtcDateTime.ToString("u")})");
-			tabContent.AppendLine($"LocationData ID: {WeatherData.CacheLocationID}");
+			tabContent.AppendLine($"Location ID: {WeatherData.CacheLocationID}");
 			tabContent.AppendLine($"Provider ID: {WeatherData.CacheWeatherProviderID} ({WeatherProvider.Get(WeatherData.CacheWeatherProviderID ?? -1).ProviderName})");
 			tabContent.AppendLine();
 

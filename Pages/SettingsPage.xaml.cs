@@ -90,8 +90,8 @@ namespace Aer
 		#region Location
 		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
 		{
-			LocationSettingsCard.Header = LocationData.LocationLabel!;
-			LocationSettingsCard.Description = LocationData.ReadableLocationCoordinates!;
+			LocationSettingsCard.Header = Location.Label!;
+			LocationSettingsCard.Description = Location.ReadableCoordinates!;
 			
 			if (acknowlidgeAChange)
 			{
@@ -116,7 +116,7 @@ namespace Aer
 					&& !string.IsNullOrWhiteSpace(location.City)
 					&& !string.IsNullOrWhiteSpace(location.Country))
 				{
-					LocationData.SetLocation(location.City, location.Country, location.Latitude, location.Longitude);
+					Location.SetLocation(location.City, location.Country, location.Latitude, location.Longitude);
 					
 					UpdateLocationSectionFromData(true);
 				}
@@ -186,7 +186,7 @@ namespace Aer
 			{
 				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
 				
-				LocationData.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
+				Location.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
 				
 				// LocationAndCacheData will update when showing the HomePage
@@ -339,7 +339,7 @@ namespace Aer
 			AppStorage.Delete();
 
 			// 4. Reload default data
-			LocationData.LoadOrSetDefaults();
+			Location.LoadOrSetDefaults();
 			WeatherData.LoadOrSetDefaults();
 
 			// 5. Reload default preferences

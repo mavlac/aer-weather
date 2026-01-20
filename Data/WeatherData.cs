@@ -44,7 +44,7 @@ namespace Aer.Data
 			if (AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", out int cacheLocationID))
 			{
 				CacheLocationID = cacheLocationID;
-				isCachedDataMatchingLocation = (CacheLocationID == LocationData.LocationID);
+				isCachedDataMatchingLocation = (CacheLocationID == Location.ID);
 			}
 			else
 			{
@@ -88,7 +88,7 @@ namespace Aer.Data
 			
 			Debug.WriteLineIf(IsCachedDataLoaded, $"WeatherData loaded and valid. All OK.");
 			Debug.WriteLineIf(!IsCachedDataLoaded, $"Loading from the cache failed.");
-			Debug.WriteLineIf(!isCachedDataMatchingLocation, $"WeatherData location not matching selected location. '{CacheLocationID}' vs '{LocationData.LocationID}'");
+			Debug.WriteLineIf(!isCachedDataMatchingLocation, $"WeatherData location not matching selected location. '{CacheLocationID}' vs '{Location.ID}'");
 		}
 
 		public static async Task<(bool status, string message)> UpdateWeatherDataFromNetwork(CancellationToken cancellationToken)
@@ -107,7 +107,7 @@ namespace Aer.Data
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var provider = WeatherProvider.Get(Preferences.WeatherProviderId);
-				var (weatherResult, errorMessage) = await provider.GetWeatherAsync(LocationData.LocationLatitude!.Value, LocationData.LocationLongitude!.Value, cancellationToken);
+				var (weatherResult, errorMessage) = await provider.GetWeatherAsync(Location.Latitude!.Value, Location.Longitude!.Value, cancellationToken);
 
 				cancellationToken.ThrowIfCancellationRequested();
 
@@ -118,7 +118,7 @@ namespace Aer.Data
 				}
 
 				// On success
-				CacheLocationID = LocationData.LocationID;
+				CacheLocationID = Location.ID;
 				CacheWeatherProviderID = provider.ProviderId;
 				CachedWeatherCode = weatherResult.Current.WeatherCode;
 				CachedIsDaytime = weatherResult.Current.IsDaytime;
