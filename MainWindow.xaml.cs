@@ -16,9 +16,6 @@ namespace Aer
 {
 	public sealed partial class MainWindow : Window
 	{
-		private const int DefaultWindowWidth = 1850;
-		private const int DefaultWindowHeight = 1040;
-
 		public enum GlobalHotkey { OpenSettings, DarkThemeToggle }
 
 		private bool _isKeyHandlerAdded;
@@ -37,8 +34,10 @@ namespace Aer
 			this.SizeChanged += MainWindow_SizeChanged;
 			this.Closed += MainWindow_Closed;
 
-			WindowPlacementManager.Restore(this, DefaultWindowWidth, DefaultWindowHeight); // Load size and position
-			NavigationViewStateManager.Restore(NavView, false); // Load nav state
+			// Load size and position
+			WindowPlacementManager.Restore(this, (int)Application.Current.Resources["DefaultWindowWidth"], (int)Application.Current.Resources["DefaultWindowHeight"]);
+			// Load nav state
+			NavigationViewStateManager.Restore(NavView, false);
 
 			HomeNavItem.Tag = HomePage.NavigationTag;
 
