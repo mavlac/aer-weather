@@ -155,7 +155,8 @@
 									VerticalAlignment="Center"
 									Height="32"
 									Width="36"
-									Visibility="Collapsed">
+									Visibility="Collapsed"
+									ToolTipService.ToolTip="Restart the Application">
 								<FontIcon Glyph="&#xE72C;" Width="20" Height="20" FontSize="14"/><!-- Refresh Icon -->
 							</Button>
 							<ComboBox x:Name="AccentColorSelector"
