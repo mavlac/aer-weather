@@ -56,13 +56,15 @@ namespace Aer
 			}
 		}
 
-		private void HomePage_Loaded(object sender, RoutedEventArgs e)
+		private async void HomePage_Loaded(object sender, RoutedEventArgs e)
 		{
 			// Show whatever is available immediately
 			// Can be default location with no weather data, can be old cached data, can be valid current data
 			UpdatePageContent();
-
-			UpdateDataFromNetwork();
+			
+			await UpdateDataFromNetwork();
+			
+			UpdatePageContent();
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -99,16 +101,13 @@ namespace Aer
 			}
 		}
 
-		private void OnMinuteTick()
+		private async void OnMinuteTick()
 		{
-			UpdatePageContent(); // Among other content will update the LastUpdateTimeText
-
-			// LocationAndCacheData Update
-			// If cache is still valid, no network call will be made.
-			UpdateDataFromNetwork();
+			await UpdateDataFromNetwork();
+			UpdatePageContent();
 		}
 
-		private async void UpdateDataFromNetwork()
+		private async Task UpdateDataFromNetwork()
 		{
 			if (_updateTask != null)
 				return;
@@ -146,7 +145,6 @@ namespace Aer
 
 			// Whatever happened, does not matter, hide loader
 			LoadingOverlay.Visibility = Visibility.Collapsed;
-			UpdatePageContent(); // Will update the content and LastUpdateTimeText
 
 			if (!didUpdateSucceed)
 			{
