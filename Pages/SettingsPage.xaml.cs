@@ -97,11 +97,11 @@ namespace Aer
 			{
 				// Highlight changes in LocationSettingsCard
 				var iconPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderIconPresenter");
-				if (iconPresenter != null) CompositorAnimations.AnimatePop(iconPresenter, 0.5);
+				CompositorAnimations.AnimatePop(iconPresenter!, 1.2f, 0.5d);
 				var headerPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderPresenter");
-				if (headerPresenter != null) CompositorAnimations.AnimateFadeIn(headerPresenter, 0.5);
+				CompositorAnimations.AnimateFadeIn(headerPresenter!, 1d);
 				var descriptionPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_DescriptionPresenter");
-				if (descriptionPresenter != null) CompositorAnimations.AnimateFadeIn(descriptionPresenter, 0.5);
+				CompositorAnimations.AnimateFadeIn(descriptionPresenter!, 1d);
 			}
 		}
 
@@ -263,7 +263,7 @@ namespace Aer
 					{
 						// Differs from the setting App started with
 						RestartAppButton.Visibility = Visibility.Visible;
-						CompositorAnimations.AnimatePop(RestartAppButton, 0.5);
+						CompositorAnimations.AnimatePop(RestartAppButton, 1.1f, 0.5d);
 					}
 					else
 					{

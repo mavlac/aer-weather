@@ -23,7 +23,7 @@ namespace Aer.Utils
 			visual.StartAnimation(nameof(visual.Opacity), animation);
 		}
 
-		public static void AnimatePop(FrameworkElement element, double duration)
+		public static void AnimatePop(FrameworkElement element, float scale, double duration)
 		{
 			// Ensure layout exists and element is visible before animating
 			if (element.Visibility == Visibility.Visible &&
@@ -59,7 +59,7 @@ namespace Aer.Utils
 					0f);
 				
 				var animation = compositor.CreateVector3KeyFrameAnimation();
-				animation.InsertKeyFrame(0f, new Vector3(1.1f));
+				animation.InsertKeyFrame(0f, new Vector3(scale));
 				animation.InsertKeyFrame(1f, new Vector3(1f));
 				animation.Duration = TimeSpan.FromSeconds(duration);
 				
