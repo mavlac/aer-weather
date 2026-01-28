@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Aer.Data
 {
+	// TODO: Update the text, AppStorage will be replaced by DB
 	/// <summary>
 	/// Cached weather data, saved using AppStorage
 	/// Able to update itself from network using the IWeatherProvider
@@ -19,6 +20,7 @@ namespace Aer.Data
 
 		private static bool IsUpdatingFromNetwork { get; set; }
 
+		// TODO: Wrap all this in some sort of "Current" record
 		public static int? CacheLocationID { get; private set; }
 		public static int? CacheWeatherProviderID { get; private set; }
 		public static int? CachedWeatherCode { get; private set; }

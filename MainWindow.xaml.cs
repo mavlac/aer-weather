@@ -16,7 +16,11 @@ namespace Aer
 {
 	public sealed partial class MainWindow : Window
 	{
-		public enum GlobalHotkey { OpenSettings, DarkThemeToggle }
+		public enum GlobalHotkey
+		{
+			OpenSettings,
+			DarkThemeToggle
+		}
 
 		private bool _isKeyHandlerAdded;
 

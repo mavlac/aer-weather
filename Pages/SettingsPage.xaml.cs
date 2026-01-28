@@ -37,7 +37,7 @@ namespace Aer
 
 		private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
 		{
-			UpdateLocationSectionFromData();
+			UpdateLocationSectionFromData(false);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
 		}
@@ -88,20 +88,29 @@ namespace Aer
 		}
 	
 		#region Location
-		private void UpdateLocationSectionFromData(bool acknowlidgeAChange = false)
+		private void UpdateLocationSectionFromData(bool popIfChanged)
 		{
+			bool didChange =
+				(string)LocationSettingsCard.Header != Location.Label ||
+				(string)LocationSettingsCard.Description != Location.ReadableCoordinates;
+
 			LocationSettingsCard.Header = Location.Label!;
 			LocationSettingsCard.Description = Location.ReadableCoordinates!;
-			
-			if (acknowlidgeAChange)
+
+			// Highlight changes in LocationSettingsCard
+			if (popIfChanged)
 			{
-				// Highlight changes in LocationSettingsCard
+				// Icon always
 				var iconPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderIconPresenter");
 				CompositorAnimations.AnimatePop(iconPresenter!, 1.2f, 0.5d);
-				var headerPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderPresenter");
-				CompositorAnimations.AnimateFadeIn(headerPresenter!, 1d);
-				var descriptionPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_DescriptionPresenter");
-				CompositorAnimations.AnimateFadeIn(descriptionPresenter!, 1d);
+				// Text only if did change
+				if (didChange)
+				{
+					var headerPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderPresenter");
+					CompositorAnimations.AnimateFadeIn(headerPresenter!, 1d);
+					var descriptionPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_DescriptionPresenter");
+					CompositorAnimations.AnimateFadeIn(descriptionPresenter!, 1d);
+				}
 			}
 		}
 
