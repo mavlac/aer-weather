@@ -104,6 +104,9 @@ namespace Aer.Data
 
 			IsUpdatingFromNetwork = true;
 
+			// Simulate a long-running operation
+			//await Task.Delay(1000);
+
 			try
 			{
 				cancellationToken.ThrowIfCancellationRequested();
