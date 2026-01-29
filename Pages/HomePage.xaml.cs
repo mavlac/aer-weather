@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Windows.BadgeNotifications;
 using System;
 using System.Text;
 using System.Threading;
@@ -136,6 +137,8 @@ namespace Aer
 			// Only show loader and loading status if still not finished
 			if (!_updateTask.IsCompleted)
 			{
+				BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Activity);
+				
 				LoadingOverlay.Visibility = Visibility.Visible;
 				LastUpdateTimeText.Text = "Loading from network…";
 			}
@@ -148,12 +151,15 @@ namespace Aer
 
 			if (!didUpdateSucceed)
 			{
+				BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Error);
+				
 				await MessageBoxEx.ShowAsync(
 					"Unable to update weather data",
 					$"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.\r\n\r\n{updateErrorMessage}",
 					"Oh dear");
 			}
 
+			BadgeNotificationManager.Current.ClearBadge();
 			_updateTask = null;
 		}
 
