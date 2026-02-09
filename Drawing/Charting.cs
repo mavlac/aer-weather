@@ -152,10 +152,13 @@ namespace Aer.Drawing
 			if (zeroDegPositionY > (paddingBottom - 15f) && zeroDegPositionY < (height - paddingTop + 15f))
 			{
 				var strokeStyle = new CanvasStrokeStyle();
+				float strokeWidth = mainLineStrokeWidth;
 				strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
 				strokeStyle.DashStyle = CanvasDashStyle.Dash;
-				strokeStyle.CustomDashStyle = [0.5f, 4f];
-				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), gridColor, mainLineStrokeWidth, strokeStyle);
+				strokeStyle.DashOffset = hourWidth / strokeWidth * 0.5f;
+				float dotLength = 0.175f;
+				strokeStyle.CustomDashStyle = [dotLength / strokeWidth, (hourWidth - dotLength) / strokeWidth];
+				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), gridColor, strokeWidth, strokeStyle);
 			}
 
 			// Main temperature spline fill
