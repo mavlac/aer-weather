@@ -148,8 +148,8 @@ namespace Aer.Drawing
 			// Drawing
 
 			// Zero degree horizontal line
-			// Draw only if not above paddings (can go a bit under)
-			if (zeroDegPositionY > (paddingBottom - 15f) && zeroDegPositionY < (height - paddingTop + 15f))
+			// Draw only if not above top padding (a little upper) and under some constant height
+			if (zeroDegPositionY > (paddingBottom - 15f) && zeroDegPositionY < (height - 50f))
 			{
 				var strokeStyle = new CanvasStrokeStyle();
 				float strokeWidth = mainLineStrokeWidth;
