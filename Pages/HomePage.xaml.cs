@@ -239,6 +239,9 @@ namespace Aer
 		#region User Interface
 		private void SubHeaderTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
 		{
+			App.MainWindow.NavigateToSettingsPage(true);
+
+			/*
 			var flyout = new MenuFlyout();
 
 			// TODO: The FlyOut content
@@ -294,6 +297,7 @@ namespace Aer
 				{
 					Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft
 				});
+			*/
 		}
 		private void MenuItem_Click(object sender, RoutedEventArgs e)
 		{

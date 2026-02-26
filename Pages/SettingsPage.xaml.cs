@@ -215,6 +215,7 @@ namespace Aer
 
 		private void UpdateDataUIControls()
 		{
+			/*
 			// Clear any existing items
 			WeatherProviderSelector.Items.Clear();
 
@@ -236,6 +237,7 @@ namespace Aer
 
 			if (selectedItem != null)
 				WeatherProviderSelector.SelectedItem = selectedItem;
+			*/
 		}
 		#endregion
 
