@@ -34,7 +34,7 @@ namespace Aer.Weather.OpenMeteo
 			// Map current
 			var current = new CurrentWeatherData
 			{
-				IsDaytime = openMeteoResponse.Current.IsDay == 1,
+				IsDaytime = openMeteoResponse.Current.IsDay == 1.0,
 				Temperature = openMeteoResponse.Current.Temperature,
 				WeatherCode = openMeteoResponse.Current.WeatherCode,
 			};
@@ -46,7 +46,7 @@ namespace Aer.Weather.OpenMeteo
 				hourly.Add(new HourlyForecast
 				{
 					Time = DateTimeUtils.ConvertUtcIsoToLocal(openMeteoResponse.Hourly.Time[i]), // Convert Open-Meteo's UTC time to local OS time
-					IsDaytime = openMeteoResponse.Hourly.IsDay[i] == 1,
+					IsDaytime = openMeteoResponse.Hourly.IsDay[i] == 1.0,
 					Temperature = openMeteoResponse.Hourly.Temperature[i],
 					WeatherCode = openMeteoResponse.Hourly.WeatherCode[i],
 					Rain = openMeteoResponse.Hourly.Rain[i],
@@ -71,12 +71,14 @@ namespace Aer.Weather.OpenMeteo
 				
 				// Fetch weather data from Open-Meteo API
 				string url =
-					$"https://api.open-meteo.com/v1/forecast?" +
-					$"latitude={latitude.ToString("F4", CultureInfo.InvariantCulture)}&" +
-					$"longitude={longitude.ToString("F4", CultureInfo.InvariantCulture)}&" +
-					$"current_weather=true&hourly=temperature_2m,weather_code,rain,snowfall,is_day&" +
-					$"timezone=GMT&temperature_unit=celsius&" +
-					$"forecast_days=7"; // Number of forecast days to retrieve
+					$"https://api.open-meteo.com/v1/forecast" +
+					$"?latitude={latitude.ToString("F4", CultureInfo.InvariantCulture)}" +
+					$"&longitude={longitude.ToString("F4", CultureInfo.InvariantCulture)}" +
+					$"&current=temperature_2m,is_day,weather_code" +
+					$"&hourly=temperature_2m,weather_code,rain,snowfall,is_day" +
+					$"&timezone=GMT" +
+					$"&temperature_unit=celsius" +
+					$"&forecast_days=7";
 
 				var response = await _httpClient.GetAsync(url, cancellationToken);
 				string json = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -100,7 +102,7 @@ namespace Aer.Weather.OpenMeteo
 		#region OpenMeteo JSON Models
 		public class OpenMeteoResponse
 		{
-			[JsonPropertyName("current_weather")] public OpenMeteoCurrent? Current { get; set; }
+			[JsonPropertyName("current")] public OpenMeteoCurrent? Current { get; set; }
 			[JsonPropertyName("hourly")] public OpenMeteoHourly? Hourly { get; set; }
 		}
 
@@ -113,9 +115,9 @@ namespace Aer.Weather.OpenMeteo
 			/// <summary>
 			/// Is Celsius when no temperature_unit specified in query
 			/// </summary>
-			[JsonPropertyName("temperature")] public double Temperature { get; set; }
-			[JsonPropertyName("is_day")] public int IsDay { get; set; }
-			[JsonPropertyName("weathercode")] public int WeatherCode { get; set; }
+			[JsonPropertyName("temperature_2m")] public double Temperature { get; set; }
+			[JsonPropertyName("is_day")] public double IsDay { get; set; }
+			[JsonPropertyName("weather_code")] public int WeatherCode { get; set; }
 		}
 
 		public class OpenMeteoHourly
@@ -131,7 +133,7 @@ namespace Aer.Weather.OpenMeteo
 			[JsonPropertyName("weather_code")] public List<int> WeatherCode { get; set; } = new();
 			[JsonPropertyName("rain")] public List<double> Rain { get; set; } = new();
 			[JsonPropertyName("snowfall")] public List<double> Snowfall { get; set; } = new();
-			[JsonPropertyName("is_day")] public List<int> IsDay { get; set; } = new();
+			[JsonPropertyName("is_day")] public List<double> IsDay { get; set; } = new();
 		}
 		#endregion
 	}
