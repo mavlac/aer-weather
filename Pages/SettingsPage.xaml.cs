@@ -216,10 +216,8 @@ namespace Aer
 		private void UpdateDataUIControls()
 		{
 			/*
-			// Clear any existing items
+			// Clear and populate ComboBox items
 			WeatherProviderSelector.Items.Clear();
-
-			// Populate Segmented control
 			var providers = Weather.WeatherProvider.GetAllProvidersForUserSelection();
 			foreach (var keyValuePair in providers)
 			{
