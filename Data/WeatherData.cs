@@ -20,24 +20,21 @@ namespace Aer.Data
 
 		private static bool IsUpdatingFromNetwork { get; set; }
 
-		// TODO: Wrap all this in some sort of "Current" record
+		// Cache
 		public static int? CacheLocationID { get; private set; }
 		public static int? CacheWeatherProviderID { get; private set; }
-		public static int? CachedWeatherCode { get; private set; }
-		public static bool? CachedIsDaytime { get; private set; }
-		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
-		public static double? CachedApparentTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
-		public static List<HourlyForecast> CachedHourly { get; private set; } = new();
+		public static CurrentWeather? CurrentWeather { get; private set; }
+		public static List<HourlyForecast> HourlyForecast { get; private set; } = new();
 		public static DateTimeOffset? CacheValidUntil { get; private set; }
 		public static DateTimeOffset? CacheLastUpdateTime { get; private set; }
 		
 		public static bool IsCachedDataLoaded => CacheValidUntil is not null;
 		public static bool IsCachedDataRecentEnough => IsCachedDataLoaded && DateTimeOffset.UtcNow < CacheValidUntil;
 
-		public static string ReadableTemperature => CachedTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedTemperature.Value, " ", 0);
-		public static string ReadableApparentTemperature => CachedApparentTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedApparentTemperature.Value, " ", 0);
-		public static string ConditionDescription => CachedWeatherCode is null ? "—" : WeatherDescriptions.GetDescription(CachedWeatherCode.Value, CachedIsDaytime!.Value);
-		public static string ConditionWeatherIconsGlyph => CachedWeatherCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedWeatherCode!.Value, CachedIsDaytime!.Value);
+		public static string ReadableTemperature => CurrentWeather is null ? "—" : TemperatureUtils.GetReadableTemperature(CurrentWeather.Temperature, " ", 0);
+		public static string ReadableApparentTemperature => CurrentWeather is null ? "—" : TemperatureUtils.GetReadableTemperature(CurrentWeather.ApparentTemperature, " ", 0);
+		public static string ConditionDescription => CurrentWeather is null ? "—" : WeatherDescriptions.GetDescription(CurrentWeather.WeatherCode, CurrentWeather.IsDaytime);
+		public static string ConditionWeatherIconsGlyph => CurrentWeather is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CurrentWeather.WeatherCode, CurrentWeather.IsDaytime);
 
 		public static void LoadOrSetDefaults()
 		{
@@ -69,19 +66,20 @@ namespace Aer.Data
 			// Loading the saved weather data, only if the location was loaded successfully and cache location matches
 			if (isCachedDataMatchingLocation &&
 				isCachedDataMatchingWeatherProvider &&
-				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedWeatherCode)}", out int cachedWeatherCode) &&
-				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
-				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", out double cachedTemperature) &&
-				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedApparentTemperature)}", out double cachedApparentTemperature) &&
-				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
+				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.WeatherCode)}", out int cachedWeatherCode) &&
+				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.IsDaytime)}", out bool cachedIsDaytime) &&
+				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.Temperature)}", out double cachedTemperature) &&
+				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.ApparentTemperature)}", out double cachedApparentTemperature) &&
+				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(HourlyForecast)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", out DateTime cacheValidUntil) &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime))
 			{
-				CachedWeatherCode = cachedWeatherCode;
-				CachedIsDaytime = cachedIsDaytime;
-				CachedTemperature = cachedTemperature;
-				CachedApparentTemperature = cachedApparentTemperature;
-				CachedHourly = cachedHourly;
+				CurrentWeather = new();
+				CurrentWeather.WeatherCode = cachedWeatherCode;
+				CurrentWeather.IsDaytime = cachedIsDaytime;
+				CurrentWeather.Temperature = cachedTemperature;
+				CurrentWeather.ApparentTemperature = cachedApparentTemperature;
+				HourlyForecast = cachedHourly;
 				CacheValidUntil = cacheValidUntil;
 				CacheLastUpdateTime = cacheLastUpdateTime;
 			}
@@ -129,11 +127,12 @@ namespace Aer.Data
 				// On success
 				CacheLocationID = Location.ID;
 				CacheWeatherProviderID = provider.ProviderId;
-				CachedWeatherCode = weatherResult.Current.WeatherCode;
-				CachedIsDaytime = weatherResult.Current.IsDaytime;
-				CachedTemperature = weatherResult.Current.Temperature;
-				CachedApparentTemperature = weatherResult.Current.ApparentTemperature;
-				CachedHourly = weatherResult.Hourly;
+				CurrentWeather = new();
+				CurrentWeather.WeatherCode = weatherResult.Current.WeatherCode;
+				CurrentWeather.IsDaytime = weatherResult.Current.IsDaytime;
+				CurrentWeather.Temperature = weatherResult.Current.Temperature;
+				CurrentWeather.ApparentTemperature = weatherResult.Current.ApparentTemperature;
+				HourlyForecast = weatherResult.Hourly;
 				CacheValidUntil = weatherResult.ValidUntil;
 				CacheLastUpdateTime = DateTimeOffset.UtcNow;
 
@@ -162,14 +161,15 @@ namespace Aer.Data
 		{
 			Debug.Assert(IsUpdatingFromNetwork is false, "SaveWeatherData called while an update is in progress.");
 			Debug.Assert(IsCachedDataLoaded, "SaveWeatherData called while weather data is not loaded.");
+			Debug.Assert(CurrentWeather is not null, "SaveWeatherData called while CurrentWeather is null.");
 
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", CacheLocationID);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheWeatherProviderID)}", CacheWeatherProviderID);
-			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedWeatherCode)}", CachedWeatherCode);
-			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", CachedIsDaytime);
-			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", CachedTemperature);
-			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedApparentTemperature)}", CachedApparentTemperature);
-			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", CachedHourly);
+			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.WeatherCode)}", CurrentWeather.WeatherCode);
+			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.IsDaytime)}", CurrentWeather.IsDaytime);
+			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.Temperature)}", CurrentWeather.Temperature);
+			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.ApparentTemperature)}", CurrentWeather.ApparentTemperature);
+			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(HourlyForecast)}", HourlyForecast);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", CacheValidUntil);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", CacheLastUpdateTime);
 			AppStorage.Flush();
@@ -181,7 +181,7 @@ namespace Aer.Data
 
 			var now = DateTime.Now;
 
-			return CachedHourly.Where(f => f.Time >= now).ToList();
+			return HourlyForecast.Where(f => f.Time >= now).ToList();
 		}
 	}
 }

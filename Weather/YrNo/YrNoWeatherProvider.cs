@@ -40,7 +40,7 @@ namespace Aer.Weather.YrNo
 
 				var symbol = first.Data.Next1Hours?.Summary?.SymbolCode;
 
-				var current = new CurrentWeatherData
+				var current = new CurrentWeather
 				{
 					Temperature = instant.AirTemperature,
 					ApparentTemperature = instant.AirTemperature, // TODO: Yr has no separate apparent temperature in compact API

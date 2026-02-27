@@ -37,10 +37,7 @@ namespace Aer.Weather
 			}
 		};
 
-		protected readonly JsonSerializerOptions _jsonOptions = new()
-		{
-			PropertyNameCaseInsensitive = true
-		};
+		protected readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
 		public WeatherProvider()
 		{

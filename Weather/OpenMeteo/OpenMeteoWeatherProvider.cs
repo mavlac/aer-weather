@@ -32,7 +32,7 @@ namespace Aer.Weather.OpenMeteo
 			Debug.WriteLine($"Got response '{openMeteoResponse.Current.Time}' UTC → '{DateTimeUtils.ConvertUtcIsoToLocal(openMeteoResponse.Current.Time)}' {TimeZoneInfo.Local.DisplayName}, {TimeZoneInfo.Local.DaylightName}");
 
 			// Map current
-			var current = new CurrentWeatherData
+			var current = new CurrentWeather
 			{
 				IsDaytime = openMeteoResponse.Current.IsDay == 1.0,
 				Temperature = openMeteoResponse.Current.Temperature,
