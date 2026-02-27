@@ -6,6 +6,10 @@ using Windows.Storage;
 
 namespace Aer.Data
 {
+	/// <summary>
+	/// Going to be abandoned and replace with a proper database,
+	/// but for now this is a simple key-value store for saving app data persistently.
+	/// </summary>
 	public static class AppStorage
 	{
 		private const string AppDataFileName = "appdata.json";

@@ -349,7 +349,7 @@ namespace Aer
 
 			// 4. Reload default data
 			Location.LoadOrSetDefaults();
-			WeatherData.LoadOrSetDefaults();
+			Cache.LoadOrSetDefaults();
 
 			// 5. Reload default preferences
 			Preferences.Load();

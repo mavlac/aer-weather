@@ -14,9 +14,9 @@ namespace Aer.Data
 	/// Cached weather data, saved using AppStorage
 	/// Able to update itself from network using the IWeatherProvider
 	/// </summary>
-	internal class WeatherData
+	internal class Cache
 	{
-		private const string AppStorageKeyPrefix = nameof(WeatherData);
+		private const string AppStorageKeyPrefix = nameof(Cache);
 
 		private static bool IsUpdatingFromNetwork { get; set; }
 
@@ -66,19 +66,12 @@ namespace Aer.Data
 			// Loading the saved weather data, only if the location was loaded successfully and cache location matches
 			if (isCachedDataMatchingLocation &&
 				isCachedDataMatchingWeatherProvider &&
-				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.WeatherCode)}", out int cachedWeatherCode) &&
-				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.IsDaytime)}", out bool cachedIsDaytime) &&
-				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.Temperature)}", out double cachedTemperature) &&
-				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.ApparentTemperature)}", out double cachedApparentTemperature) &&
+				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather)}", out CurrentWeather? cachedCurrent) && cachedCurrent != null &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(HourlyForecast)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", out DateTime cacheValidUntil) &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime))
 			{
-				CurrentWeather = new();
-				CurrentWeather.WeatherCode = cachedWeatherCode;
-				CurrentWeather.IsDaytime = cachedIsDaytime;
-				CurrentWeather.Temperature = cachedTemperature;
-				CurrentWeather.ApparentTemperature = cachedApparentTemperature;
+				CurrentWeather = cachedCurrent;
 				HourlyForecast = cachedHourly;
 				CacheValidUntil = cacheValidUntil;
 				CacheLastUpdateTime = cacheLastUpdateTime;
@@ -90,9 +83,9 @@ namespace Aer.Data
 				CacheLastUpdateTime = null;
 			}
 			
-			Debug.WriteLineIf(IsCachedDataLoaded, $"WeatherData loaded and valid. All OK.");
+			Debug.WriteLineIf(IsCachedDataLoaded, $"Cache loaded and valid. All OK.");
 			Debug.WriteLineIf(!IsCachedDataLoaded, $"Loading from the cache failed.");
-			Debug.WriteLineIf(!isCachedDataMatchingLocation, $"WeatherData location not matching selected location. '{CacheLocationID}' vs '{Location.ID}'");
+			Debug.WriteLineIf(!isCachedDataMatchingLocation, $"Cache location not matching selected location. '{CacheLocationID}' vs '{Location.ID}'");
 		}
 
 		public static async Task<(bool status, string message)> UpdateWeatherDataFromNetwork(CancellationToken cancellationToken)
@@ -127,11 +120,7 @@ namespace Aer.Data
 				// On success
 				CacheLocationID = Location.ID;
 				CacheWeatherProviderID = provider.ProviderId;
-				CurrentWeather = new();
-				CurrentWeather.WeatherCode = weatherResult.Current.WeatherCode;
-				CurrentWeather.IsDaytime = weatherResult.Current.IsDaytime;
-				CurrentWeather.Temperature = weatherResult.Current.Temperature;
-				CurrentWeather.ApparentTemperature = weatherResult.Current.ApparentTemperature;
+				CurrentWeather = weatherResult.Current;
 				HourlyForecast = weatherResult.Hourly;
 				CacheValidUntil = weatherResult.ValidUntil;
 				CacheLastUpdateTime = DateTimeOffset.UtcNow;
@@ -165,10 +154,7 @@ namespace Aer.Data
 
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheLocationID)}", CacheLocationID);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheWeatherProviderID)}", CacheWeatherProviderID);
-			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.WeatherCode)}", CurrentWeather.WeatherCode);
-			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.IsDaytime)}", CurrentWeather.IsDaytime);
-			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.Temperature)}", CurrentWeather.Temperature);
-			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather.ApparentTemperature)}", CurrentWeather.ApparentTemperature);
+			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CurrentWeather)}", CurrentWeather);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(HourlyForecast)}", HourlyForecast);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", CacheValidUntil);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", CacheLastUpdateTime);
