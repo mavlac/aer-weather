@@ -43,6 +43,7 @@ namespace Aer.Weather.YrNo
 				var current = new CurrentWeatherData
 				{
 					Temperature = instant.AirTemperature,
+					ApparentTemperature = instant.AirTemperature, // TODO: Yr has no separate apparent temperature in compact API
 					WeatherCode = GetWeatherCodeFromSymbol(symbol),
 					IsDaytime = GetIsDaytimeFromSymbol(symbol)
 				};

@@ -36,6 +36,7 @@ namespace Aer.Weather.OpenMeteo
 			{
 				IsDaytime = openMeteoResponse.Current.IsDay == 1.0,
 				Temperature = openMeteoResponse.Current.Temperature,
+				ApparentTemperature = openMeteoResponse.Current.ApparentTemperature,
 				WeatherCode = openMeteoResponse.Current.WeatherCode,
 			};
 
@@ -48,6 +49,7 @@ namespace Aer.Weather.OpenMeteo
 					Time = DateTimeUtils.ConvertUtcIsoToLocal(openMeteoResponse.Hourly.Time[i]), // Convert Open-Meteo's UTC time to local OS time
 					IsDaytime = openMeteoResponse.Hourly.IsDay[i] == 1.0,
 					Temperature = openMeteoResponse.Hourly.Temperature[i],
+					ApparentTemperature = openMeteoResponse.Hourly.ApparentTemperature[i],
 					WeatherCode = openMeteoResponse.Hourly.WeatherCode[i],
 					Rain = openMeteoResponse.Hourly.Rain[i],
 					Snowfall = openMeteoResponse.Hourly.Snowfall[i]
@@ -74,8 +76,8 @@ namespace Aer.Weather.OpenMeteo
 					$"https://api.open-meteo.com/v1/forecast" +
 					$"?latitude={latitude.ToString("F4", CultureInfo.InvariantCulture)}" +
 					$"&longitude={longitude.ToString("F4", CultureInfo.InvariantCulture)}" +
-					$"&current=temperature_2m,is_day,weather_code" +
-					$"&hourly=temperature_2m,weather_code,rain,snowfall,is_day" +
+					$"&current=temperature_2m,apparent_temperature,is_day,weather_code" +
+					$"&hourly=temperature_2m,apparent_temperature,is_day,weather_code,rain,snowfall" +
 					$"&timezone=GMT" +
 					$"&temperature_unit=celsius" +
 					$"&forecast_days=7";
@@ -109,13 +111,17 @@ namespace Aer.Weather.OpenMeteo
 		public class OpenMeteoCurrent
 		{
 			/// <summary>
-			/// Is GMT+0 / UTC when no timezone specified in query
+			/// Is GMT+0, specified in query
 			/// </summary>
 			[JsonPropertyName("time")] public string Time { get; set; } = string.Empty;
 			/// <summary>
-			/// Is Celsius when no temperature_unit specified in query
+			/// Is Celsius, specified in query
 			/// </summary>
 			[JsonPropertyName("temperature_2m")] public double Temperature { get; set; }
+			/// <summary>
+			/// Is Celsius, specified in query
+			/// </summary>
+			[JsonPropertyName("apparent_temperature")] public double ApparentTemperature { get; set; }
 			[JsonPropertyName("is_day")] public double IsDay { get; set; }
 			[JsonPropertyName("weather_code")] public int WeatherCode { get; set; }
 		}
@@ -123,13 +129,17 @@ namespace Aer.Weather.OpenMeteo
 		public class OpenMeteoHourly
 		{
 			/// <summary>
-			/// Is GMT+0 / UTC when no timezone specified in query
+			/// Is GMT+0, specified in query
 			/// </summary>
-			[JsonPropertyName("time")] public List<string> Time { get; set; } = new(); // Is GMT+0 / UTC when no timezone specified in query
+			[JsonPropertyName("time")] public List<string> Time { get; set; } = new();
 			/// <summary>
-			/// Is Celsius when no temperature_unit specified in query
+			/// Is Celsius, specified in query
 			/// </summary>
 			[JsonPropertyName("temperature_2m")] public List<double> Temperature { get; set; } = new();
+			/// <summary>
+			/// Is Celsius, specified in query
+			/// </summary>
+			[JsonPropertyName("apparent_temperature")] public List<double> ApparentTemperature { get; set; } = new();
 			[JsonPropertyName("weather_code")] public List<int> WeatherCode { get; set; } = new();
 			[JsonPropertyName("rain")] public List<double> Rain { get; set; } = new();
 			[JsonPropertyName("snowfall")] public List<double> Snowfall { get; set; } = new();

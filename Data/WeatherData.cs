@@ -26,6 +26,7 @@ namespace Aer.Data
 		public static int? CachedWeatherCode { get; private set; }
 		public static bool? CachedIsDaytime { get; private set; }
 		public static double? CachedTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
+		public static double? CachedApparentTemperature { get; private set; } // Stored in Celsius. Converted if shown as Fahrenheit
 		public static List<HourlyForecast> CachedHourly { get; private set; } = new();
 		public static DateTimeOffset? CacheValidUntil { get; private set; }
 		public static DateTimeOffset? CacheLastUpdateTime { get; private set; }
@@ -34,6 +35,7 @@ namespace Aer.Data
 		public static bool IsCachedDataRecentEnough => IsCachedDataLoaded && DateTimeOffset.UtcNow < CacheValidUntil;
 
 		public static string ReadableTemperature => CachedTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedTemperature.Value, " ", 0);
+		public static string ReadableApparentTemperature => CachedApparentTemperature is null ? "—" : TemperatureUtils.GetReadableTemperature(CachedApparentTemperature.Value, " ", 0);
 		public static string ConditionDescription => CachedWeatherCode is null ? "—" : WeatherDescriptions.GetDescription(CachedWeatherCode.Value, CachedIsDaytime!.Value);
 		public static string ConditionWeatherIconsGlyph => CachedWeatherCode is null || CachedIsDaytime is null ? WeatherIconsUtils.Unknown : WeatherIconsUtils.GetWeatherIcon(CachedWeatherCode!.Value, CachedIsDaytime!.Value);
 
@@ -70,6 +72,7 @@ namespace Aer.Data
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedWeatherCode)}", out int cachedWeatherCode) &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", out bool cachedIsDaytime) &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", out double cachedTemperature) &&
+				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedApparentTemperature)}", out double cachedApparentTemperature) &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", out List<HourlyForecast>? cachedHourly) && cachedHourly != null &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", out DateTime cacheValidUntil) &&
 				AppStorage.TryGetValue($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", out DateTime cacheLastUpdateTime))
@@ -77,6 +80,7 @@ namespace Aer.Data
 				CachedWeatherCode = cachedWeatherCode;
 				CachedIsDaytime = cachedIsDaytime;
 				CachedTemperature = cachedTemperature;
+				CachedApparentTemperature = cachedApparentTemperature;
 				CachedHourly = cachedHourly;
 				CacheValidUntil = cacheValidUntil;
 				CacheLastUpdateTime = cacheLastUpdateTime;
@@ -128,6 +132,7 @@ namespace Aer.Data
 				CachedWeatherCode = weatherResult.Current.WeatherCode;
 				CachedIsDaytime = weatherResult.Current.IsDaytime;
 				CachedTemperature = weatherResult.Current.Temperature;
+				CachedApparentTemperature = weatherResult.Current.ApparentTemperature;
 				CachedHourly = weatherResult.Hourly;
 				CacheValidUntil = weatherResult.ValidUntil;
 				CacheLastUpdateTime = DateTimeOffset.UtcNow;
@@ -163,6 +168,7 @@ namespace Aer.Data
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedWeatherCode)}", CachedWeatherCode);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedIsDaytime)}", CachedIsDaytime);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedTemperature)}", CachedTemperature);
+			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedApparentTemperature)}", CachedApparentTemperature);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CachedHourly)}", CachedHourly);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheValidUntil)}", CacheValidUntil);
 			AppStorage.SaveValue($"{AppStorageKeyPrefix}_{nameof(CacheLastUpdateTime)}", CacheLastUpdateTime);

@@ -31,7 +31,8 @@
 							   Text="HeaderText"
 							   Padding="1,0,0,0"
 							   FontFamily="Segoe UI"
-							   FontWeight="Light" />
+							   FontWeight="Light"
+							   ToolTipService.ToolTip="Header tooltip" />
 					<FontIcon x:Name="CurrentConditionIcon"
 							  FontFamily="{StaticResource WeatherIconsFont}"
 							  Glyph="&#xF00D;"

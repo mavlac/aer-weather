@@ -169,6 +169,7 @@ namespace Aer
 			{
 				// CachedTemperature, CachedCondition
 				HeaderText.Text = string.Format("{0}, {1}", WeatherData.ReadableTemperature, WeatherData.ConditionDescription);
+				ToolTipService.SetToolTip(HeaderText, $"Feels like: {WeatherData.ReadableApparentTemperature}");
 				// Location
 				SubHeaderText.Text = Location.Label;
 				CurrentConditionIcon.Visibility = Visibility.Visible;
@@ -190,6 +191,7 @@ namespace Aer
 
 				// CachedCondition - unknown
 				HeaderText.Text = "No data";
+				ToolTipService.SetToolTip(HeaderText, null);
 				// Location - always known
 				SubHeaderText.Text = Location.Label;
 				CurrentConditionIcon.Visibility = Visibility.Collapsed;

@@ -14,6 +14,10 @@ namespace Aer.Weather
 		/// </summary>
 		public double Temperature { get; set; }
 		/// <summary>
+		/// Stored in Celsius. If shown as Fahrenheit to the user, conversion is done on display.
+		/// </summary>
+		public double ApparentTemperature { get; set; }
+		/// <summary>
 		/// WMO Code - World Meteorological Organization standard
 		/// </summary>
 		public int WeatherCode { get; set; }
@@ -23,14 +27,15 @@ namespace Aer.Weather
 		public override string ToString()
 		{
 			CultureInfo culture = CultureInfo.CurrentCulture;
-
+			
 			const string separator = " ";
 			string formattedTime = Time.ToString(culture.DateTimeFormat.ShortDatePattern) + " " + Time.ToString("HH:mm");
 			string formattedTemperature = TemperatureUtils.GetReadableTemperature(Temperature, string.Empty, 1);
-
+			string formattedApparentTemperature = TemperatureUtils.GetReadableTemperature(ApparentTemperature, string.Empty, 1);
+			
 			return
 				$"{formattedTime}{separator}" +
-				$"{formattedTemperature}{separator}" +
+				$"{formattedTemperature}/{formattedApparentTemperature}{separator}" +
 				$"WMO:{WeatherCode}{separator}" +
 				$"{WeatherDescriptions.GetDescription(WeatherCode, IsDaytime)}{separator}" +
 				$"{Rain}mm{separator}" +
