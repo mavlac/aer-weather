@@ -37,8 +37,6 @@ namespace Aer
 			Debug.WriteLine("App OnLaunched");
 
 			Preferences.Load();
-			Location.LoadOrSetDefaults();
-			Cache.LoadOrSetDefaults();
 
 			WindowUtils.ApplyAccentColor(); // Before the Window is created
 			StartedUsingSystemAccentColor = Preferences.UseSystemAccentColor;

@@ -30,6 +30,9 @@ namespace Aer
 		{
 			InitializeComponent();
 			
+			Location.LoadOrSetDefaults();
+			Cache.LoadOrSetDefaults();
+			
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
 			
