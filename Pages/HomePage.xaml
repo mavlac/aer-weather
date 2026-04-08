@@ -44,8 +44,8 @@
 					<TextBlock x:Name="SubHeaderTextBlock"
 							   Style="{StaticResource BodyTextBlockStyle}"
 							   Padding="0,6,0,0"
-							   Width="auto"
-							   ToolTipService.ToolTip="Quickly switch to a recently viewed location">
+							   Width="auto">
+							<!-- TODO  ToolTipService.ToolTip="Quickly switch to a recently viewed location">-->
 						<Hyperlink Click="SubHeaderTextHyperlink_Click"
 								   TextDecorations="None"
 								   IsTabStop="False">
