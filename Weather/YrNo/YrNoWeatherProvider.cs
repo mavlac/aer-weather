@@ -16,6 +16,7 @@ namespace Aer.Weather.YrNo
 
 		public override int ProviderId => ProviderStaticId;
 		public override string ProviderName => "Yr MET/NRK Norway";
+		public override string ProviderURL => "api.met.no";
 		public override string ProviderDescription => "Europe-focused";
 
 		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
@@ -102,9 +103,17 @@ namespace Aer.Weather.YrNo
 				var yrResponse = JsonSerializer.Deserialize<YrResponse>(json, _jsonOptions);
 				return (yrResponse, expires, string.Empty);
 			}
-			catch (OperationCanceledException)
+			catch (OperationCanceledException ex) when (ex is TaskCanceledException)
 			{
-				return (null, null, "Operation cancelled");
+				// Could be timeout or manual cancellation
+				if (!cancellationToken.IsCancellationRequested)
+				{
+					return (null, null, "Operation timed out");
+				}
+				else
+				{
+					return (null, null, "Operation cancelled by user");
+				}
 			}
 			catch (HttpRequestException ex)
 			{

@@ -17,6 +17,7 @@ namespace Aer.Weather.OpenMeteo
 
 		public override int ProviderId => ProviderStaticId;
 		public override string ProviderName => "Open-Meteo";
+		public override string ProviderURL => "api.open-meteo.com";
 		public override string ProviderDescription => "Fast with global coverage";
 
 		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
@@ -87,9 +88,17 @@ namespace Aer.Weather.OpenMeteo
 				var openMeteoResponse = JsonSerializer.Deserialize<OpenMeteoResponse>(json, _jsonOptions);
 				return (openMeteoResponse, string.Empty);
 			}
-			catch (OperationCanceledException)
+			catch (OperationCanceledException ex) when (ex is TaskCanceledException)
 			{
-				return (null, "Operation cancelled");
+				// Could be timeout or manual cancellation
+				if (!cancellationToken.IsCancellationRequested)
+				{
+					return (null, "Operation timed out");
+				}
+				else
+				{
+					return (null, "Operation cancelled by user");
+				}
 			}
 			catch (HttpRequestException ex)
 			{

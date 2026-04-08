@@ -140,7 +140,7 @@ namespace Aer
 				BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Activity);
 				
 				LoadingOverlay.Visibility = Visibility.Visible;
-				LastUpdateTimeText.Text = "Loading from network…";
+				LastUpdateTimeText.Text = $"Loading from {WeatherProvider.Get(Preferences.WeatherProviderId).ProviderURL}…";
 			}
 
 			// Await completion (still necessary to observe exceptions etc.)
@@ -155,7 +155,9 @@ namespace Aer
 				
 				await MessageBoxEx.ShowAsync(
 					"Unable to update weather data",
-					$"Could not load new weather data from the network.\r\nPlease check your internet connection and restart the app.\r\n\r\n{updateErrorMessage}",
+					"Could not load forecast data update from the network.\r\n"
+						+ $"The {WeatherProvider.Get(Preferences.WeatherProviderId).ProviderName} service may be temporarily unavailable, or unreachable using your current network connection.\r\n"
+						+ $"\r\n{updateErrorMessage}",
 					"Oh dear");
 			}
 
