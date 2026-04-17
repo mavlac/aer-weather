@@ -284,7 +284,7 @@ namespace Aer.Drawing
 			// Temperature spline
 			if (showApparentSpline)
 			{
-				DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, gridColor, gridStrokeWidth, null);
+				//DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, gridColor, gridStrokeWidth, null);
 				DrawMainTemperatureSpline(ds, apparentTemperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
 			}
 			else
