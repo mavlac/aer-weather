@@ -22,10 +22,8 @@ namespace Aer.Drawing
 {
 	public static class Charting
 	{
-		public static void DrawHomePageChart(CanvasControl sender, CanvasDrawingSession ds, List<HourlyForecast> hourly, bool showApparelSpline)
+		public static void DrawHomePageChart(CanvasControl sender, CanvasDrawingSession ds, List<HourlyForecast> hourly, bool showApparentSpline)
 		{
-			Debug.WriteLine("TODO: Show apparel spline: " + showApparelSpline);
-
 			ds.Antialiasing = CanvasAntialiasing.Antialiased;
 			ds.TextAntialiasing = CanvasTextAntialiasing.Auto;
 
@@ -145,7 +143,13 @@ namespace Aer.Drawing
 				float y = zeroDegPositionY + (float)h.Temperature * degreeHeight;
 				return new Vector2(x, y);
 			}).ToList();
-
+			// Apparent temperature line points
+			var apparentTemperatureLinePoints = hourly.Select((h, i) =>
+			{
+				float x = hourWidth * i;
+				float y = zeroDegPositionY + (float)h.ApparentTemperature * degreeHeight;
+				return new Vector2(x, y);
+			}).ToList();
 
 
 			// Drawing
@@ -277,8 +281,16 @@ namespace Aer.Drawing
 				ds.DrawText(label, x, y, textColor, textFormat);
 			}
 
-			// TODO: based on showApparelSpline draw apparel temperature line
-			DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
+			// Temperature spline
+			if (showApparentSpline)
+			{
+				DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, gridColor, gridStrokeWidth, null);
+				DrawMainTemperatureSpline(ds, apparentTemperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
+			}
+			else
+			{
+				DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
+			}
 
 			// Temperature readings
 			var dayExtremes = new List<DayExtremes>();
@@ -294,7 +306,7 @@ namespace Aer.Drawing
 					lastDay = hourly[i].Time.Day;
 				}
 				
-				double temperature = hourly[i].Temperature;
+				double temperature = showApparentSpline ? hourly[i].ApparentTemperature : hourly[i].Temperature;
 				int hour = hourly[i].Time.Hour;
 				if (temperature < currentExtremes.DayLow.temperature)
 					currentExtremes.DayLow = (temperature, i);
@@ -377,7 +389,7 @@ namespace Aer.Drawing
 		}
 
 		/// <summary>
-		/// Draws a smooth curve through the given temperatureLinePoints using quadratic Beziers.
+		/// Draws a smooth curve through the given points using quadratic Beziers.
 		/// Points should be in “data coordinates” (before flipping Y).
 		/// </summary>
 		public static void DrawMainTemperatureSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, ICanvasBrush? fillBrush)
