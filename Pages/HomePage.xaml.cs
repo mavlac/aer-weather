@@ -7,9 +7,11 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.BadgeNotifications;
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +24,7 @@ namespace Aer
 		public const string NavigationTag = "home";
 
 		private readonly MinuteTimer _minuteTimer = new();
+		private bool _isMouseDownOnChart = false;
 
 		private Task<(bool status, string message)>? _updateTask;
 		private CancellationTokenSource? _updateTaskCts;
@@ -206,7 +209,8 @@ namespace Aer
 			}
 		}
 
-		private void ContentChartCanvas_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
+		#region Canvas
+		private void ContentChart_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
 		{
 			var ds = args.DrawingSession;
 
@@ -216,14 +220,46 @@ namespace Aer
 			// No data
 			if (!Cache.IsCachedDataLoaded)
 				return;
+
 			// Insufficient data
 			var hourlyData = Cache.GetHourlyDataSinceNow();
 			if (hourlyData.Count <= 2)
 				return;
 
 			// Call Charting class to do the actual drawing
-			Charting.DrawHomePageChart(sender, ds, hourlyData);
+			Charting.DrawHomePageChart(sender, ds, hourlyData, _isMouseDownOnChart);
 		}
+
+		private void ContentChart_PointerPressed(object sender, PointerRoutedEventArgs e)
+		{
+			Debug.WriteLine("PointerPressed on Chart");
+			if (e.Pointer.PointerDeviceType == Microsoft.UI.Input.PointerDeviceType.Mouse)
+			{
+				var point = e.GetCurrentPoint(ContentChart);
+
+				if (point.Properties.IsLeftButtonPressed)
+				{
+					_isMouseDownOnChart = true;
+					ContentChart.Invalidate();
+					ContentChart.CapturePointer(e.Pointer); // important if user drags outside
+				}
+			}
+		}
+
+		private void ContentChart_PointerReleased(object sender, PointerRoutedEventArgs e)
+		{
+			_isMouseDownOnChart = false;
+			ContentChart.Invalidate();
+			ContentChart.ReleasePointerCapture(e.Pointer);
+		}
+
+		private void ContentChart_PointerCanceled(object sender, PointerRoutedEventArgs e)
+		{
+			_isMouseDownOnChart = false;
+			ContentChart.Invalidate();
+			ContentChart.ReleasePointerCapture(e.Pointer);
+		}
+		#endregion
 
 		private static string GetContentDataTabText()
 		{
@@ -318,13 +354,17 @@ namespace Aer
 			{
 				ContentChart.Visibility = Visibility.Visible;
 				ContentData.Visibility = Visibility.Collapsed;
-				Scroller.IsEnabled = false;
+
+				Scroller.VerticalScrollMode = ScrollMode.Disabled;
+				Scroller.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
 			}
 			else
 			{
 				ContentChart.Visibility = Visibility.Collapsed;
 				ContentData.Visibility = Visibility.Visible;
-				Scroller.IsEnabled = true;
+
+				Scroller.VerticalScrollMode = ScrollMode.Auto;
+				Scroller.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 			}
 		}
 		#endregion

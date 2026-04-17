@@ -61,13 +61,15 @@
 						  Grid.Row="1"
 						  Padding="0,16,0,0"
 						  HorizontalScrollMode="Disabled"
-						  VerticalScrollMode="Auto"
-						  IsEnabled="False">
+						  VerticalScrollMode="Auto">
 				<Grid x:Name="ContentGrid">
 					<!-- A) Chart fills all space -->
 					<win2d:CanvasControl x:Name="ContentChart"
 										 ClearColor="Transparent"
-										 Draw="ContentChartCanvas_Draw"
+										 Draw="ContentChart_Draw"
+										 PointerPressed="ContentChart_PointerPressed"
+										 PointerReleased="ContentChart_PointerReleased"
+										 PointerCanceled="ContentChart_PointerCanceled"
 										 Visibility="Visible"
 										 HorizontalAlignment="Stretch"
 										 VerticalAlignment="Stretch" />

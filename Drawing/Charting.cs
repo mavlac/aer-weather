@@ -12,6 +12,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -21,8 +22,10 @@ namespace Aer.Drawing
 {
 	public static class Charting
 	{
-		public static void DrawHomePageChart(CanvasControl sender, CanvasDrawingSession ds, List<HourlyForecast> hourly)
+		public static void DrawHomePageChart(CanvasControl sender, CanvasDrawingSession ds, List<HourlyForecast> hourly, bool showApparelSpline)
 		{
+			Debug.WriteLine("TODO: Show apparel spline: " + showApparelSpline);
+
 			ds.Antialiasing = CanvasAntialiasing.Antialiased;
 			ds.TextAntialiasing = CanvasTextAntialiasing.Auto;
 
@@ -274,7 +277,7 @@ namespace Aer.Drawing
 				ds.DrawText(label, x, y, textColor, textFormat);
 			}
 
-			// Main temperature spline stroke
+			// TODO: based on showApparelSpline draw apparel temperature line
 			DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
 
 			// Temperature readings
