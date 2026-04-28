@@ -1,4 +1,4 @@
-using Aer.Data;
+ï»¿using Aer.Data;
 using Aer.Utils;
 using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
@@ -19,7 +19,7 @@ namespace Aer
 		private Dictionary<string, GeoNames.GeoNamesLocation> _locationSuggestionsMap = new();
 
 		public string AppName => Package.Current.DisplayName;
-		public string Copyright => $"© {DateTime.Now.Year} {Package.Current.PublisherDisplayName}. All rights reserved.";
+		public string Copyright => $"Â© {DateTime.Now.Year} {Package.Current.PublisherDisplayName}. All rights reserved.";
 		public string AppVersion => $"Version {Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
 
 		public bool IsThickLineEnabled
@@ -322,7 +322,7 @@ namespace Aer
 			var appWindow = WindowUtils.GetAppWindow(App.MainWindow);
 			if (appWindow == null) return null;
 
-			return "Window size: " + appWindow.Size.Width + "×" + appWindow.Size.Height;
+			return "Window size: " + appWindow.Size.Width + "Ã—" + appWindow.Size.Height;
 		}
 
 		private void OpenAppLocalFolderButton_Click(object sender, RoutedEventArgs e)

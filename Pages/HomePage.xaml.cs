@@ -1,4 +1,4 @@
-using Aer.Data;
+﻿using Aer.Data;
 using Aer.Drawing;
 using Aer.Utils;
 using Aer.Utils.Extensions;
@@ -143,7 +143,7 @@ namespace Aer
 				BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Activity);
 				
 				LoadingOverlay.Visibility = Visibility.Visible;
-				LastUpdateTimeText.Text = $"Loading from {WeatherProvider.Get(Preferences.WeatherProviderId).ProviderURL}...";
+				LastUpdateTimeText.Text = $"Loading from {WeatherProvider.Get(Preferences.WeatherProviderId).ProviderURL}…";
 			}
 
 			// Await completion (still necessary to observe exceptions etc.)
