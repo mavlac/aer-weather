@@ -342,7 +342,7 @@ namespace Aer.Drawing
 			{
 				float x, y;
 				string label;
-				bool isOnLeftEdge, isOnRightEdge, isNextToPrevious;
+				bool isOnLeftEdge, isOnRightEdge, isVerticallyOut, isNextToPrevious;
 				bool printLow, printHigh;
 
 				// Low
@@ -351,10 +351,11 @@ namespace Aer.Drawing
 				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
 				isOnLeftEdge = x < 10;
 				isOnRightEdge = x > width - 15;
+				isVerticallyOut = y > (height - paddingTop / 2f) || y < paddingBottom / 2f;
 				isNextToPrevious =
 					previousPrintedLow != null && day.DayLow.chartHour - previousPrintedLow.DayLow.chartHour <= 3 ||
 					previousPrintedHigh != null && day.DayLow.chartHour - previousPrintedHigh.DayHigh.chartHour <= 3;
-				printLow = !isOnRightEdge && !isOnLeftEdge && !isNextToPrevious;
+				printLow = !isOnRightEdge && !isOnLeftEdge && !isVerticallyOut && !isNextToPrevious;
 				if (printLow)
 					ds.DrawText(label, x, chart.Y(y - 12), mainColor, textFormatCentered);
 				
@@ -364,10 +365,11 @@ namespace Aer.Drawing
 				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
 				isOnLeftEdge = x < 10;
 				isOnRightEdge = x > width - 15;
+				isVerticallyOut = y > (height - paddingTop / 2f) || y < paddingBottom / 2f;
 				isNextToPrevious =
 					previousPrintedHigh != null && day.DayHigh.chartHour - previousPrintedHigh.DayHigh.chartHour <= 3 ||
 					previousPrintedLow != null && day.DayHigh.chartHour - previousPrintedLow.DayLow.chartHour <= 3;
-				printHigh = !isOnRightEdge && !isOnLeftEdge && !isNextToPrevious;
+				printHigh = !isOnRightEdge && !isOnLeftEdge && !isVerticallyOut && !isNextToPrevious;
 				if (printHigh)
 					ds.DrawText(label, x, chart.Y(y + 12), mainColor, textFormatCentered);
 				
