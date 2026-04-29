@@ -275,10 +275,30 @@ namespace Aer.Drawing
 						labels.Add((label, x + 8, chart.Y(0 + 22)));
 				}
 			}
-			// Legend - Labels on top of lines
+			// Legend - Condition icons
+			Color legendColor = showApparentSpline ? gridColor : textColor; // Suppressed on "feels like"
+			int eachNthHour = isWide ? 3 : 6; // Density
+			int startHourlyIndex = 0;
+			// When dense, got to start at hours 0,3,6,9,12.. When sparse, got to start at hours 0,6,12,18..
+			// Find the start from where to draw first icon
+			while (hourly[startHourlyIndex].Time.Hour % eachNthHour != 0) // Look for the first divisible
+			{
+				startHourlyIndex++;
+			}
+			for (int i = startHourlyIndex; i < hourly.Count; i += eachNthHour)
+			{
+				float x = hourWidth * i;
+				bool isOnRightEdge = x > width - 35;
+				if (!isOnRightEdge)
+				{
+					var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].WeatherCode, hourly[i].IsDaytime);
+					ds.DrawText(glyph, x + 15f, chart.Y(40f), legendColor, iconFormat);
+				}
+			}
+			// Legend - Labels
 			foreach (var (label, x, y) in labels)
 			{
-				ds.DrawText(label, x, y, textColor, textFormat);
+				ds.DrawText(label, x, y, legendColor, textFormat);
 			}
 
 			// Temperature spline
@@ -355,26 +375,6 @@ namespace Aer.Drawing
 					previousPrintedLow = day;
 				if (printHigh)
 					previousPrintedHigh = day;
-			}
-
-			// Condition icons
-			int eachNthHour = isWide ? 3 : 6; // Density
-			int startHourlyIndex = 0;
-			// When dense, got to start at hours 0,3,6,9,12.. When sparse, got to start at hours 0,6,12,18..
-			// Find the start from where to draw first icon
-			while (hourly[startHourlyIndex].Time.Hour % eachNthHour != 0) // Look for the first divisible
-			{
-				startHourlyIndex++;
-			}
-			for (int i = startHourlyIndex; i < hourly.Count; i += eachNthHour)
-			{
-				float x = hourWidth * i;
-				bool isOnRightEdge = x > width - 35;
-				if (!isOnRightEdge)
-				{
-					var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].WeatherCode, hourly[i].IsDaytime);
-					ds.DrawText(glyph, x + 15f, chart.Y(40f), textColor, iconFormat);
-				}
 			}
 		}
 
