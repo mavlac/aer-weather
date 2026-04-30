@@ -24,7 +24,7 @@ namespace Aer
 		public const string NavigationTag = "home";
 
 		private readonly MinuteTimer _minuteTimer = new();
-		private bool _isMouseDownOnChart = false;
+		private bool _isMouseDownOverChart = false;
 
 		private Task<(bool status, string message)>? _updateTask;
 		private CancellationTokenSource? _updateTaskCts;
@@ -172,18 +172,29 @@ namespace Aer
 		{
 			if (Cache.IsCachedDataLoaded)
 			{
-				// CachedTemperature, CachedCondition
-				HeaderText.Text = string.Format("{0}, {1}", Cache.ReadableTemperature, Cache.ConditionDescription);
-				ToolTipService.SetToolTip(HeaderText, $"Feels like: {Cache.ReadableApparentTemperature}");
+				// Temperature, Condition, Icon
+				if (_isMouseDownOverChart == false)
+				{
+					// Normal
+					HeaderText.Text = $"{Cache.ReadableTemperature}, {Cache.ConditionDescription}";
+					ToolTipService.SetToolTip(HeaderText, $"Feels like: {Cache.ReadableApparentTemperature}");
+					CurrentConditionIcon.Visibility = Visibility.Visible;
+					CurrentConditionIcon.Glyph = Cache.ConditionWeatherIconsGlyph;
+				}
+				else
+				{
+					// Feels-like
+					HeaderText.Text = $"{Cache.ReadableApparentTemperature} (feels like)";
+					ToolTipService.SetToolTip(HeaderText, null);
+					CurrentConditionIcon.Visibility = Visibility.Collapsed;
+				}
 				// Location
 				SubHeaderText.Text = Location.Label;
-				CurrentConditionIcon.Visibility = Visibility.Visible;
-				CurrentConditionIcon.Glyph = Cache.ConditionWeatherIconsGlyph;
 				// Content tabs: Chart / LocationAndCacheData
 				ContentChart.Invalidate();
 				ContentData.Text = GetContentDataTabText();
 				// Last updated
-				LastUpdateTimeText.Text = string.Format("Updated {0}", DateTimeUtils.GetRelativeTimeString(Cache.CacheLastUpdateTime));
+				LastUpdateTimeText.Text = $"Updated {DateTimeUtils.GetRelativeTimeString(Cache.CacheLastUpdateTime)}";
 				ToolTipService.SetToolTip(
 					LastUpdateTimeText,
 					Cache.CacheLastUpdateTime?.ToLocalTime().ToString("G"));
@@ -194,7 +205,7 @@ namespace Aer
 				// There should always be at least some cache, no matter how valid.
 				// This means that app is started a first time or settings were cleared.
 
-				// CachedCondition - unknown
+				// Condition - unknown
 				HeaderText.Text = "No data";
 				ToolTipService.SetToolTip(HeaderText, null);
 				// Location - always known
@@ -227,7 +238,7 @@ namespace Aer
 				return;
 
 			// Call Charting class to do the actual drawing
-			Charting.DrawHomePageChart(sender, ds, hourlyData, _isMouseDownOnChart);
+			Charting.DrawHomePageChart(sender, ds, hourlyData, _isMouseDownOverChart);
 		}
 
 		private void ContentChart_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -239,8 +250,8 @@ namespace Aer
 
 				if (point.Properties.IsLeftButtonPressed)
 				{
-					_isMouseDownOnChart = true;
-					ContentChart.Invalidate();
+					_isMouseDownOverChart = true;
+					UpdatePageContent();
 					ContentChart.CapturePointer(e.Pointer); // important if user drags outside
 				}
 			}
@@ -248,14 +259,14 @@ namespace Aer
 
 		private void ContentChart_PointerReleased(object sender, PointerRoutedEventArgs e)
 		{
-			_isMouseDownOnChart = false;
-			ContentChart.Invalidate();
+			_isMouseDownOverChart = false;
+			UpdatePageContent();
 			ContentChart.ReleasePointerCapture(e.Pointer);
 		}
 
 		private void ContentChart_PointerCanceled(object sender, PointerRoutedEventArgs e)
 		{
-			_isMouseDownOnChart = false;
+			_isMouseDownOverChart = false;
 			ContentChart.Invalidate();
 			ContentChart.ReleasePointerCapture(e.Pointer);
 		}
