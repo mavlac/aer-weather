@@ -12,7 +12,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -54,6 +53,8 @@ namespace Aer.Drawing
 			// Colors
 			bool isDarkTheme;
 			Color mainColor, fillColor, freezeFillColor, gridColor, textColor, rainBarColor, snowBarColor;
+			// Muted colors used to suppress rain/snow bars when showing apparent temperature
+			Color rainBarMutedColor, snowBarMutedColor;
 			switch (sender.ActualTheme switch // Is Dark? If unable to get from FrameworkElement, get from ApplicationTheme
 				{
 					ElementTheme.Dark => true,
@@ -71,6 +72,8 @@ namespace Aer.Drawing
 					textColor = Colors.Gray;
 					rainBarColor = Colors.LightSkyBlue; // #84C9F3
 					snowBarColor = Colors.White;
+					rainBarMutedColor = Color.FromArgb(255, 205, 233, 250);
+					snowBarMutedColor = snowBarColor;
 					break;
 
 				case true:
@@ -83,6 +86,8 @@ namespace Aer.Drawing
 					textColor = Colors.Gray;
 					rainBarColor = Color.FromArgb(255, 19, 130, 197);
 					snowBarColor = Colors.White;
+					rainBarMutedColor = Color.FromArgb(255, 30, 70, 92);
+					snowBarMutedColor = Color.FromArgb(255, 92, 92, 92);
 					break;
 			}
 
@@ -205,6 +210,9 @@ namespace Aer.Drawing
 			}
 
 			// Rain and snow bars
+			// Choose draw colors. When apparent temperature spline is shown we use muted variants
+			Color rainBarDrawColor = showApparentSpline ? rainBarMutedColor : rainBarColor;
+			Color snowBarDrawColor = showApparentSpline ? snowBarMutedColor : snowBarColor;
 			for (int i = 0; i < hourly.Count; i++)
 			{
 				float rain = (float)hourly[i].Rain;
@@ -222,21 +230,21 @@ namespace Aer.Drawing
 				bool drawSnowBarDot = !isDarkTheme && drawSnowBar;
 				if (drawRainBar && !drawSnowBar)
 				{
-					ds.FillRoundedRectangle(x, chart.Y(bottomLineY), barWidth, -rainBarHeight, rainSnowBarCornerRadius, rainSnowBarCornerRadius, rainBarColor);
+					ds.FillRoundedRectangle(x, chart.Y(bottomLineY), barWidth, -rainBarHeight, rainSnowBarCornerRadius, rainSnowBarCornerRadius, rainBarDrawColor);
 				}
 				else if (drawSnowBar && !drawRainBar)
 				{
-					ds.FillRoundedRectangle(x, chart.Y(bottomLineY), barWidth, -snowBarHeight, rainSnowBarCornerRadius, rainSnowBarCornerRadius, snowBarColor);
+					ds.FillRoundedRectangle(x, chart.Y(bottomLineY), barWidth, -snowBarHeight, rainSnowBarCornerRadius, rainSnowBarCornerRadius, snowBarDrawColor);
 				}
 				else if (drawRainBar && drawSnowBar)
 				{
 					// The smaller value bar on top of the higher value one
-					(float height, Color color) backBar = rain > snow ? (rainBarHeight, rainBarColor) : (snowBarHeight, snowBarColor);
-					(float height, Color color) frontBar = rain > snow ? (snowBarHeight, snowBarColor) : (rainBarHeight, rainBarColor);
+					(float height, Color color) backBar = rain > snow ? (rainBarHeight, rainBarDrawColor) : (snowBarHeight, snowBarDrawColor);
+					(float height, Color color) frontBar = rain > snow ? (snowBarHeight, snowBarDrawColor) : (rainBarHeight, rainBarDrawColor);
 					// Higher back one
 					ds.FillRoundedRectangle(x, chart.Y(bottomLineY), barWidth, -backBar.height, rainSnowBarCornerRadius, rainSnowBarCornerRadius, backBar.color);
 					// And the smaller front one is striped
-					DrawStripedBar(ds, x, chart.Y(bottomLineY), barWidth, -frontBar.height, rainSnowBarCornerRadius, rainBarColor, snowBarColor);
+					DrawStripedBar(ds, x, chart.Y(bottomLineY), barWidth, -frontBar.height, rainSnowBarCornerRadius, rainBarDrawColor, snowBarDrawColor);
 					
 					// Snow bar dot only if both bar overlaying and snow is back and significantly higher than rain
 					drawSnowBarDot = drawSnowBarDot && snowBarHeight > rainBarHeight + 4;
@@ -246,7 +254,7 @@ namespace Aer.Drawing
 				{
 					// Light theme snow bars needs to have a dot in order to be visible
 					float lineCapY = bottomLineY + snowBarHeight;
-					ds.FillCircle(x + barWidth / 2f, chart.Y(lineCapY), snowBarDotRadius, rainBarColor);
+					ds.FillCircle(x + barWidth / 2f, chart.Y(lineCapY), snowBarDotRadius, rainBarDrawColor);
 				}
 			}
 
