@@ -94,21 +94,23 @@
 						</StackPanel>
 					</controls:SettingsCard>
 					
-					<!--
+					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="Data source" />
 
 					<controls:SettingsCard Header="Weather forecasts provider"
-										   Description="Select a service for getting weather forecasts">
+										   Description="Service selection is a work in progress and will be included in a future update">
+<!--										   Description="Select a service for getting weather forecasts">-->
 						<controls:SettingsCard.HeaderIcon>
-							<FontIcon Glyph="&#xE968;" />Network Icon 
+							<FontIcon Glyph="&#xE968;" /><!-- Network Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<ComboBox x:Name="WeatherProviderSelector"
 								  SelectionChanged="WeatherProviderSelector_SelectionChanged"
-								  Width="320">
+								  Width="320"
+								  IsEnabled="false">
 						</ComboBox>
 					</controls:SettingsCard>
-					-->
+					
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="Appearance &amp; behavior" />

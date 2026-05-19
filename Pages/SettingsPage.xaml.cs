@@ -215,7 +215,6 @@ namespace Aer
 
 		private void UpdateDataUIControls()
 		{
-			/*
 			// Clear and populate ComboBox items
 			WeatherProviderSelector.Items.Clear();
 			var providers = Weather.WeatherProvider.GetAllProvidersForUserSelection();
@@ -235,7 +234,6 @@ namespace Aer
 
 			if (selectedItem != null)
 				WeatherProviderSelector.SelectedItem = selectedItem;
-			*/
 		}
 		#endregion
 
