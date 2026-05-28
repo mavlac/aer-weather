@@ -3,6 +3,7 @@ using Aer.Drawing;
 using Aer.Utils;
 using Aer.Utils.Extensions;
 using Aer.Weather;
+using CommunityToolkit.WinUI;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -152,10 +153,17 @@ namespace Aer
 			// Whatever happened, does not matter, hide loader
 			LoadingOverlay.Visibility = Visibility.Collapsed;
 
+			// Simulate a network error
+			//didUpdateSucceed = false;
+			//updateErrorMessage = "Simulated network error for demonstration purposes.";
+
 			if (!didUpdateSucceed)
 			{
-				BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Error);
-				
+				await DispatcherQueue.EnqueueAsync(() =>
+				{
+					BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Error);
+				});
+
 				await MessageBoxEx.ShowAsync(
 					"Unable to update weather data",
 					"Could not load forecast data update from the network.\r\n"
