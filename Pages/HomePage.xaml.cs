@@ -141,6 +141,7 @@ namespace Aer
 			// Only show loader and loading status if still not finished
 			if (!_updateTask.IsCompleted)
 			{
+				BadgeNotificationManager.Current.ClearBadge();
 				BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Activity);
 				
 				LoadingOverlay.Visibility = Visibility.Visible;
@@ -161,6 +162,7 @@ namespace Aer
 			{
 				await DispatcherQueue.EnqueueAsync(() =>
 				{
+					BadgeNotificationManager.Current.ClearBadge();
 					BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Error);
 				});
 
@@ -171,8 +173,11 @@ namespace Aer
 						+ $"\r\n{updateErrorMessage}",
 					"Oh dear");
 			}
+			else
+			{
+				BadgeNotificationManager.Current.ClearBadge();
+			}
 
-			BadgeNotificationManager.Current.ClearBadge();
 			_updateTask = null;
 		}
 
