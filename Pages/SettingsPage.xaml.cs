@@ -79,7 +79,8 @@ namespace Aer
 			switch (obj)
 			{
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
-					// TODO: Toggle dark/light theme by abstracting the ToggleDarkAndLightTheme method from HomePage
+					Preferences.ToggleDarkAndLightTheme();
+					UpdatePreferenceUIControls();
 					break;
 			}
 		}

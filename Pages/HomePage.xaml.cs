@@ -101,7 +101,8 @@ namespace Aer
 					break;
 
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
-					ToggleDarkAndLightTheme();
+					Preferences.ToggleDarkAndLightTheme();
+					ContentChart.Invalidate();
 					break;
 			}
 		}
@@ -363,6 +364,7 @@ namespace Aer
 				});
 			*/
 		}
+
 		private void MenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			if (sender is RadioMenuFlyoutItem item)
@@ -390,39 +392,6 @@ namespace Aer
 				Scroller.VerticalScrollMode = ScrollMode.Auto;
 				Scroller.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 			}
-		}
-		#endregion
-
-		#region Utils
-		private void ToggleDarkAndLightTheme()
-		{
-			var systemTheme = ThemeUtils.GetSystemTheme(); // Dark or Light (only, OS is always specific)
-			
-			ElementTheme newTheme;
-			if (Preferences.AppTheme == ElementTheme.Default)
-			{
-				// Is using OS default
-				newTheme = systemTheme.Opposite(); // Set the opposite as override
-			}
-			else
-			{
-				// Is using specific theme override
-				if (Preferences.AppTheme == systemTheme)
-				{
-					// That is specific but matches OS default
-					newTheme = systemTheme.Opposite(); // Set the opposite
-				}
-				else
-				{
-					// That is opposite to OS default
-					newTheme = ElementTheme.Default; // Set the OS default
-				}
-			}
-			
-			Preferences.SetAppTheme(newTheme);
-			WindowUtils.ApplyAppTheme(App.MainWindow);
-
-			ContentChart.Invalidate();
 		}
 		#endregion
 	}

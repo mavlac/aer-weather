@@ -1,4 +1,5 @@
 ﻿using Aer.Utils;
+using Aer.Utils.Extensions;
 using Aer.Weather;
 using Microsoft.UI.Xaml;
 using System.Diagnostics;
@@ -69,6 +70,36 @@ namespace Aer.Data
 			Debug.WriteLine($"Preferences: Setting app theme to {newTheme}");
 			AppTheme = newTheme;
 			Save();
+		}
+
+		public static void ToggleDarkAndLightTheme()
+		{
+			var systemTheme = ThemeUtils.GetSystemTheme(); // Dark or Light (only. OS is always specific)
+
+			ElementTheme newTheme;
+			if (AppTheme == ElementTheme.Default)
+			{
+				// Is using OS default
+				newTheme = systemTheme.Opposite(); // Set the opposite as override
+			}
+			else
+			{
+				// Is using specific theme override
+				if (AppTheme == systemTheme)
+				{
+					// That is specific but matches OS default
+					newTheme = systemTheme.Opposite(); // Set the opposite
+				}
+				else
+				{
+					// That is opposite to OS default
+					newTheme = ElementTheme.Default; // Set the OS default
+				}
+			}
+
+			SetAppTheme(newTheme);
+
+			WindowUtils.ApplyAppTheme(App.MainWindow);
 		}
 
 		public static void SetAccentColor(bool useSystemAccentColor)
