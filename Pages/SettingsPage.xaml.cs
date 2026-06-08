@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Windows.ApplicationModel;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.System;
 
@@ -60,6 +61,32 @@ namespace Aer
 					});
 				};
 			}
+
+			MainWindow.GlobalHotkeyPressed += MainWindow_GlobalHotkeyPressed;
+			MainWindow.WindowSizeChanged += MainWindow_WindowSizeChanged;
+		}
+
+		protected override void OnNavigatedFrom(NavigationEventArgs e)
+		{
+			base.OnNavigatedFrom(e);
+
+			MainWindow.GlobalHotkeyPressed -= MainWindow_GlobalHotkeyPressed;
+			MainWindow.WindowSizeChanged -= MainWindow_WindowSizeChanged;
+		}
+
+		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey obj)
+		{
+			switch (obj)
+			{
+				case MainWindow.GlobalHotkey.DarkThemeToggle:
+					// TODO: Toggle dark/light theme by abstracting the ToggleDarkAndLightTheme method from HomePage
+					break;
+			}
+		}
+
+		private void MainWindow_WindowSizeChanged(Size size)
+		{
+			this.Bindings.Update(); // All UI refreshed (Debug window size info in About section)
 		}
 
 		// Generic handler for all HyperlinkButton clicks

@@ -421,6 +421,7 @@ namespace Aer
 			
 			Preferences.SetAppTheme(newTheme);
 			WindowUtils.ApplyAppTheme(App.MainWindow);
+
 			ContentChart.Invalidate();
 		}
 		#endregion

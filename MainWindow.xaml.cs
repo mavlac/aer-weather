@@ -27,6 +27,7 @@ namespace Aer
 		public string WindowTitle => Package.Current.DisplayName;
 
 		public static event Action<GlobalHotkey>? GlobalHotkeyPressed;
+		public static event Action<Windows.Foundation.Size>? WindowSizeChanged;
 
 		public MainWindow()
 		{
@@ -83,6 +84,8 @@ namespace Aer
 			{
 				NavView.ClearValue(NavigationView.OpenPaneLengthProperty); // restore default (320)
 			}
+
+			WindowSizeChanged?.Invoke(e.Size);
 		}
 
 		private void MainWindow_Closed(object sender, WindowEventArgs args)
