@@ -18,8 +18,8 @@
 			<x:String x:Key="WebStoreURL">https://apps.microsoft.com/detail/9NFLN708XZLH</x:String>
 			
 			<!-- Window -->
-			<x:Int32 x:Key="DefaultWindowWidth">1850</x:Int32>
-			<x:Int32 x:Key="DefaultWindowHeight">890</x:Int32>
+			<x:Int32 x:Key="DefaultWindowWidth">2048</x:Int32>
+			<x:Int32 x:Key="DefaultWindowHeight">856</x:Int32>
 
 			<!-- Other app resources here -->
 			<FontFamily x:Key="WeatherIconsFont">ms-appx:///Assets/Fonts/weathericons-regular-webfont.ttf#Weather Icons</FontFamily>
