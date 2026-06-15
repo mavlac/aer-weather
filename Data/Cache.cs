@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace Aer.Data
 {
-	// TODO: Update the text, AppStorage will be replaced by DB
+	// TODO: AppStorage will be replaced by DB
+	// TODO: The 'Cache' will probably separate into 'Cache' (database) and 'WeatherDataManager' (saving, loading, refreshing from network)
 	/// <summary>
 	/// Cached weather data, saved using AppStorage
 	/// Able to update itself from network using the IWeatherProvider

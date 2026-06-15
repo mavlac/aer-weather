@@ -5,7 +5,8 @@ using Windows.Storage;
 namespace Aer.Data
 {
 	/// <summary>
-	/// The location, used for current forecast, saved in LocalSettings
+	/// The user-selected current location.
+	/// Saved in LocalSettings
 	/// </summary>
 	internal class Location
 	{

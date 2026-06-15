@@ -8,8 +8,12 @@ using Windows.Storage;
 namespace Aer.Data
 {
 	/// <summary>
-	/// Application user preferences, saved in LocalSettings
+	/// Application user preferences.
+	/// Saved in LocalSettings.
 	/// </summary>
+	/// <remarks>
+	/// The user selected location is in LocalSettings as well, but handled by <see cref="Location"/>.
+	/// </remarks>
 	public static class Preferences
 	{
 		private const string LocalSettingsKeyPrefix = nameof(Preferences);
