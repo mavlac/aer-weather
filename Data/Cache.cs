@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace Aer.Data
 {
 	// TODO: AppStorage will be replaced by DB
-	// TODO: The 'Cache' will probably separate into 'Cache' (database) and 'WeatherDataManager' (saving, loading, refreshing from network)
+	// TODO: The 'Cache' will separate into 'WeatherDataCache' (database) and 'WeatherDataManager' (saving, loading, refreshing from network)
 	/// <summary>
-	/// Cached weather data, saved using AppStorage
+	/// Cached weather data, now saved using AppStorage
 	/// Able to update itself from network using the IWeatherProvider
 	/// </summary>
 	internal class Cache
@@ -22,10 +22,10 @@ namespace Aer.Data
 		private static bool IsUpdatingFromNetwork { get; set; }
 
 		// Cache
+		private static CurrentWeather? CurrentWeather { get; set; }
+		private static List<HourlyForecast> HourlyForecast { get; set; } = new();
 		public static int? CacheLocationID { get; private set; }
 		public static int? CacheWeatherProviderID { get; private set; }
-		public static CurrentWeather? CurrentWeather { get; private set; }
-		public static List<HourlyForecast> HourlyForecast { get; private set; } = new();
 		public static DateTimeOffset? CacheValidUntil { get; private set; }
 		public static DateTimeOffset? CacheLastUpdateTime { get; private set; }
 		
