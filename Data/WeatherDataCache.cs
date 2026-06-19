@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using Windows.Storage;
@@ -52,7 +53,12 @@ namespace Aer.Data
 				WHERE ValidUntilUtc <= @now;
 				""";
 			cmd.Parameters.AddWithValue("@now", NowIso());
-			cmd.ExecuteNonQuery();
+			int deletedRecords = cmd.ExecuteNonQuery();
+			
+			if (deletedRecords > 0)
+			{
+				Debug.WriteLine($"WeatherDataCache cleanup removed {deletedRecords} expired records.");
+			}
 		}
 
 		private static void DeleteSingleEntry(int locationId, int providerId)
@@ -168,6 +174,34 @@ namespace Aer.Data
 			}
 			
 			Initialize();
+		}
+
+		public static (int Total, int Valid, int Expired) GetStatistics()
+		{
+			using var connection = CreateConnection();
+			connection.Open();
+			
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = """
+				SELECT
+					COUNT(*) AS TotalCount,
+					SUM(CASE WHEN ValidUntilUtc > @now THEN 1 ELSE 0 END) AS ValidCount
+				FROM ForecastCache;
+				""";
+			cmd.Parameters.AddWithValue("@now", NowIso());
+			
+			using var reader = cmd.ExecuteReader();
+			
+			if (!reader.Read())
+				return default;
+			
+			int total = reader.GetInt32(0);
+			int valid = reader.IsDBNull(1)
+				? 0
+				: reader.GetInt32(1);
+			int expired = total - valid;
+			
+			return (Total: total, Valid: valid, Expired: expired);
 		}
 	}
 }
