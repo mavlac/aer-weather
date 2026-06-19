@@ -44,6 +44,9 @@ namespace Aer.Data
 
 		public static void CleanupExpiredRecords()
 		{
+			if (App.IsShuttingDown)
+				return;
+			
 			using var connection = CreateConnection();
 			connection.Open();
 			
@@ -86,6 +89,12 @@ namespace Aer.Data
 
 		public static bool GetWeatherData(int locationID, int weatherProviderID, out WeatherData? weatherData)
 		{
+			if (App.IsShuttingDown)
+			{
+				weatherData = null;
+				return false;
+			}
+
 			using var connection = CreateConnection();
 			connection.Open();
 			
@@ -126,6 +135,9 @@ namespace Aer.Data
 
 		public static void SaveWeatherData(WeatherData weatherData)
 		{
+			if (App.IsShuttingDown)
+				return;
+			
 			try
 			{
 				using var connection = CreateConnection();
@@ -164,6 +176,9 @@ namespace Aer.Data
 
 		public static void ResetCache()
 		{
+			if (App.IsShuttingDown)
+				return;
+			
 			try
 			{
 				using var connection = CreateConnection();

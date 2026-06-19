@@ -19,6 +19,8 @@ namespace Aer
 		/// </summary>
 		internal static bool StartedUsingSystemAccentColor { get; private set; }
 
+		public static bool IsShuttingDown { get; private set; }
+
 		/// <summary>
 		/// Initializes the singleton application object.  This is the first line of authored code executed,
 		/// and as such is the logical equivalent of main() or WinMain().
@@ -52,6 +54,12 @@ namespace Aer
 
 			// Activate the startup window.
 			MainWindow.Activate();
+
+			MainWindow.Closed += (s, e) =>
+			{
+				Debug.WriteLine("App MainWindow Closed");
+				IsShuttingDown = true;
+			};
 		}
 
 		internal static async Task Restart()
