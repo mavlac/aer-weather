@@ -177,7 +177,7 @@ namespace Aer
 					return;
 				
 				LocationLoadingProgressRing.IsActive = true;
-				await GeoNames.Load(); // Wait for it to finish
+				await GeoNames.Load(App.ShutdownToken); // Wait for it to finish and respect app shutdown
 				LocationLoadingProgressRing.IsActive = false; // disable the ring
 				
 				// LocationAndCacheData ready - continue with creating options

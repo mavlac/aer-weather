@@ -121,7 +121,9 @@ namespace Aer
 			_updateTaskCts?.Dispose();
 
 			_updateTaskCts = new();
-			var cancellationToken = _updateTaskCts.Token;
+			// Link local cancellation with app shutdown token so shutdown cancels the operation as well
+			var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(_updateTaskCts.Token, App.ShutdownToken);
+			var cancellationToken = linkedTokenSource.Token;
 
 			// Kick off the network update, but don't await it yet
 			_updateTask = WeatherDataManager.Load(cancellationToken);
@@ -133,6 +135,8 @@ namespace Aer
 			}
 			catch (TaskCanceledException)
 			{
+				// Ensure linkedTokenSource CTS is disposed
+				linkedTokenSource.Dispose();
 				_updateTask = null;
 				return;
 			}
@@ -149,6 +153,9 @@ namespace Aer
 
 			// Await completion (still necessary to observe exceptions etc.)
 			var (didUpdateSucceed, updateErrorMessage) = await _updateTask;
+
+			// Dispose linkedTokenSource token source now that work is done
+			linkedTokenSource.Dispose();
 
 			// Whatever happened, does not matter, hide loader
 			LoadingOverlay.Visibility = Visibility.Collapsed;

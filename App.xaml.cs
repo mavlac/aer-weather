@@ -3,6 +3,7 @@ using Aer.Utils;
 using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Aer
@@ -19,7 +20,10 @@ namespace Aer
 		/// </summary>
 		internal static bool StartedUsingSystemAccentColor { get; private set; }
 
-		public static bool IsShuttingDown { get; private set; }
+		private static readonly CancellationTokenSource s_shutdownCts = new();
+		public static CancellationToken ShutdownToken => s_shutdownCts.Token;
+
+		public static bool IsShuttingDown => ShutdownToken.IsCancellationRequested;
 
 		/// <summary>
 		/// Initializes the singleton application object.  This is the first line of authored code executed,
@@ -57,8 +61,8 @@ namespace Aer
 
 			MainWindow.Closed += (s, e) =>
 			{
-				Debug.WriteLine("App MainWindow Closed");
-				IsShuttingDown = true;
+				Debug.WriteLine("App MainWindow Closed - Shutdown Signal");
+				SignalShutdown();
 			};
 		}
 
@@ -80,6 +84,12 @@ namespace Aer
 			{
 				Debug.WriteLine($"Manual restart failed: {ex}");
 			}
+		}
+
+		internal static void SignalShutdown()
+		{
+			try { s_shutdownCts.Cancel(); }
+			catch { }
 		}
 	}
 }

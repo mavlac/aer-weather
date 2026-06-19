@@ -15,7 +15,7 @@ namespace Aer.Data
 		public static bool IsLoaded => allGeoNamesLocations != null && allGeoNamesLocations.Count > 0;
 		public static List<GeoNamesLocation> AllGeoNamesLocations => allGeoNamesLocations;
 
-		internal static async Task Load()
+		internal static async Task Load(System.Threading.CancellationToken cancellationToken = default)
 		{
 			IsLoading = true;
 
@@ -49,6 +49,9 @@ namespace Aer.Data
 				allGeoNamesLocations = new();
 				foreach (var line in File.ReadLines(filePath))
 				{
+					if (cancellationToken.IsCancellationRequested)
+						return;
+
 					var parts = line.Split('\t');
 					if (parts.Length < 9) continue;
 
