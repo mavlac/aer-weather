@@ -1,58 +1,173 @@
 ﻿using Microsoft.Data.Sqlite;
+using System;
 using System.IO;
+using System.Text.Json;
 using Windows.Storage;
 
 namespace Aer.Data
 {
-	internal class WeatherDataCache
+	internal static class WeatherDataCache
 	{
 		private const string CacheFileName = "cache.db";
 
 		private static readonly string _dbFilePath = Path.Combine(ApplicationData.Current.LocalFolder.Path, CacheFileName);
 
-		// TODO: Not called
-		public void Initialize()
+		private static string NowIso() => DateTimeOffset.UtcNow.ToString("O");
+
+		private static SqliteConnection CreateConnection()
 		{
-			var connectionString = $"Data Source={_dbFilePath}";
+			return new SqliteConnection($"Data Source={_dbFilePath}");
+		}
 
-			using var connection = new SqliteConnection(connectionString);
+		public static void Initialize()
+		{
+			Directory.CreateDirectory(Path.GetDirectoryName(_dbFilePath)!);
+			
+			using var connection = CreateConnection();
 			connection.Open();
-
-			// Create table once
+			
 			using var cmd = connection.CreateCommand();
-			cmd.CommandText =
-			"""
-CREATE TABLE IF NOT EXISTS ForecastCache (
-    LocationId    TEXT NOT NULL,
-    ProviderId    TEXT NOT NULL,
-    CreatedUtc    TEXT NOT NULL,
-    ValidUntilUtc TEXT NOT NULL,
-    Data          TEXT NOT NULL,
-    PRIMARY KEY (LocationId, ProviderId)
-);
-""";
+			cmd.CommandText = """
+				CREATE TABLE IF NOT EXISTS ForecastCache (
+				    LocationId     INTEGER NOT NULL,
+				    ProviderId     INTEGER NOT NULL,
+				    CreatedUtc     TEXT NOT NULL,
+				    ValidUntilUtc  TEXT NOT NULL,
+				    Data           TEXT NOT NULL,
+				    PRIMARY KEY (LocationId, ProviderId)
+				);
+				""";
+			
 			cmd.ExecuteNonQuery();
 		}
 
-		public bool GetWeatherData(int locationID, int weatherProviderID, out WeatherData? weatherData)
+		public static void CleanupExpiredRecords()
 		{
-			// TODO: Query that deletes all records where validUntil < now
-			cmd.CommandText =
-"""
-DELETE FROM ForecastCache
-WHERE ValidUntilUtc <= @now;
-""";
-
-			// TODO: Query that selects the record for the location/provider pair
-
-			// No cached data for location/provider pair found
-			weatherData = null;
-			return false;
+			using var connection = CreateConnection();
+			connection.Open();
+			
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = """
+				DELETE FROM ForecastCache
+				WHERE ValidUntilUtc <= @now;
+				""";
+			cmd.Parameters.AddWithValue("@now", NowIso());
+			cmd.ExecuteNonQuery();
 		}
 
-		public void SaveWeatherData(WeatherData weatherData)
+		private static void DeleteSingleEntry(int locationId, int providerId)
 		{
-			// TODO: Query that inserts or updates the record for the location/provider pair
+			try
+			{
+				using var connection = CreateConnection();
+				connection.Open();
+				
+				using var cmd = connection.CreateCommand();
+				cmd.CommandText = """
+					DELETE FROM ForecastCache
+					WHERE LocationId = @locId
+					  AND ProviderId = @provId;
+					""";
+				cmd.Parameters.AddWithValue("@locId", locationId);
+				cmd.Parameters.AddWithValue("@provId", providerId);
+				cmd.ExecuteNonQuery();
+			}
+			catch
+			{
+				// Ignore cache maintenance failures
+			}
+		}
+
+		public static bool GetWeatherData(int locationID, int weatherProviderID, out WeatherData? weatherData)
+		{
+			using var connection = CreateConnection();
+			connection.Open();
+			
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = """
+				SELECT Data
+				FROM ForecastCache
+				WHERE LocationId = @locId
+				  AND ProviderId = @provId
+				  AND ValidUntilUtc > @now;
+				""";
+			cmd.Parameters.AddWithValue("@locId", locationID);
+			cmd.Parameters.AddWithValue("@provId", weatherProviderID);
+			cmd.Parameters.AddWithValue("@now", NowIso());
+			
+			var result = cmd.ExecuteScalar();
+			
+			if (result is not string json)
+			{
+				weatherData = null;
+				return false;
+			}
+
+			try
+			{
+				weatherData = JsonSerializer.Deserialize<WeatherData>(json);
+				return weatherData != null;
+			}
+			catch
+			{
+				// Remove corrupted entry
+				DeleteSingleEntry(locationID, weatherProviderID);
+				
+				weatherData = null;
+				return false;
+			}
+		}
+
+		public static void SaveWeatherData(WeatherData weatherData)
+		{
+			try
+			{
+				using var connection = CreateConnection();
+				connection.Open();
+
+				var json = JsonSerializer.Serialize(weatherData);
+
+				using var cmd = connection.CreateCommand();
+
+				cmd.CommandText = """
+					INSERT INTO ForecastCache
+					(LocationId, ProviderId, CreatedUtc, ValidUntilUtc, Data)
+					VALUES
+					(@locId, @provId, @created, @valid, @data)
+					ON CONFLICT(LocationId, ProviderId)
+					DO UPDATE SET
+						CreatedUtc    = excluded.CreatedUtc,
+						ValidUntilUtc = excluded.ValidUntilUtc,
+						Data          = excluded.Data;
+					""";
+
+				cmd.Parameters.AddWithValue("@locId", weatherData.LocationID);
+				cmd.Parameters.AddWithValue("@provId", weatherData.WeatherProviderID);
+				cmd.Parameters.AddWithValue("@created", weatherData.Created.ToString("O"));
+				cmd.Parameters.AddWithValue("@valid", weatherData.ValidUntil.ToString("O"));
+				cmd.Parameters.AddWithValue("@data", json);
+
+				cmd.ExecuteNonQuery();
+			}
+			catch (SqliteException)
+			{
+				// DB corruption or write failure → reset cache
+				ResetCache();
+			}
+		}
+
+		public static void ResetCache()
+		{
+			try
+			{
+				File.Delete(_dbFilePath);
+			}
+			catch
+			{
+				return;
+			}
+			
+			Initialize();
 		}
 	}
 }

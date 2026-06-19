@@ -373,9 +373,9 @@ namespace Aer
 			// 3. Delete app storage file
 			AppStorage.Delete();
 
-			// 4. Reload default data
+			// 4. Reset location and delete cache data
 			Location.LoadOrSetDefaults();
-			Cache.LoadOrSetDefaults();
+			WeatherDataCache.ResetCache();
 
 			// 5. Reload default preferences
 			Preferences.Load();

@@ -18,7 +18,7 @@ namespace Aer.Data
 	{
 		private const string LocalSettingsKeyPrefix = nameof(Preferences);
 
-		public static int WeatherProviderId { get; private set; }
+		public static int? WeatherProviderId { get; private set; }
 		public static TemperatureUtils.Unit TemperatureUnits { get; private set; }
 		public static ElementTheme AppTheme { get; private set; }
 		public static bool UseSystemAccentColor { get; private set; }
