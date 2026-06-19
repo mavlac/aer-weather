@@ -166,14 +166,19 @@ namespace Aer.Data
 		{
 			try
 			{
-				File.Delete(_dbFilePath);
+				using var connection = CreateConnection();
+				connection.Open();
+				
+				using var cmd = connection.CreateCommand();
+				cmd.CommandText = "DROP TABLE IF EXISTS ForecastCache;";
+				cmd.ExecuteNonQuery();
+				
+				Initialize();
 			}
-			catch
+			catch (Exception ex)
 			{
-				return;
+				Debug.WriteLine($"Cache reset failed: {ex.Message}");
 			}
-			
-			Initialize();
 		}
 
 		public static (int Total, int Valid, int Expired) GetStatistics()

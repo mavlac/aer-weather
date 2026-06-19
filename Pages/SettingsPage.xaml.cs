@@ -390,6 +390,7 @@ namespace Aer
 			UpdateLocationSectionFromData(true);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
+			UpdateAboutUIControls();
 			this.Bindings.Update();
 		}
 		#endregion

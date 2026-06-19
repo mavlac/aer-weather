@@ -57,8 +57,8 @@ namespace Aer.Weather.OpenMeteo
 				});
 			}
 
-			// Validity (calculated)
-			var validUntil = DateTimeOffset.Now.AddMinutes(DefaultCacheValidityMinutes);
+			// Validity (calculated), UTC0
+			var validUntil = DateTimeOffset.UtcNow.AddMinutes(DefaultCacheValidityMinutes);
 
 			return (new WeatherResult(current, hourly, validUntil), string.Empty);
 		}
