@@ -41,6 +41,7 @@ namespace Aer
 			UpdateLocationSectionFromData(false);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
+			UpdateAboutUIControls();
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -81,13 +82,14 @@ namespace Aer
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
 					Preferences.ToggleDarkAndLightTheme();
 					UpdatePreferenceUIControls();
+					this.Bindings.Update();
 					break;
 			}
 		}
 
 		private void MainWindow_WindowSizeChanged(Size size)
 		{
-			this.Bindings.Update(); // All UI refreshed (Debug window size info in About section)
+			this.Bindings.Update(); // Debug window size info in About section
 		}
 
 		// Generic handler for all HyperlinkButton clicks
@@ -335,12 +337,16 @@ namespace Aer
 				true => AccentColorSystem,
 				false => AccentColorAer
 			};
-
-			this.Bindings.Update(); // All UI refreshed
 		}
 		#endregion
 
 		#region About and Debug
+		private void UpdateAboutUIControls()
+		{
+			var stats = WeatherDataCache.GetStatistics();
+			DebugInfoDatabaseStatsText.Text = $"Cached records: {stats.Total} ({stats.Expired} expired)";
+		}
+
 		public string? WindowSizeInfoText()
 		{
 			if (App.MainWindow == null) return null;
@@ -373,9 +379,9 @@ namespace Aer
 			// 3. Delete app storage file
 			AppStorage.Delete();
 
-			// 4. Reload default data
+			// 4. Reset location and delete cache data
 			Location.LoadOrSetDefaults();
-			Cache.LoadOrSetDefaults();
+			WeatherDataCache.ResetCache();
 
 			// 5. Reload default preferences
 			Preferences.Load();
@@ -384,6 +390,7 @@ namespace Aer
 			UpdateLocationSectionFromData(true);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
+			this.Bindings.Update();
 		}
 		#endregion
 

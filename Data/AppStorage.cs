@@ -8,7 +8,6 @@ namespace Aer.Data
 {
 	/// <summary>
 	/// Simple key-value store for saving app data persistently.
-	/// TODO: For weather data purpose is going to be abandoned and replaced with a proper database.
 	/// </summary>
 	public static class AppStorage
 	{

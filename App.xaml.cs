@@ -38,6 +38,9 @@ namespace Aer
 
 			Preferences.Load();
 
+			WeatherDataCache.Initialize();
+			WeatherDataCache.CleanupExpiredRecords();
+
 			WindowUtils.ApplyAccentColor(); // Before the Window is created
 			StartedUsingSystemAccentColor = Preferences.UseSystemAccentColor;
 

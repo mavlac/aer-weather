@@ -35,7 +35,6 @@ namespace Aer
 			InitializeComponent();
 			
 			Location.LoadOrSetDefaults();
-			Cache.LoadOrSetDefaults();
 			
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
@@ -66,9 +65,8 @@ namespace Aer
 			// Show whatever is available immediately
 			// Can be default location with no weather data, can be old cached data, can be valid current data
 			UpdatePageContent();
-			
-			await UpdateDataFromNetwork();
-			
+
+			await RefreshData();
 			UpdatePageContent();
 		}
 
@@ -109,11 +107,11 @@ namespace Aer
 
 		private async void OnMinuteTick()
 		{
-			await UpdateDataFromNetwork();
+			await RefreshData();
 			UpdatePageContent();
 		}
 
-		private async Task UpdateDataFromNetwork()
+		private async Task RefreshData()
 		{
 			if (_updateTask != null)
 				return;
@@ -126,7 +124,7 @@ namespace Aer
 			var cancellationToken = _updateTaskCts.Token;
 
 			// Kick off the network update, but don't await it yet
-			_updateTask = Cache.UpdateWeatherDataFromNetwork(cancellationToken);
+			_updateTask = WeatherDataManager.Load(cancellationToken);
 
 			// Wait briefly before deciding to show loader, cancellable
 			try
@@ -146,7 +144,7 @@ namespace Aer
 				BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Activity);
 				
 				LoadingOverlay.Visibility = Visibility.Visible;
-				LastUpdateTimeText.Text = $"Loading from {WeatherProvider.Get(Preferences.WeatherProviderId).ProviderURL}\u2026";
+				LastUpdateTimeText.Text = $"Loading from {WeatherProvider.Get(Preferences.WeatherProviderId!.Value).ProviderURL}\u2026";
 			}
 
 			// Await completion (still necessary to observe exceptions etc.)
@@ -170,7 +168,7 @@ namespace Aer
 				await MessageBoxEx.ShowAsync(
 					"Unable to update weather data",
 					"Could not load forecast data update from the network.\r\n"
-						+ $"The {WeatherProvider.Get(Preferences.WeatherProviderId).ProviderName} service may be temporarily unavailable, or unreachable using your current network connection.\r\n"
+						+ $"The {WeatherProvider.Get(Preferences.WeatherProviderId!.Value).ProviderName} service may be temporarily unavailable, or unreachable using your current network connection.\r\n"
 						+ $"\r\n{updateErrorMessage}",
 					"Oh dear");
 			}
@@ -184,21 +182,21 @@ namespace Aer
 
 		private void UpdatePageContent()
 		{
-			if (Cache.IsCachedDataLoaded)
+			if (WeatherDataManager.IsWeatherDataLoaded)
 			{
 				// Temperature, Condition, Icon
 				if (_isMouseDownOverChart == false)
 				{
 					// Normal
-					HeaderText.Text = $"{Cache.ReadableTemperature}, {Cache.ConditionDescription}";
-					ToolTipService.SetToolTip(HeaderText, $"Feels like: {Cache.ReadableApparentTemperature}");
+					HeaderText.Text = $"{WeatherDataManager.WeatherData.ReadableTemperature}, {WeatherDataManager.WeatherData.ConditionDescription}";
+					ToolTipService.SetToolTip(HeaderText, $"Feels like: {WeatherDataManager.WeatherData.ReadableApparentTemperature}");
 					CurrentConditionIcon.Visibility = Visibility.Visible;
-					CurrentConditionIcon.Glyph = Cache.ConditionWeatherIconsGlyph;
+					CurrentConditionIcon.Glyph = WeatherDataManager.WeatherData.ConditionWeatherIconsGlyph;
 				}
 				else
 				{
 					// Feels-like
-					HeaderText.Text = $"{Cache.ReadableApparentTemperature} (feels like)";
+					HeaderText.Text = $"{WeatherDataManager.WeatherData.ReadableApparentTemperature} (feels like)";
 					ToolTipService.SetToolTip(HeaderText, null);
 					CurrentConditionIcon.Visibility = Visibility.Collapsed;
 				}
@@ -208,10 +206,10 @@ namespace Aer
 				ContentChart.Invalidate();
 				ContentData.Text = GetContentDataTabText();
 				// Last updated
-				LastUpdateTimeText.Text = $"Updated {DateTimeUtils.GetRelativeTimeString(Cache.CacheLastUpdateTime)}";
+				LastUpdateTimeText.Text = $"Updated {DateTimeUtils.GetRelativeTimeString(WeatherDataManager.WeatherData.Created)}";
 				ToolTipService.SetToolTip(
 					LastUpdateTimeText,
-					Cache.CacheLastUpdateTime?.ToLocalTime().ToString("G"));
+					WeatherDataManager.WeatherData.Created.ToLocalTime().ToString("G"));
 			}
 			else
 			{
@@ -243,11 +241,11 @@ namespace Aer
 			ds.Clear(Colors.Transparent);
 
 			// No data
-			if (!Cache.IsCachedDataLoaded)
+			if (!WeatherDataManager.IsWeatherDataLoaded)
 				return;
 
 			// Insufficient data
-			var hourlyData = Cache.GetHourlyDataSinceNow();
+			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
 			if (hourlyData.Count <= 2)
 				return;
 
@@ -290,13 +288,13 @@ namespace Aer
 		{
 			var tabContent = new StringBuilder();
 
-			tabContent.AppendLine($"Last update: {Cache.CacheLastUpdateTime?.ToLocalTime().ToString("G")} ({Cache.CacheLastUpdateTime?.UtcDateTime.ToString("u")})");
-			tabContent.AppendLine($"Valid until: {Cache.CacheValidUntil?.ToLocalTime().ToString("G")} ({Cache.CacheValidUntil?.UtcDateTime.ToString("u")})");
-			tabContent.AppendLine($"Location ID: {Cache.CacheLocationID}");
-			tabContent.AppendLine($"Provider ID: {Cache.CacheWeatherProviderID} ({WeatherProvider.Get(Cache.CacheWeatherProviderID ?? -1).ProviderName})");
+			tabContent.AppendLine($"Last update: {WeatherDataManager.WeatherData.Created.ToLocalTime().ToString("G")} ({WeatherDataManager.WeatherData.Created.UtcDateTime.ToString("u")})");
+			tabContent.AppendLine($"Valid until: {WeatherDataManager.WeatherData.ValidUntil.ToLocalTime().ToString("G")} ({WeatherDataManager.WeatherData.ValidUntil.UtcDateTime.ToString("u")})");
+			tabContent.AppendLine($"Location ID: {WeatherDataManager.WeatherData.LocationID}");
+			tabContent.AppendLine($"Provider ID: {WeatherDataManager.WeatherData.WeatherProviderID} ({WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).ProviderName})");
 			tabContent.AppendLine();
 
-			tabContent.Append(string.Join(Environment.NewLine, Cache.GetHourlyDataSinceNow()));
+			tabContent.Append(string.Join(Environment.NewLine, WeatherDataManager.GetHourlyDataSinceNow()));
 
 			return tabContent.ToString();
 		}
