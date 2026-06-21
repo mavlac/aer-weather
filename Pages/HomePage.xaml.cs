@@ -1,13 +1,11 @@
 ﻿using Aer.Data;
 using Aer.Drawing;
 using Aer.Utils;
-using Aer.Utils.Extensions;
 using Aer.Weather;
 using CommunityToolkit.WinUI;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.BadgeNotifications;
@@ -295,10 +293,10 @@ namespace Aer
 		{
 			var tabContent = new StringBuilder();
 
-			tabContent.AppendLine($"Last update: {WeatherDataManager.WeatherData.Created.ToLocalTime().ToString("G")} ({WeatherDataManager.WeatherData.Created.UtcDateTime.ToString("u")})");
-			tabContent.AppendLine($"Valid until: {WeatherDataManager.WeatherData.ValidUntil.ToLocalTime().ToString("G")} ({WeatherDataManager.WeatherData.ValidUntil.UtcDateTime.ToString("u")})");
 			tabContent.AppendLine($"Location ID: {WeatherDataManager.WeatherData.LocationID}");
 			tabContent.AppendLine($"Provider ID: {WeatherDataManager.WeatherData.WeatherProviderID} ({WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).ProviderName})");
+			tabContent.AppendLine($"Last update: {WeatherDataManager.WeatherData.Created.ToLocalTime().ToString("G")} ({WeatherDataManager.WeatherData.Created.UtcDateTime.ToString("u")})");
+			tabContent.AppendLine($"Valid until: {WeatherDataManager.WeatherData.ValidUntil.ToLocalTime().ToString("G")} ({WeatherDataManager.WeatherData.ValidUntil.UtcDateTime.ToString("u")})");
 			tabContent.AppendLine();
 
 			tabContent.Append(string.Join(Environment.NewLine, WeatherDataManager.GetHourlyDataSinceNow()));
