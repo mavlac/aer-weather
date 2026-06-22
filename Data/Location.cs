@@ -28,7 +28,10 @@ namespace Aer.Data
 		public static string Label => string.Format(LabelFormat, Name, Country);
 		public static string? ReadableCoordinates => Latitude is null || Longitude is null ? null : $"{Latitude.Value.ToString("F4", CultureInfo.InvariantCulture)}, {Longitude.Value.ToString("F4", CultureInfo.InvariantCulture)}";
 
-		public static bool LoadOrSetDefaults()
+		/// <summary>
+		/// Loads the location from LocalSettings. If not found, sets the default location.
+		/// </summary>
+		public static bool Load()
 		{
 			var localSettings = ApplicationData.Current.LocalSettings;
 			
@@ -48,12 +51,15 @@ namespace Aer.Data
 			}
 			else
 			{
-				SetLocation(DefaultName, DefaultCountry, DefaultLatitude, DefaultLongitude);
+				Set(DefaultName, DefaultCountry, DefaultLatitude, DefaultLongitude);
 				return false;
 			}
 		}
 
-		public static void SetLocation(string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
+		/// <summary>
+		/// Sets the current location and saves it to LocalSettings.
+		/// </summary>
+		public static void Set(string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
 		{
 			ID = GetLocationID(newLocationLatitude, newLocationLongitude);
 			Name = newLocationName;
@@ -79,14 +85,14 @@ namespace Aer.Data
 			// Round to avoid floating noise
 			double roundLatitude = Math.Round(latitude, 3);
 			double roundLongitude = Math.Round(longitude, 3);
-
+			
 			// Convert to long bits (stable numeric representation)
 			long latBits = BitConverter.DoubleToInt64Bits(roundLatitude);
 			long lonBits = BitConverter.DoubleToInt64Bits(roundLongitude);
-
+			
 			// Combine deterministically
 			long hash = latBits ^ (lonBits * 31);
-
+			
 			// Compress to int
 			return (int)(hash ^ (hash >> 32));
 		}

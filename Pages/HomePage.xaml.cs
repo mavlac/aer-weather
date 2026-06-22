@@ -6,6 +6,7 @@ using CommunityToolkit.WinUI;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.BadgeNotifications;
@@ -32,7 +33,7 @@ namespace Aer
 		{
 			InitializeComponent();
 			
-			Location.LoadOrSetDefaults();
+			Location.Load();
 			
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
@@ -307,9 +308,6 @@ namespace Aer
 		#region User Interface
 		private void SubHeaderTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
 		{
-			App.MainWindow.NavigateToSettingsPage(true);
-
-			/*
 			var flyout = new MenuFlyout();
 
 			// TODO: The FlyOut content
@@ -347,7 +345,7 @@ namespace Aer
 				Text = "Location Settings...",
 				KeyboardAccelerators =
 				{
-					new Microsoft.UI.Xaml.Input.KeyboardAccelerator
+					new KeyboardAccelerator
 					{
 						Key = Windows.System.VirtualKey.S,
 						Modifiers = Windows.System.VirtualKeyModifiers.Control |
@@ -365,7 +363,6 @@ namespace Aer
 				{
 					Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft
 				});
-			*/
 		}
 
 		private void MenuItem_Click(object sender, RoutedEventArgs e)

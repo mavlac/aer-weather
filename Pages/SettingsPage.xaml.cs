@@ -155,7 +155,7 @@ namespace Aer
 					&& !string.IsNullOrWhiteSpace(location.City)
 					&& !string.IsNullOrWhiteSpace(location.Country))
 				{
-					Location.SetLocation(location.City, location.Country, location.Latitude, location.Longitude);
+					Location.Set(location.City, location.Country, location.Latitude, location.Longitude);
 					
 					UpdateLocationSectionFromData(true);
 				}
@@ -225,7 +225,7 @@ namespace Aer
 			{
 				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
 				
-				Location.SetLocation(location.Name, location.Country, location.Latitude, location.Longitude);
+				Location.Set(location.Name, location.Country, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
 				
 				// LocationAndCacheData will update when showing the HomePage
@@ -380,7 +380,7 @@ namespace Aer
 			AppStorage.Delete();
 
 			// 4. Reset location and delete cache data
-			Location.LoadOrSetDefaults();
+			Location.Load(); // Local settings are cleared, so this will reset to defaults
 			WeatherDataCache.ResetCache();
 
 			// 5. Reload default preferences
