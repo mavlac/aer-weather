@@ -13,7 +13,7 @@ namespace Aer.Data
 		private const string LocalSettingsKeyPrefix = nameof(Location);
 
 		private const string DefaultName = "Prague";
-		private const string DefaultCountry = "CZ";
+		private const string DefaultCountryCode = "CZ";
 		private const double DefaultLatitude = 50.08804;
 		private const double DefaultLongitude = 14.42076;
 
@@ -21,11 +21,11 @@ namespace Aer.Data
 
 		public static int? ID { get; private set; }
 		public static string? Name { get; private set; }
-		public static string? Country { get; private set; }
+		public static string? CountryCode { get; private set; }
 		public static double? Latitude { get; private set; }
 		public static double? Longitude { get; private set; }
 
-		public static string Label => string.Format(LabelFormat, Name, Country);
+		public static string Label => string.Format(LabelFormat, Name, CountryCode);
 		public static string? ReadableCoordinates => Latitude is null || Longitude is null ? null : $"{Latitude.Value.ToString("F4", CultureInfo.InvariantCulture)}, {Longitude.Value.ToString("F4", CultureInfo.InvariantCulture)}";
 
 		/// <summary>
@@ -37,21 +37,21 @@ namespace Aer.Data
 			
 			// Loading the saved location details
 			if (localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(ID)}", out var locationIDObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(Country)}", out var locationCountryObj) &&
+				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(CountryCode)}", out var locationCountryCodeObj) &&
 				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(Latitude)}", out var locationLatitudeObj) &&
 				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(Longitude)}", out var locationLongitudeObj) &&
 				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{nameof(Name)}", out var locationNameObj))
 			{
 				ID = (int)locationIDObj;
 				Name = (string)locationNameObj;
-				Country = (string)locationCountryObj;
+				CountryCode = (string)locationCountryCodeObj;
 				Latitude = (double)locationLatitudeObj;
 				Longitude = (double)locationLongitudeObj;
 				return true;
 			}
 			else
 			{
-				Set(DefaultName, DefaultCountry, DefaultLatitude, DefaultLongitude);
+				Set(DefaultName, DefaultCountryCode, DefaultLatitude, DefaultLongitude);
 				return false;
 			}
 		}
@@ -59,11 +59,11 @@ namespace Aer.Data
 		/// <summary>
 		/// Sets the current location and saves it to LocalSettings.
 		/// </summary>
-		public static void Set(string newLocationName, string newLocationCountry, double newLocationLatitude, double newLocationLongitude)
+		public static void Set(string newLocationName, string newLocationCountryCode, double newLocationLatitude, double newLocationLongitude)
 		{
 			ID = GetLocationID(newLocationLatitude, newLocationLongitude);
 			Name = newLocationName;
-			Country = newLocationCountry;
+			CountryCode = newLocationCountryCode;
 			Latitude = newLocationLatitude;
 			Longitude = newLocationLongitude;
 
@@ -71,7 +71,7 @@ namespace Aer.Data
 
 			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(ID)}"] = ID;
 			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(Name)}"] = Name;
-			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(Country)}"] = Country;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(CountryCode)}"] = CountryCode;
 			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(Latitude)}"] = Latitude;
 			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(Longitude)}"] = Longitude;
 		}

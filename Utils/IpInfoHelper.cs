@@ -13,7 +13,7 @@ namespace Aer.Utils
 
 		private static HttpClient? _httpClient;
 
-		public record LocationResponse
+		public record IpInfoLocationResponse
 		{
 			public string? City;
 			public string? Country;
@@ -21,7 +21,7 @@ namespace Aer.Utils
 			public double Longitude;
 		}
 
-		public static async Task<LocationResponse?> GetLocationAsync()
+		public static async Task<IpInfoLocationResponse?> GetLocationAsync()
 		{
 			try
 			{
@@ -48,7 +48,7 @@ namespace Aer.Utils
 					longitude = lon;
 				}
 
-				return new LocationResponse
+				return new IpInfoLocationResponse
 				{
 					City = city,
 					Country = country,

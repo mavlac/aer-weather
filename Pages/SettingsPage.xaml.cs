@@ -209,7 +209,7 @@ namespace Aer
 			{
 				// Keep Admin1Code only if it present and not a digit
 				string adminCode = string.IsNullOrWhiteSpace(c.Admin1Code) || double.TryParse(c.Admin1Code, out _) ? "" : $", {c.Admin1Code}";
-				string key = $"{c.Name}, {c.Country}{adminCode}";
+				string key = $"{c.Name}, {c.CountryCode}{adminCode}";
 
 				// Only add if not present (or replace if population is higher), keys can repeat
 				if (!_locationSuggestionsMap.TryGetValue(key, out var existing) || c.Population > existing.Population)
@@ -223,9 +223,9 @@ namespace Aer
 		{
 			if (args.SelectedItem is string text && _locationSuggestionsMap.TryGetValue(text, out var location))
 			{
-				Debug.WriteLine($"Chosen: {location.Name}, {location.Country} ({location.Latitude}, {location.Longitude})");
+				Debug.WriteLine($"Chosen: {location.Name}, {location.CountryCode} ({location.Latitude}, {location.Longitude})");
 				
-				Location.Set(location.Name, location.Country, location.Latitude, location.Longitude);
+				Location.Set(location.Name, location.CountryCode, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
 				
 				// LocationAndCacheData will update when showing the HomePage
