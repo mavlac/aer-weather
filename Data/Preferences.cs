@@ -12,7 +12,7 @@ namespace Aer.Data
 	/// Saved in LocalSettings.
 	/// </summary>
 	/// <remarks>
-	/// The user selected location is in LocalSettings as well, but handled by <see cref="Location"/>.
+	/// The user selected location is in LocalSettings as well, but handled by <see cref="LocationManager"/>.
 	/// </remarks>
 	public static class Preferences
 	{
@@ -36,7 +36,9 @@ namespace Aer.Data
 			
 			static T GetValueOrDefault<T>(string key, T defaultValue)
 			{
-				if (ApplicationData.Current.LocalSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{key}", out var obj) && obj is T value)
+				var localSettings = ApplicationData.Current.LocalSettings;
+				
+				if (localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_{key}", out var obj) && obj is T value)
 					return value;
 				
 				return defaultValue;

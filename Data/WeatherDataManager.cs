@@ -28,14 +28,18 @@ namespace Aer.Data
 
 		public static async Task<(bool status, string message)> Load(CancellationToken cancellationToken)
 		{
-			if (!Location.ID.HasValue || !Preferences.WeatherProviderId.HasValue)
+			if (LocationManager.CurrentLocation == null)
 			{
-				throw new InvalidOperationException("Location ID or Weather Provider ID is not set or set default, before loading data from cache.");
+				throw new InvalidOperationException("LocationManager CurrentLocation is not set, before loading data from cache.");
+			}
+			if (Preferences.WeatherProviderId == null)
+			{
+				throw new InvalidOperationException("Preferences WeatherProviderId is not set, before loading data from cache.");
 			}
 
 			bool success =
 				WeatherDataCache.GetWeatherData(
-					Location.ID.Value,
+					LocationManager.CurrentLocation.ID,
 					Preferences.WeatherProviderId.Value,
 					out weatherData);
 			if (success)
@@ -63,7 +67,7 @@ namespace Aer.Data
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var provider = WeatherProvider.Get(Preferences.WeatherProviderId!.Value);
-				var (weatherResult, errorMessage) = await provider.GetWeatherAsync(Location.Latitude!.Value, Location.Longitude!.Value, cancellationToken);
+				var (weatherResult, errorMessage) = await provider.GetWeatherAsync(LocationManager.CurrentLocation!.Latitude, LocationManager.CurrentLocation!.Longitude, cancellationToken);
 
 				cancellationToken.ThrowIfCancellationRequested();
 
@@ -76,7 +80,7 @@ namespace Aer.Data
 				// Success
 				weatherData = new WeatherData
 				{
-					LocationID = Location.ID!.Value,
+					LocationID = LocationManager.CurrentLocation.ID,
 					WeatherProviderID = provider.ProviderId,
 					Created = DateTimeOffset.UtcNow,
 					ValidUntil = weatherResult.ValidUntil,
