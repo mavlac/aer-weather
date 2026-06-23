@@ -12,7 +12,7 @@ namespace Aer.Data
 	/// Saved in LocalSettings.
 	/// </summary>
 	/// <remarks>
-	/// The user selected location is in LocalSettings as well, but handled by <see cref="Location"/>.
+	/// The user selected location is in LocalSettings as well, but handled by <see cref="LocationManager"/>.
 	/// </remarks>
 	public static class Preferences
 	{

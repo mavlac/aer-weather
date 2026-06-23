@@ -17,7 +17,7 @@ namespace Aer
 {
 	public sealed partial class SettingsPage : Page
 	{
-		private Dictionary<string, GeoNames.GeoNamesLocation> _locationSuggestionsMap = new();
+		private Dictionary<string, GeoNames.GeoNamesLocation> _locationSuggestionsMap = [];
 
 		public string AppName => Package.Current.DisplayName;
 		public string Copyright => $"\u00A9 {DateTime.Now.Year} {Package.Current.PublisherDisplayName}. All rights reserved.";
@@ -121,11 +121,11 @@ namespace Aer
 		private void UpdateLocationSectionFromData(bool popIfChanged)
 		{
 			bool didChange =
-				(string)LocationSettingsCard.Header != Location.Label ||
-				(string)LocationSettingsCard.Description != Location.ReadableCoordinates;
+				(string)LocationSettingsCard.Header != LocationManager.CurrentLocation?.Label ||
+				(string)LocationSettingsCard.Description != LocationManager.CurrentLocation?.ReadableCoordinates;
 
-			LocationSettingsCard.Header = Location.Label!;
-			LocationSettingsCard.Description = Location.ReadableCoordinates!;
+			LocationSettingsCard.Header = LocationManager.CurrentLocation?.Label!;
+			LocationSettingsCard.Description = LocationManager.CurrentLocation?.ReadableCoordinates!;
 
 			// Highlight changes in LocationSettingsCard
 			if (popIfChanged)
@@ -155,7 +155,7 @@ namespace Aer
 					&& !string.IsNullOrWhiteSpace(location.City)
 					&& !string.IsNullOrWhiteSpace(location.Country))
 				{
-					Location.Set(location.City, location.Country, location.Latitude, location.Longitude);
+					LocationManager.Set(location.City, location.Country, location.Latitude, location.Longitude);
 					
 					UpdateLocationSectionFromData(true);
 				}
@@ -204,7 +204,7 @@ namespace Aer
 				.ToList();
 
 			// Dictionary of labels and location objects for easy lookup when suggestion is chosen
-			_locationSuggestionsMap = new Dictionary<string, GeoNames.GeoNamesLocation>();
+			_locationSuggestionsMap = [];
 			foreach (var c in filteredGeoNames)
 			{
 				// Keep Admin1Code only if it present and not a digit
@@ -225,7 +225,7 @@ namespace Aer
 			{
 				Debug.WriteLine($"Chosen: {location.Name}, {location.CountryCode} ({location.Latitude}, {location.Longitude})");
 				
-				Location.Set(location.Name, location.CountryCode, location.Latitude, location.Longitude);
+				LocationManager.Set(location.Name, location.CountryCode, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
 				
 				// LocationAndCacheData will update when showing the HomePage
@@ -380,7 +380,7 @@ namespace Aer
 			AppStorage.Delete();
 
 			// 4. Reset location and delete cache data
-			Location.Load(); // Local settings are cleared, so this will reset to defaults
+			LocationManager.Load(); // Local settings are cleared, so this will reset to defaults
 			WeatherDataCache.ResetCache();
 
 			// 5. Reload default preferences

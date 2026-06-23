@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.BadgeNotifications;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
@@ -33,7 +34,7 @@ namespace Aer
 		{
 			InitializeComponent();
 			
-			Location.Load();
+			LocationManager.Load();
 			
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
@@ -207,7 +208,7 @@ namespace Aer
 					CurrentConditionIcon.Visibility = Visibility.Collapsed;
 				}
 				// Location
-				SubHeaderText.Text = Location.Label;
+				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
 				// Content tabs: Chart / LocationAndCacheData
 				ContentChart.Invalidate();
 				ContentData.Text = GetContentDataTabText();
@@ -227,7 +228,7 @@ namespace Aer
 				HeaderText.Text = "No data";
 				ToolTipService.SetToolTip(HeaderText, null);
 				// Location - always known
-				SubHeaderText.Text = Location.Label;
+				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
 				CurrentConditionIcon.Visibility = Visibility.Collapsed;
 				// Content tabs: Chart / LocationAndCacheData
 				ContentChart.Invalidate();
@@ -310,33 +311,21 @@ namespace Aer
 		{
 			var flyout = new MenuFlyout();
 
-			// TODO: The FlyOut content
-
-			var currentItem = new RadioMenuFlyoutItem
+			var locationItems = new List<LocationManager.Location>(LocationManager.RecentLocations);
+			locationItems.Reverse();
+			foreach (var location in locationItems)
 			{
-				Text = "Prague, CZ",
-				GroupName = "RecentLocations",
-				IsChecked = true
-			};
-			currentItem.Click += MenuItem_Click;
-			flyout.Items.Add(currentItem);
-
-			// Other items
-			var berlin = new RadioMenuFlyoutItem
-			{
-				Text = "Berlin, DE",
-				GroupName = "RecentLocations"
-			};
-			berlin.Click += MenuItem_Click;
-			flyout.Items.Add(berlin);
-
-			var vienna = new RadioMenuFlyoutItem
-			{
-				Text = "Vienna, AU",
-				GroupName = "RecentLocations"
-			};
-			vienna.Click += MenuItem_Click;
-			flyout.Items.Add(vienna);
+				bool isCurrent = location.ID == LocationManager.CurrentLocation?.ID;
+				var addedItem = new RadioMenuFlyoutItem
+				{
+					Text = location.Label,
+					GroupName = "RecentLocations",
+					IsChecked = isCurrent,
+					DataContext = location
+				};
+				addedItem.Click += LocationFlyoutItem_Click;
+				flyout.Items.Add(addedItem);
+			}
 
 			flyout.Items.Add(new MenuFlyoutSeparator());
 
@@ -365,12 +354,17 @@ namespace Aer
 				});
 		}
 
-		private void MenuItem_Click(object sender, RoutedEventArgs e)
+		private async void LocationFlyoutItem_Click(object sender, RoutedEventArgs e)
 		{
 			if (sender is RadioMenuFlyoutItem item)
 			{
-				// PROOF it works
-				System.Diagnostics.Debug.WriteLine($"Clicked: {item.Text}");
+				if (item.DataContext is LocationManager.Location selectedLocation)
+				{
+					LocationManager.Set(selectedLocation);
+					
+					await RefreshData();
+					UpdatePageContent();
+				}
 			}
 		}
 
