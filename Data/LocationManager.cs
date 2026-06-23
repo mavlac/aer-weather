@@ -148,11 +148,12 @@ namespace Aer.Data
 		{
 			var localSettings = ApplicationData.Current.LocalSettings;
 
+			const string obsoleteLocalSettingsKeyPrefix = "Location";
 			// Loading the obsolete format saved location details
-			if (localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_Country", out var locationCountryCodeObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_Latitude", out var locationLatitudeObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_Longitude", out var locationLongitudeObj) &&
-				localSettings.Values.TryGetValue($"{LocalSettingsKeyPrefix}_Name", out var locationNameObj))
+			if (localSettings.Values.TryGetValue($"{obsoleteLocalSettingsKeyPrefix}_Country", out var locationCountryCodeObj) &&
+				localSettings.Values.TryGetValue($"{obsoleteLocalSettingsKeyPrefix}_Latitude", out var locationLatitudeObj) &&
+				localSettings.Values.TryGetValue($"{obsoleteLocalSettingsKeyPrefix}_Longitude", out var locationLongitudeObj) &&
+				localSettings.Values.TryGetValue($"{obsoleteLocalSettingsKeyPrefix}_Name", out var locationNameObj))
 			{
 				name = (string)locationNameObj;
 				countryCode = (string)locationCountryCodeObj;
