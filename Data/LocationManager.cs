@@ -51,7 +51,7 @@ namespace Aer.Data
 				catch (JsonException)
 				{
 					// Ignore JSON deserialization errors
-					Debug.WriteLine("Error deserializing recent locations from LocalSettings, will be reset to default.");
+					Debug.WriteLine("Error deserializing recent locations from LocalSettings.");
 				}
 			}
 
@@ -64,13 +64,14 @@ namespace Aer.Data
 			{
 				// Fallback 1) Try loading from the original separate-value format
 				// TODO: DELETE when it is sure everyone safely updated
-				Debug.WriteLine("Fallback location from original separate-value format loaded.");
+				Debug.WriteLine("Current location loaded using fallback original separate-value format.");
 				Set(name, countryCode, latitude, longitude);
 				return true;
 			}
 			else
 			{
 				// Fallback 2) Set defaults
+				Debug.WriteLine("Unable to load current location - setting default.");
 				Set(DefaultName, DefaultCountryCode, DefaultLatitude, DefaultLongitude);
 				return false;
 			}
