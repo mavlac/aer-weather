@@ -47,12 +47,12 @@ namespace Aer
 			if (!Preferences.WasWelcomeShown)
 			{
 				Preferences.SetWelcomeShown(true);
-
+				
 				bool proceedToSettings = await MessageBoxEx.ShowAsync(
 					$"Welcome to {Package.Current.DisplayName}!",
 					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now.\r\nSet your preferred location in Settings.",
 					primaryButtonText: "Open Settings");
-
+				
 				if (proceedToSettings)
 				{
 					App.MainWindow.NavigateToSettingsPage(true);
@@ -62,11 +62,14 @@ namespace Aer
 
 		private async void HomePage_Loaded(object sender, RoutedEventArgs e)
 		{
+			var refreshDataTask = RefreshData();
+			
 			// Show whatever is available immediately
-			// Can be default location with no weather data, can be old cached data, can be valid current data
+			// Cache load is synchronous, network load is asynchronous, so this will show the cache first, then update when network load finishes
+			// Can be no weather data, can be old cached data, can be valid current data
 			UpdatePageContent();
-
-			await RefreshData();
+			
+			await refreshDataTask;
 			UpdatePageContent();
 		}
 
