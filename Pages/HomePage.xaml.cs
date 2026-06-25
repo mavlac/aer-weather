@@ -34,8 +34,6 @@ namespace Aer
 		{
 			InitializeComponent();
 			
-			LocationManager.Load();
-			
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
 			
@@ -128,7 +126,8 @@ namespace Aer
 			var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(_updateTaskCts.Token, App.ShutdownToken);
 			var cancellationToken = linkedTokenSource.Token;
 
-			// Kick off the network update, but don't await it yet
+			// Load cache - immediate
+			// and kick off the network update if not present or expired - but don't await it yet
 			_updateTask = WeatherDataManager.Load(cancellationToken);
 
 			// Wait briefly before deciding to show loader, cancellable

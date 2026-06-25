@@ -26,7 +26,7 @@ namespace Aer.Data
 			}
 		}
 
-		public static async Task<(bool status, string message)> Load(CancellationToken cancellationToken)
+		public static async Task<(bool status, string errorMessage)> Load(CancellationToken cancellationToken)
 		{
 			if (LocationManager.CurrentLocation == null)
 			{
@@ -37,30 +37,38 @@ namespace Aer.Data
 				throw new InvalidOperationException("Preferences WeatherProviderId is not set, before loading data from cache.");
 			}
 
-			bool success =
+			var response =
 				WeatherDataCache.GetWeatherData(
 					LocationManager.CurrentLocation.ID,
 					Preferences.WeatherProviderId.Value,
 					out weatherData);
-			if (success)
+			switch (response)
 			{
-				return (true, "Using cached data."); // OK: using valid data from cache
-			}
-			else
-			{
+				// Cache loaded
+				case WeatherDataCache.GetWeatherDataResponse.IsLoaded:
+					Debug.WriteLine("Using cached data.");
+					return (true, string.Empty);
+				
+				// Cache loaded, but expired
+				case WeatherDataCache.GetWeatherDataResponse.IsLoadedButExpired:
+					Debug.WriteLine("Using expired cached data. Updating from network...");
+					return await UpdateWeatherDataFromNetwork(cancellationToken);
+				
 				// No valid cache data or load fail
-				return await UpdateWeatherDataFromNetwork(cancellationToken);
+				default:
+					Debug.WriteLine("No cached data found. Updating from network...");
+					return await UpdateWeatherDataFromNetwork(cancellationToken);
 			}
 		}
 
-		private static async Task<(bool status, string message)> UpdateWeatherDataFromNetwork(CancellationToken cancellationToken)
+		private static async Task<(bool status, string errorMessage)> UpdateWeatherDataFromNetwork(CancellationToken cancellationToken)
 		{
 			Debug.Assert(IsUpdatingFromNetwork is false, "UpdateWeatherDataFromNetwork called while another update is in progress.");
 
 			IsUpdatingFromNetwork = true;
 
 			// Simulate a long-running operation
-			//await Task.Delay(1000);
+			//await Task.Delay(3000, cancellationToken);
 
 			try
 			{
@@ -95,7 +103,7 @@ namespace Aer.Data
 			catch (OperationCanceledException ex)
 			{
 				Debug.WriteLine($"Weather update canceled: {ex}");
-				return (true, ex.Message); // OK: was canceled, but no error
+				return (true, string.Empty); // OK: was canceled, but no error
 			}
 			catch (Exception ex)
 			{

@@ -11,6 +11,13 @@ namespace Aer.Data
 	{
 		private const string CacheFileName = "cache.db";
 
+		public enum GetWeatherDataResponse
+		{
+			IsLoaded,
+			IsLoadedButExpired,
+			NotLoaded
+		}
+
 		private static readonly string _dbFilePath = Path.Combine(ApplicationData.Current.LocalFolder.Path, CacheFileName);
 
 		private static string NowIso() => DateTimeOffset.UtcNow.ToString("O");
@@ -42,19 +49,43 @@ namespace Aer.Data
 			cmd.ExecuteNonQuery();
 		}
 
-		public static void CleanupExpiredRecords()
+		/// <summary>
+		/// Delete expired records from the cache,
+		/// while keeping the current location/provider record even if expired,
+		/// so it can be loaded and shown on app startup, before new data is fetched.
+		/// Connection may be slow or unavailable.
+		/// </summary>
+		public static void CleanupRecords()
 		{
 			if (App.IsShuttingDown)
 				return;
-			
+
+			int? currentLocationID = LocationManager.CurrentLocation?.ID;
+			int? currentProviderID = Preferences.WeatherProviderId;
+
 			using var connection = CreateConnection();
 			connection.Open();
-			
+
 			using var cmd = connection.CreateCommand();
-			cmd.CommandText = """
-				DELETE FROM ForecastCache
-				WHERE ValidUntilUtc <= @now;
-				""";
+			if (currentLocationID.HasValue && currentProviderID.HasValue)
+			{
+				// Delete expired records but keep the cache entry for the currently selected location/provider even if expired.
+				cmd.CommandText = """
+					DELETE FROM ForecastCache
+					WHERE ValidUntilUtc <= @now
+					  AND NOT (LocationId = @keepLoc AND ProviderId = @keepProv);
+					""";
+				cmd.Parameters.AddWithValue("@keepLoc", currentLocationID.Value);
+				cmd.Parameters.AddWithValue("@keepProv", currentProviderID.Value);
+			}
+			else
+			{
+				// Delete all expired records.
+				cmd.CommandText = """
+					DELETE FROM ForecastCache
+					WHERE ValidUntilUtc <= @now;
+					""";
+			}
 			cmd.Parameters.AddWithValue("@now", NowIso());
 			int deletedRecords = cmd.ExecuteNonQuery();
 			
@@ -64,7 +95,7 @@ namespace Aer.Data
 			}
 		}
 
-		private static void DeleteSingleEntry(int locationId, int providerId)
+		private static void DeleteSingleEntry(int locationID, int providerID)
 		{
 			try
 			{
@@ -77,8 +108,8 @@ namespace Aer.Data
 					WHERE LocationId = @locId
 					  AND ProviderId = @provId;
 					""";
-				cmd.Parameters.AddWithValue("@locId", locationId);
-				cmd.Parameters.AddWithValue("@provId", providerId);
+				cmd.Parameters.AddWithValue("@locId", locationID);
+				cmd.Parameters.AddWithValue("@provId", providerID);
 				cmd.ExecuteNonQuery();
 			}
 			catch
@@ -87,49 +118,63 @@ namespace Aer.Data
 			}
 		}
 
-		public static bool GetWeatherData(int locationID, int weatherProviderID, out WeatherData? weatherData)
+		/// <summary>
+		/// Tries to load weather data from the cache for the specified location and provider.
+		/// Loaded data may be expired, in which case the caller should fetch new data from the provider and update the cache.
+		/// Expired data is still returned so the app can display it while waiting for new data to be fetched.
+		/// Corrupted cache entries are removed and treated as not loaded.
+		/// </summary>
+		public static GetWeatherDataResponse GetWeatherData(int locationID, int weatherProviderID, out WeatherData? weatherData)
 		{
 			if (App.IsShuttingDown)
 			{
 				weatherData = null;
-				return false;
+				return GetWeatherDataResponse.NotLoaded;
 			}
 
 			using var connection = CreateConnection();
 			connection.Open();
-			
+
 			using var cmd = connection.CreateCommand();
 			cmd.CommandText = """
-				SELECT Data
+				SELECT Data, CASE WHEN ValidUntilUtc <= @now THEN 1 ELSE 0 END AS IsExpired
 				FROM ForecastCache
 				WHERE LocationId = @locId
-				  AND ProviderId = @provId
-				  AND ValidUntilUtc > @now;
+				  AND ProviderId = @provId;
 				""";
 			cmd.Parameters.AddWithValue("@locId", locationID);
 			cmd.Parameters.AddWithValue("@provId", weatherProviderID);
 			cmd.Parameters.AddWithValue("@now", NowIso());
-			
-			var result = cmd.ExecuteScalar();
-			
-			if (result is not string json)
+
+			using var reader = cmd.ExecuteReader();
+			if (!reader.Read())
 			{
 				weatherData = null;
-				return false;
+				return GetWeatherDataResponse.NotLoaded;
 			}
+			string json = reader.GetString(0);
+			bool isExpired = reader.GetBoolean(1);
 
 			try
 			{
+				// Attempt to deserialize the JSON data into a WeatherData object
 				weatherData = JsonSerializer.Deserialize<WeatherData>(json);
-				return weatherData != null;
+				if (weatherData != null)
+				{
+					return isExpired ? GetWeatherDataResponse.IsLoadedButExpired : GetWeatherDataResponse.IsLoaded;
+				}
+				else
+				{
+					return GetWeatherDataResponse.NotLoaded;
+				}
 			}
 			catch
 			{
 				// Remove corrupted entry
 				DeleteSingleEntry(locationID, weatherProviderID);
-				
+
 				weatherData = null;
-				return false;
+				return GetWeatherDataResponse.NotLoaded;
 			}
 		}
 

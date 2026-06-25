@@ -43,9 +43,10 @@ namespace Aer
 			Debug.WriteLine("App OnLaunched");
 
 			Preferences.Load();
+			LocationManager.Load();
 
 			WeatherDataCache.Initialize();
-			WeatherDataCache.CleanupExpiredRecords();
+			WeatherDataCache.CleanupRecords();
 
 			WindowUtils.ApplyAccentColor(); // Before the Window is created
 			StartedUsingSystemAccentColor = Preferences.UseSystemAccentColor;
