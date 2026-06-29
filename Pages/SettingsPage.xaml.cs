@@ -364,29 +364,30 @@ namespace Aer
 
 		private void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs e)
 		{
-			var settings = ApplicationData.Current.LocalSettings;
+			var localSettings = ApplicationData.Current.LocalSettings;
 
-			// 1. Clear all root-level key/value pairs
-			settings.Values.Clear();
-
-			// 2. Delete all sub-containers, if any
-			var containersToRemove = settings.Containers.Keys.ToList(); // copy keys to avoid modifying collection while iterating
+			// 1. Clear all local settings
+			// Clear all root-level key/value pairs
+			localSettings.Values.Clear();
+			// Delete all sub-containers, if any
+			var containersToRemove = localSettings.Containers.Keys.ToList(); // copy keys to avoid modifying collection while iterating
 			foreach (var containerName in containersToRemove)
 			{
-				settings.DeleteContainer(containerName);
+				localSettings.DeleteContainer(containerName);
 			}
 
-			// 3. Delete app storage file
+			// 2. Delete app storage file
 			AppStorage.Delete();
 
-			// 4. Reset location and delete cache data
-			LocationManager.Load(); // Local settings are cleared, so this will reset to defaults
+			// 3. Reset location and delete cache data
+			LocationManager.ClearRecents();
+			LocationManager.Load(); // Will reset to default
 			WeatherDataCache.ResetCache();
 
-			// 5. Reload default preferences
+			// 4. Reload default preferences
 			Preferences.Load();
 
-			// 6. Refresh UI with default values
+			// 5. Refresh UI with default values
 			UpdateLocationSectionFromData(true);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();

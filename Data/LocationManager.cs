@@ -29,6 +29,17 @@ namespace Aer.Data
 		public static List<Location> RecentLocations => recentLocations;
 
 		/// <summary>
+		/// Clears the current location and recent locations from LocalSettings.
+		/// </summary>
+		public static void ClearRecents()
+		{
+			var localSettings = ApplicationData.Current.LocalSettings;
+			
+			recentLocations.Clear();
+			localSettings.Values.Remove($"{LocalSettingsKeyPrefix}_{nameof(recentLocations)}");
+		}
+
+		/// <summary>
 		/// Loads the location from LocalSettings. If not found, sets the default location.
 		/// </summary>
 		public static bool Load()
