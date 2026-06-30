@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace Aer.Weather.OpenMeteo
 {
+	/// <summary>
+	/// Weather provider for Open-Meteo API (https://open-meteo.com/en/docs).
+	/// </summary>
 	public class OpenMeteoWeatherProvider : WeatherProvider
 	{
 		public const int ProviderStaticId = 0;

@@ -99,15 +99,13 @@
 							   Text="Data source" />
 
 					<controls:SettingsCard Header="Weather forecasts provider"
-										   Description="Service selection is a work in progress and will be included in a future update">
-<!--										   Description="Select a service for getting weather forecasts">-->
+										   Description="Select a service for getting weather forecasts">
 						<controls:SettingsCard.HeaderIcon>
 							<FontIcon Glyph="&#xE968;" /><!-- Network Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<ComboBox x:Name="WeatherProviderSelector"
 								  SelectionChanged="WeatherProviderSelector_SelectionChanged"
-								  Width="320"
-								  IsEnabled="false">
+								  Width="320">
 						</ComboBox>
 					</controls:SettingsCard>
 					

@@ -10,7 +10,10 @@ using System.Threading.Tasks;
 
 namespace Aer.Weather.YrNo
 {
-	public class YrNoWeatherProvider : WeatherProvider
+	/// <summary>
+	/// Weather provider for Yr.no API (https://api.met.no/weatherapi/locationforecast/2.0/documentation).
+	/// </summary>
+	public partial class YrNoWeatherProvider : WeatherProvider
 	{
 		public const int ProviderStaticId = 1;
 
@@ -21,10 +24,10 @@ namespace Aer.Weather.YrNo
 
 		public override async Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
-			var (yrResponse, expires, errorMessage) = await QueryYrNoAsync(latitude, longitude, cancellationToken);
-			if (yrResponse == null ||
-				yrResponse.Properties == null ||
-				yrResponse.Properties.Timeseries == null ||
+			var (yrNoResponse, expires, errorMessage) = await QueryYrNoAsync(latitude, longitude, cancellationToken);
+			if (yrNoResponse == null ||
+				yrNoResponse.Properties == null ||
+				yrNoResponse.Properties.Timeseries == null ||
 				expires == null)
 			{
 				return (null, errorMessage ?? "Response parsed incomplete");
@@ -33,11 +36,11 @@ namespace Aer.Weather.YrNo
 			try
 			{
 				// Map current
-				var first = yrResponse.Properties?.Timeseries?[0];
+				var first = yrNoResponse.Properties?.Timeseries?[0];
 				var instant = first?.Data?.Instant?.Details;
 
 				if (instant == null)
-					return (null, "Yr.no: Missing 'instant' weather data.");
+					return (null, "Missing 'instant' weather data.");
 
 				var symbol = first.Data.Next1Hours?.Summary?.SymbolCode;
 
@@ -45,14 +48,14 @@ namespace Aer.Weather.YrNo
 				{
 					Temperature = instant.AirTemperature,
 					ApparentTemperature = instant.AirTemperature, // TODO: Yr has no separate apparent temperature in compact API
-					WeatherCode = GetWeatherCodeFromSymbol(symbol),
-					IsDaytime = GetIsDaytimeFromSymbol(symbol)
+					WeatherCode = GetWMOCodeFromYrNoSymbol(symbol),
+					IsDaytime = GetIsDaytimeFromYrNoSymbol(symbol)
 				};
 
 				// Map hourly
 				var hourly = new List<HourlyForecast>();
 
-				foreach (var ts in yrResponse.Properties.Timeseries)
+				foreach (var ts in yrNoResponse.Properties.Timeseries)
 				{
 					var hourInstant = ts.Data?.Instant?.Details;
 					if (hourInstant == null)
@@ -64,10 +67,10 @@ namespace Aer.Weather.YrNo
 					{
 						Time = DateTimeUtils.ConvertUtcIsoToLocal(ts.Time),
 						Temperature = hourInstant.AirTemperature,
-						WeatherCode = GetWeatherCodeFromSymbol(sym),
-						IsDaytime = GetIsDaytimeFromSymbol(sym),
+						WeatherCode = GetWMOCodeFromYrNoSymbol(sym),
+						IsDaytime = GetIsDaytimeFromYrNoSymbol(sym),
 						Rain = ts.Data.Next1Hours?.Details?.PrecipitationAmount ?? 0,
-						Snowfall = 0 // Yr.no compact API does not expose separate snowfall here
+						Snowfall = 0 // TODO: Yr.no compact API does not expose separate snowfall here
 					});
 				}
 
@@ -85,7 +88,7 @@ namespace Aer.Weather.YrNo
 		/// <summary>
 		/// The network call
 		/// </summary>
-		private async Task<(YrResponse? yrResponse, DateTimeOffset? expires, string errorMessage)> QueryYrNoAsync(double latitude, double longitude, CancellationToken cancellationToken)
+		private async Task<(YrNoResponse? yrResponse, DateTimeOffset? expires, string errorMessage)> QueryYrNoAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -100,7 +103,7 @@ namespace Aer.Weather.YrNo
 				var expires = response.Content.Headers.Expires;
 				string json = await response.Content.ReadAsStringAsync(cancellationToken);
 
-				var yrResponse = JsonSerializer.Deserialize<YrResponse>(json, _jsonOptions);
+				var yrResponse = JsonSerializer.Deserialize<YrNoResponse>(json, _jsonOptions);
 				return (yrResponse, expires, string.Empty);
 			}
 			catch (OperationCanceledException ex) when (ex is TaskCanceledException)
@@ -125,77 +128,53 @@ namespace Aer.Weather.YrNo
 			}
 		}
 
-		private static int GetWeatherCodeFromSymbol(string? symbol)
-		{
-			if (string.IsNullOrEmpty(symbol))
-				return 0;
-
-			// Start simple – you can refine mapping later
-			if (symbol.StartsWith("clearsky"))
-				return 0;
-			if (symbol.Contains("cloudy"))
-				return 1;
-			if (symbol.Contains("rain"))
-				return 2;
-			if (symbol.Contains("snow"))
-				return 3;
-
-			return 99;
-		}
-
-		private static bool GetIsDaytimeFromSymbol(string? symbol)
-		{
-			if (symbol == null) return true;
-			return symbol.EndsWith("_day");
-		}
-
 		#region Yr.no JSON Models
-		public class YrResponse
+		public class YrNoResponse
 		{
-			[JsonPropertyName("properties")] public YrProperties? Properties { get; set; }
+			[JsonPropertyName("properties")] public YrNoProperties? Properties { get; set; }
 		}
 
-		public class YrProperties
+		public class YrNoProperties
 		{
-			[JsonPropertyName("timeseries")] public List<YrTimeseries> Timeseries { get; set; } = new();
+			[JsonPropertyName("timeseries")] public List<YrNoTimeseries> Timeseries { get; set; } = [];
 		}
 
-		public class YrTimeseries
+		public class YrNoTimeseries
 		{
 			[JsonPropertyName("time")] public string Time { get; set; } = string.Empty;
-			[JsonPropertyName("data")] public YrData? Data { get; set; }
+			[JsonPropertyName("data")] public YrNoData? Data { get; set; }
 		}
 
-		public class YrData
+		public class YrNoData
 		{
-			[JsonPropertyName("instant")] public YrInstant? Instant { get; set; }
-			[JsonPropertyName("next_1_hours")] public YrForecastStep? Next1Hours { get; set; }
-			[JsonPropertyName("next_6_hours")] public YrForecastStep? Next6Hours { get; set; }
-			[JsonPropertyName("next_12_hours")] public YrForecastStep? Next12Hours { get; set; }
+			[JsonPropertyName("instant")] public YrNoInstant? Instant { get; set; }
+			[JsonPropertyName("next_1_hours")] public YrNoForecastStep? Next1Hours { get; set; }
+			[JsonPropertyName("next_6_hours")] public YrNoForecastStep? Next6Hours { get; set; }
+			[JsonPropertyName("next_12_hours")] public YrNoForecastStep? Next12Hours { get; set; }
 		}
 
-		public class YrInstant
+		public class YrNoInstant
 		{
-			[JsonPropertyName("details")] public YrDetails? Details { get; set; }
+			[JsonPropertyName("details")] public YrNoDetails? Details { get; set; }
 		}
 
-		public class YrDetails
+		public class YrNoDetails
 		{
 			[JsonPropertyName("air_temperature")] public double AirTemperature { get; set; }
 		}
 
-		public class YrForecastStep
+		public class YrNoForecastStep
 		{
-			[JsonPropertyName("summary")] public YrSummary? Summary { get; set; }
-			[JsonPropertyName("details")] public YrForecastDetails? Details { get; set; }
+			[JsonPropertyName("summary")] public YrNoSummary? Summary { get; set; }
+			[JsonPropertyName("details")] public YrNoForecastDetails? Details { get; set; }
 		}
 
-		public class YrSummary
+		public class YrNoSummary
 		{
 			[JsonPropertyName("symbol_code")] public string? SymbolCode { get; set; }
 		}
 
-		public class YrForecastDetails
+		public class YrNoForecastDetails
 		{
 			[JsonPropertyName("precipitation_amount")] public double PrecipitationAmount { get; set; }
 		}
