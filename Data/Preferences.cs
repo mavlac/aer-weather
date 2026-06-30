@@ -27,7 +27,7 @@ namespace Aer.Data
 
 		public static void Load()
 		{
-			WeatherProviderId = GetValueOrDefault(nameof(WeatherProviderId), WeatherProvider.GetPreferredProviderId());
+			WeatherProviderId = GetValueOrDefault(nameof(WeatherProviderId), WeatherProvider.GetDefaultPreferredProviderId());
 			TemperatureUnits = (TemperatureUtils.Unit)GetValueOrDefault(nameof(TemperatureUnits), (int)TemperatureUtils.GetPreferredTemperatureUnit());
 			AppTheme = (ElementTheme)GetValueOrDefault(nameof(AppTheme), (int)ElementTheme.Default);
 			UseThickChartLine = GetValueOrDefault(nameof(UseThickChartLine), true);

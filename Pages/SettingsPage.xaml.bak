@@ -112,8 +112,7 @@
 							 IsOpen="False"
 							 Severity="Informational"
 							 IsClosable="True" />
-					
-					
+
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
 							   Text="Appearance &amp; behavior" />
 					

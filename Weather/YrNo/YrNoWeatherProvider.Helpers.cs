@@ -6,18 +6,62 @@
 		{
 			if (string.IsNullOrEmpty(symbol))
 				return 0;
-			
-			// TODO: refine mapping later
+
+			symbol = symbol.ToLowerInvariant();
+
+			// Clear sky
 			if (symbol.StartsWith("clearsky"))
 				return 0;
-			if (symbol.Contains("cloudy"))
+
+			// Mainly clear / fair
+			if (symbol.StartsWith("fair"))
 				return 1;
-			if (symbol.Contains("rain"))
+
+			// Partly cloudy
+			if (symbol.StartsWith("partlycloudy"))
 				return 2;
-			if (symbol.Contains("snow"))
+
+			// Cloudy / overcast
+			if (symbol.StartsWith("cloudy"))
 				return 3;
-			
-			return 99;
+
+			// Fog
+			if (symbol.Contains("fog"))
+				return 45;
+
+			// Drizzle / light rain
+			if (symbol.Contains("lightrain") || symbol.Contains("rainshowers") && symbol.Contains("light"))
+				return 51;
+
+			// Rain
+			if (symbol.Contains("rainshowers"))
+				return 53;
+
+			if (symbol.Contains("rain"))
+				return 61;
+
+			// Heavy rain
+			if (symbol.Contains("heavyrain") || symbol.Contains("extremerain"))
+				return 63;
+
+			// Sleet / freezing rain
+			if (symbol.Contains("sleet") || symbol.Contains("rainandsnow"))
+				return 66;
+
+			// Snow showers (light/moderate)
+			if (symbol.Contains("snowshowers"))
+				return 73;
+
+			// Snow
+			if (symbol.Contains("snow"))
+				return 71;
+
+			// Thunderstorm
+			if (symbol.Contains("thunder"))
+				return 95;
+
+			// Default unknown
+			return 3; // fallback: cloudy is safest neutral UI state
 		}
 
 		private static bool GetIsDaytimeFromYrNoSymbol(string? symbol)

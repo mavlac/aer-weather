@@ -1,6 +1,7 @@
 ﻿using Aer.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
 using System.Text.Json;
@@ -28,6 +29,7 @@ namespace Aer.Weather.YrNo
 			if (yrNoResponse == null ||
 				yrNoResponse.Properties == null ||
 				yrNoResponse.Properties.Timeseries == null ||
+				yrNoResponse.Properties.Timeseries.Count == 0 ||
 				expires == null)
 			{
 				return (null, errorMessage ?? "Response parsed incomplete");
@@ -36,47 +38,63 @@ namespace Aer.Weather.YrNo
 			try
 			{
 				// Map current
-				var first = yrNoResponse.Properties?.Timeseries?[0];
-				var instant = first?.Data?.Instant?.Details;
+				var first = yrNoResponse.Properties.Timeseries[0];
+				var firstDataInstantDetails = first?.Data?.Instant?.Details;
+				string? firstSymbol = first?.Data?.Next1Hours?.Summary?.SymbolCode;
+				
+				Debug.WriteLine(first + " " + firstDataInstantDetails + " " + firstSymbol);
 
-				if (instant == null)
-					return (null, "Missing 'instant' weather data.");
-
-				var symbol = first.Data.Next1Hours?.Summary?.SymbolCode;
-
+				if (first == null || firstDataInstantDetails == null || string.IsNullOrEmpty(firstSymbol))
+				{
+					return (null, "Response parsed incomplete: missing first timeseries data");
+				}
+				
 				var current = new CurrentWeather
 				{
-					Temperature = instant.AirTemperature,
-					ApparentTemperature = instant.AirTemperature, // TODO: Yr has no separate apparent temperature in compact API
-					WeatherCode = GetWMOCodeFromYrNoSymbol(symbol),
-					IsDaytime = GetIsDaytimeFromYrNoSymbol(symbol)
+					Temperature = firstDataInstantDetails.AirTemperature,
+					ApparentTemperature = firstDataInstantDetails.AirTemperature, // TODO: Yr has no separate apparent temperature in compact API
+					WeatherCode = GetWMOCodeFromYrNoSymbol(firstSymbol),
+					IsDaytime = GetIsDaytimeFromYrNoSymbol(firstSymbol)
 				};
 
 				// Map hourly
 				var hourly = new List<HourlyForecast>();
-
-				foreach (var ts in yrNoResponse.Properties.Timeseries)
+				
+				foreach(var timeSerie in yrNoResponse.Properties.Timeseries)
 				{
-					var hourInstant = ts.Data?.Instant?.Details;
-					if (hourInstant == null)
-						continue;
+					var time = timeSerie.Time; // UTC ISO string
+					var timeOffset = DateTimeOffset.Parse(time, null, DateTimeStyles.AssumeUniversal);
+					var dataInstantDetails = timeSerie.Data?.Instant?.Details;
+					string? symbol = timeSerie?.Data?.Next1Hours?.Summary?.SymbolCode;
 
-					var sym = ts.Data.Next1Hours?.Summary?.SymbolCode;
+					// YrNo timeseries are every hour and after ~3 days, they are every 6 hours
+					// Only fine sampled data is useful for hourly forecasts, so we skip all data that is more than hour in future from the last remapped hourly record
+					if (hourly.Count > 0 && hourly[^1].Time.AddHours(1) < timeOffset.DateTime)
+					{
+						break;
+					}
+
+					// YrNo does not expose separate rain/snow amounts, only total precipitation amount and a symbol code that indicates if it is snow or rain.
+					// We split the total precipitation amount into rain/snow based on the symbol code.
+					double precipitationAmount = timeSerie?.Data?.Next1Hours?.Details?.PrecipitationAmount ?? 0d;
+					bool isPrecipitationSnow = symbol?.Contains("snow", StringComparison.OrdinalIgnoreCase) ?? false;
+					double rain = isPrecipitationSnow ? 0d : precipitationAmount;
+					double snow = isPrecipitationSnow ? precipitationAmount : 0d;
 
 					hourly.Add(new HourlyForecast
 					{
-						Time = DateTimeUtils.ConvertUtcIsoToLocal(ts.Time),
-						Temperature = hourInstant.AirTemperature,
-						WeatherCode = GetWMOCodeFromYrNoSymbol(sym),
-						IsDaytime = GetIsDaytimeFromYrNoSymbol(sym),
-						Rain = ts.Data.Next1Hours?.Details?.PrecipitationAmount ?? 0,
-						Snowfall = 0 // TODO: Yr.no compact API does not expose separate snowfall here
+						Time = timeOffset.DateTime,
+						IsDaytime = GetIsDaytimeFromYrNoSymbol(symbol),
+						Temperature = dataInstantDetails?.AirTemperature ?? 0d,
+						WeatherCode = GetWMOCodeFromYrNoSymbol(symbol),
+						Rain = rain,
+						Snowfall = snow
 					});
 				}
-
+				
 				// Validity (from HTTP header)
 				var validUntil = (DateTimeOffset)expires;
-
+				
 				return (new WeatherResult(current, hourly, validUntil), string.Empty);
 			}
 			catch (Exception ex)
@@ -88,7 +106,7 @@ namespace Aer.Weather.YrNo
 		/// <summary>
 		/// The network call
 		/// </summary>
-		private async Task<(YrNoResponse? yrResponse, DateTimeOffset? expires, string errorMessage)> QueryYrNoAsync(double latitude, double longitude, CancellationToken cancellationToken)
+		private async Task<(YrNoResponse? yrNoResponse, DateTimeOffset? expires, string errorMessage)> QueryYrNoAsync(double latitude, double longitude, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -103,8 +121,8 @@ namespace Aer.Weather.YrNo
 				var expires = response.Content.Headers.Expires;
 				string json = await response.Content.ReadAsStringAsync(cancellationToken);
 
-				var yrResponse = JsonSerializer.Deserialize<YrNoResponse>(json, _jsonOptions);
-				return (yrResponse, expires, string.Empty);
+				var yrNoResponse = JsonSerializer.Deserialize<YrNoResponse>(json, _jsonOptions);
+				return (yrNoResponse, expires, string.Empty);
 			}
 			catch (OperationCanceledException ex) when (ex is TaskCanceledException)
 			{
@@ -126,6 +144,11 @@ namespace Aer.Weather.YrNo
 			{
 				return (null, null, $"Unexpected Yr.no API error: {ex.Message}");
 			}
+		}
+
+		public override bool IsFeatureSupported(Feature feature)
+		{
+			return false;
 		}
 
 		#region Yr.no JSON Models
