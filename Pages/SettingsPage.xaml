@@ -221,12 +221,12 @@
 											Orientation="Vertical">
 									<HyperlinkButton Click="HyperlinkButton_Click"
 												   DataContext="https://open-meteo.com/">
-										<TextBlock Text="Open-Meteo weather API"
+										<TextBlock Text="Open-Meteo Weather API"
 												   TextDecorations="Underline" />
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click"
 												   DataContext="https://www.yr.no/">
-										<TextBlock Text="Yr Weather Service"
+										<TextBlock Text="MET Norway Locationforecast API"
 												   TextDecorations="Underline" />
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click"

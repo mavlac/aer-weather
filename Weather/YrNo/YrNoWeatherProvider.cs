@@ -19,7 +19,7 @@ namespace Aer.Weather.YrNo
 		public const int ProviderStaticId = 1;
 
 		public override int ProviderId => ProviderStaticId;
-		public override string ProviderName => "Yr MET/NRK Norway";
+		public override string ProviderName => "Yr / MET Norway";
 		public override string ProviderURL => "api.met.no";
 		public override string ProviderDescription => "Europe-focused";
 
