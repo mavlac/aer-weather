@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace Aer.Weather.OpenMeteo
 {
+	/// <summary>
+	/// Weather provider for Open-Meteo API (https://open-meteo.com/en/docs).
+	/// </summary>
 	public class OpenMeteoWeatherProvider : WeatherProvider
 	{
 		public const int ProviderStaticId = 0;
@@ -110,6 +113,11 @@ namespace Aer.Weather.OpenMeteo
 			}
 		}
 
+		public override bool IsFeatureSupported(Feature feature)
+		{
+			return feature is Feature.ApparentTemperature;
+		}
+
 		#region OpenMeteo JSON Models
 		public class OpenMeteoResponse
 		{
@@ -120,7 +128,7 @@ namespace Aer.Weather.OpenMeteo
 		public class OpenMeteoCurrent
 		{
 			/// <summary>
-			/// Is GMT+0, specified in query
+			/// Is UTC / GMT+0, specified in query
 			/// </summary>
 			[JsonPropertyName("time")] public string Time { get; set; } = string.Empty;
 			/// <summary>
@@ -138,7 +146,7 @@ namespace Aer.Weather.OpenMeteo
 		public class OpenMeteoHourly
 		{
 			/// <summary>
-			/// Is GMT+0, specified in query
+			/// Is UTC / GMT+0, specified in query
 			/// </summary>
 			[JsonPropertyName("time")] public List<string> Time { get; set; } = new();
 			/// <summary>

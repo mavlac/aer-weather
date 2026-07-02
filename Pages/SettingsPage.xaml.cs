@@ -18,6 +18,7 @@ namespace Aer
 	public sealed partial class SettingsPage : Page
 	{
 		private Dictionary<string, GeoNames.GeoNamesLocation> _locationSuggestionsMap = [];
+		private bool _isUpdatingWeatherProviderSelector;
 
 		public string AppName => Package.Current.DisplayName;
 		public string Copyright => $"\u00A9 {DateTime.Now.Year} {Package.Current.PublisherDisplayName}. All rights reserved.";
@@ -234,36 +235,60 @@ namespace Aer
 		#endregion
 
 		#region Data
+		private void UpdateDataUIControls()
+		{
+			_isUpdatingWeatherProviderSelector = true;
+			
+			try
+			{
+				// Clear and populate ComboBox items
+				WeatherProviderSelector.Items.Clear();
+				var providers = Weather.WeatherProvider.GetAllProvidersForUserSelection();
+				foreach (var keyValuePair in providers)
+				{
+					var comboItem = new ComboBoxItem
+					{
+						Content = keyValuePair.Value, // Display name
+						Tag = keyValuePair.Key // Provider Id
+					};
+					WeatherProviderSelector.Items.Add(comboItem);
+				}
+				
+				var selectedItem = WeatherProviderSelector.Items
+					.OfType<ComboBoxItem>()
+					.FirstOrDefault(i => (int)i.Tag == Preferences.WeatherProviderId);
+				
+				if (selectedItem != null)
+					WeatherProviderSelector.SelectedItem = selectedItem;
+			}
+			finally
+			{
+				_isUpdatingWeatherProviderSelector = false;
+			}
+		}
+
 		private void WeatherProviderSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (((ComboBox)sender).SelectedItem is ComboBoxItem selectedItem)
 			{
 				int providerId = (int)selectedItem.Tag;
 				Preferences.SetWeatherProviderId(providerId);
-			}
-		}
 
-		private void UpdateDataUIControls()
-		{
-			// Clear and populate ComboBox items
-			WeatherProviderSelector.Items.Clear();
-			var providers = Weather.WeatherProvider.GetAllProvidersForUserSelection();
-			foreach (var keyValuePair in providers)
-			{
-				var comboItem = new ComboBoxItem
+				// Experimental feature warning for Yr.No
+				if (!_isUpdatingWeatherProviderSelector)
 				{
-					Content = keyValuePair.Value, // Display name
-					Tag = keyValuePair.Key // Provider Id
-				};
-				WeatherProviderSelector.Items.Add(comboItem);
+					if (providerId == Weather.YrNo.YrNoWeatherProvider.ProviderStaticId)
+					{
+						WeatherProviderInfoBar.Title = "Experimental Feature";
+						WeatherProviderInfoBar.Message = "The Yr weather provider powered by the MET Norway Locationforecast API is an experimental feature with limited functionality. It does not support apparent temperature, and hourly forecasts are limited to approximately three days. It may not behave as expected and may be removed in a future update.";
+						WeatherProviderInfoBar.IsOpen = true;
+					}
+					else
+					{
+						WeatherProviderInfoBar.IsOpen = false;
+					}
+				}
 			}
-
-			var selectedItem = WeatherProviderSelector.Items
-				.OfType<ComboBoxItem>()
-				.FirstOrDefault(i => (int)i.Tag == Preferences.WeatherProviderId);
-
-			if (selectedItem != null)
-				WeatherProviderSelector.SelectedItem = selectedItem;
 		}
 		#endregion
 

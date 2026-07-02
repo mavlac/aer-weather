@@ -30,6 +30,8 @@ namespace Aer
 		private Task<(bool status, string message)>? _updateTask;
 		private CancellationTokenSource? _updateTaskCts;
 
+		private bool IsApparentViewSupported => WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).IsFeatureSupported(WeatherProvider.Feature.ApparentTemperature);
+
 		public HomePage()
 		{
 			InitializeComponent();
@@ -194,19 +196,17 @@ namespace Aer
 			if (WeatherDataManager.IsWeatherDataLoaded)
 			{
 				// Temperature, Condition, Icon
-				if (_isMouseDownOverChart == false)
+				if (_isMouseDownOverChart == false || !IsApparentViewSupported)
 				{
 					// Normal
 					HeaderText.Text = $"{WeatherDataManager.WeatherData.ReadableTemperature}, {WeatherDataManager.WeatherData.ConditionDescription}";
-					ToolTipService.SetToolTip(HeaderText, $"Feels like: {WeatherDataManager.WeatherData.ReadableApparentTemperature}");
 					CurrentConditionIcon.Visibility = Visibility.Visible;
 					CurrentConditionIcon.Glyph = WeatherDataManager.WeatherData.ConditionWeatherIconsGlyph;
 				}
 				else
 				{
-					// Feels-like
+					// Apparent / Feels-like
 					HeaderText.Text = $"{WeatherDataManager.WeatherData.ReadableApparentTemperature} (feels like)";
-					ToolTipService.SetToolTip(HeaderText, null);
 					CurrentConditionIcon.Visibility = Visibility.Collapsed;
 				}
 				// Location
@@ -228,7 +228,6 @@ namespace Aer
 
 				// Condition - unknown
 				HeaderText.Text = "No data";
-				ToolTipService.SetToolTip(HeaderText, null);
 				// Location - always known
 				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
 				CurrentConditionIcon.Visibility = Visibility.Collapsed;
@@ -259,7 +258,8 @@ namespace Aer
 				return;
 
 			// Call Charting class to do the actual drawing
-			Charting.DrawHomePageChart(sender, ds, hourlyData, _isMouseDownOverChart);
+			bool showApparentSpline = IsApparentViewSupported && _isMouseDownOverChart;
+			Charting.DrawHomePageChart(sender, ds, hourlyData, showApparentSpline);
 		}
 
 		private void ContentChart_PointerPressed(object sender, PointerRoutedEventArgs e)

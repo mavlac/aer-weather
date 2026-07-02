@@ -18,6 +18,8 @@ namespace Aer.Weather
 	/// </summary>
 	public abstract class WeatherProvider
 	{
+		public enum Feature { ApparentTemperature }
+
 		protected const double NetworkTimeoutSeconds = 30.0;
 		protected const int DefaultCacheValidityMinutes = 30; // Used when provider does not return validity in the data
 
@@ -62,11 +64,14 @@ namespace Aer.Weather
 		/// <summary>
 		/// Returns the preferred weather provider's ID, that is used as a default on application first start.
 		/// </summary>
-		public static int GetPreferredProviderId()
+		public static int GetDefaultPreferredProviderId()
 		{
 			return OpenMeteoWeatherProvider.ProviderStaticId;
 		}
 
+		/// <summary>
+		/// Gets the weather provider instance by its ID.
+		/// </summary>
 		public static WeatherProvider Get(int id)
 		{
 			if (_providers.TryGetValue(id, out var provider))
@@ -75,6 +80,9 @@ namespace Aer.Weather
 			throw new ArgumentException($"Unknown weather provider with Id: {id}");
 		}
 
+		/// <summary>
+		/// Returns a dictionary of all weather providers for user selection, with the provider ID as the key and a string containing the provider name and description as the value.
+		/// </summary>
 		public static Dictionary<int, string> GetAllProvidersForUserSelection()
 		{
 			return
@@ -92,8 +100,12 @@ namespace Aer.Weather
 
 		/// <summary>
 		/// Fetch current weather and hourly forecast in a single call.
-		/// This is the API a provider must implement.
 		/// </summary>
 		public abstract Task<(WeatherResult? weatherResult, string errorMessage)> GetWeatherAsync(double latitude, double longitude, CancellationToken cancellationToken);
+
+		/// <summary>
+		/// Returns true if the provider supports the specified feature, false otherwise.
+		/// </summary>
+		public abstract bool IsFeatureSupported(Feature feature);
 	}
 }

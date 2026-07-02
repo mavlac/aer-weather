@@ -99,17 +99,19 @@
 							   Text="Data source" />
 
 					<controls:SettingsCard Header="Weather forecasts provider"
-										   Description="Service selection is a work in progress and will be included in a future update">
-<!--										   Description="Select a service for getting weather forecasts">-->
+										   Description="Select a service for getting weather forecasts">
 						<controls:SettingsCard.HeaderIcon>
 							<FontIcon Glyph="&#xE968;" /><!-- Network Icon -->
 						</controls:SettingsCard.HeaderIcon>
 						<ComboBox x:Name="WeatherProviderSelector"
 								  SelectionChanged="WeatherProviderSelector_SelectionChanged"
-								  Width="320"
-								  IsEnabled="false">
+								  Width="320">
 						</ComboBox>
 					</controls:SettingsCard>
+					<InfoBar x:Name="WeatherProviderInfoBar"
+							 IsOpen="False"
+							 Severity="Informational"
+							 IsClosable="True" />
 					
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
@@ -219,12 +221,12 @@
 											Orientation="Vertical">
 									<HyperlinkButton Click="HyperlinkButton_Click"
 												   DataContext="https://open-meteo.com/">
-										<TextBlock Text="Open-Meteo weather API"
+										<TextBlock Text="Open-Meteo Weather API"
 												   TextDecorations="Underline" />
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click"
 												   DataContext="https://www.yr.no/">
-										<TextBlock Text="Yr Weather Service"
+										<TextBlock Text="MET Norway Locationforecast API"
 												   TextDecorations="Underline" />
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click"
