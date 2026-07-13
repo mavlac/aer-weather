@@ -80,6 +80,10 @@ namespace Aer
 		{
 			switch (obj)
 			{
+				case MainWindow.GlobalHotkey.BackToHome:
+					App.MainWindow.NavigateToHomePage();
+					break;
+
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
 					Preferences.ToggleDarkAndLightTheme();
 					UpdatePreferenceUIControls();

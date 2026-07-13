@@ -18,6 +18,7 @@ namespace Aer
 	{
 		public enum GlobalHotkey
 		{
+			BackToHome,
 			OpenSettings,
 			DarkThemeToggle
 		}
@@ -162,6 +163,11 @@ namespace Aer
 			}
 		}
 
+		public void NavigateToHomePage()
+		{
+			ContentFrame.Navigate(typeof(HomePage));
+		}
+
 		public void NavigateToSettingsPage(bool focusLocationSearch = false)
 		{
 			ContentFrame.Navigate(typeof(SettingsPage), new SettingsNavigationArgs { FocusLocationSearch = focusLocationSearch });
@@ -176,6 +182,13 @@ namespace Aer
 		#region Hotkeys
 		private void OnKeyDown(object sender, KeyRoutedEventArgs e)
 		{
+			// ESC
+			if (e.Key == VirtualKey.Escape)
+			{
+				e.Handled = true;
+				GlobalHotkeyPressed?.Invoke(GlobalHotkey.BackToHome);
+			}
+
 			// Ctrl + Alt + S
 			if (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) &&
 				InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Menu).HasFlag(CoreVirtualKeyStates.Down) &&
