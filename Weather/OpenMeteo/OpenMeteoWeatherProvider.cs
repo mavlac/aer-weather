@@ -50,7 +50,7 @@ namespace Aer.Weather.OpenMeteo
 			{
 				hourly.Add(new HourlyForecast
 				{
-					Time = DateTimeUtils.ConvertUtcIsoToLocal(openMeteoResponse.Hourly.Time[i]), // Convert Open-Meteo's UTC time to local OS time
+					Time = DateTimeOffset.Parse(openMeteoResponse.Hourly.Time[i], CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal), // UTC
 					IsDaytime = openMeteoResponse.Hourly.IsDay[i] == 1.0,
 					Temperature = openMeteoResponse.Hourly.Temperature[i],
 					ApparentTemperature = openMeteoResponse.Hourly.ApparentTemperature[i],

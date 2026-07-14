@@ -13,7 +13,13 @@ namespace Aer.Data
 		public int LocationID { get; init; }
 		public int WeatherProviderID { get; init; }
 
+		/// <summary>
+		/// UTC / GMT+0
+		/// </summary>
 		public DateTimeOffset Created { get; init; }
+		/// <summary>
+		/// UTC / GMT+0
+		/// </summary>
 		public DateTimeOffset ValidUntil { get; init; }
 
 		public required CurrentWeather CurrentWeather { get; init; }

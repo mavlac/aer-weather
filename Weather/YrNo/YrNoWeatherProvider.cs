@@ -1,5 +1,4 @@
-﻿using Aer.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -62,14 +61,13 @@ namespace Aer.Weather.YrNo
 				
 				foreach(var timeSerie in yrNoResponse.Properties.Timeseries)
 				{
-					var time = timeSerie.Time; // UTC ISO string
-					var timeOffset = DateTimeOffset.Parse(time, null, DateTimeStyles.AssumeUniversal);
+					var time = DateTimeOffset.Parse(timeSerie.Time, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
 					var dataInstantDetails = timeSerie.Data?.Instant?.Details;
 					string? symbol = timeSerie?.Data?.Next1Hours?.Summary?.SymbolCode;
 
 					// YrNo timeseries are every hour and after ~3 days, they are every 6 hours
 					// Only fine sampled data is useful for hourly forecasts, so we skip all data that is more than hour in future from the last remapped hourly record
-					if (hourly.Count > 0 && hourly[^1].Time.AddHours(1) < timeOffset.DateTime)
+					if (hourly.Count > 0 && hourly[^1].Time.AddHours(1) < time)
 					{
 						break;
 					}
@@ -83,7 +81,7 @@ namespace Aer.Weather.YrNo
 
 					hourly.Add(new HourlyForecast
 					{
-						Time = timeOffset.DateTime,
+						Time = time, // UTC
 						IsDaytime = GetIsDaytimeFromYrNoSymbol(symbol),
 						Temperature = dataInstantDetails?.AirTemperature ?? 0d,
 						WeatherCode = GetWMOCodeFromYrNoSymbol(symbol),

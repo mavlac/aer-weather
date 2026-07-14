@@ -123,9 +123,7 @@ namespace Aer.Data
 				throw new InvalidOperationException("GetHourlyDataSinceNow called while no data is loaded.");
 			}
 			
-			var now = DateTime.Now;
-			
-			return weatherData.HourlyForecast.Where(f => f.Time >= now).ToList();
+			return weatherData.HourlyForecast.Where(f => f.Time >= DateTimeOffset.UtcNow).ToList();
 		}
 	}
 }

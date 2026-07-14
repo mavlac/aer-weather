@@ -262,7 +262,7 @@ namespace Aer.Drawing
 			var labels = new List<(string label, float x, float y)>();
 			for (int i = 0; i < hourly.Count; i++)
 			{
-				int hour = hourly[i].Time.Hour;
+				int hour = hourly[i].LocalTime.Hour;
 				bool isNewDayMarker = hour is 0;
 				bool isTimeMarker = isWide ? hour is 6 or 12 or 18 : hour is 12;
 				float x = hourWidth * i;
@@ -275,7 +275,7 @@ namespace Aer.Drawing
 
 					string label =
 						isNewDayMarker
-						? culture.DateTimeFormat.GetAbbreviatedDayName(hourly[i].Time.DayOfWeek).ToUpper()
+						? culture.DateTimeFormat.GetAbbreviatedDayName(hourly[i].LocalTime.DayOfWeek).ToUpper()
 						: hour.ToString();
 
 					bool isLabelOnRightEdge = x > width - 35; // Skip label shortly overlapping right edge
@@ -289,7 +289,7 @@ namespace Aer.Drawing
 			int startHourlyIndex = 0;
 			// When dense, got to start at hours 0,3,6,9,12.. When sparse, got to start at hours 0,6,12,18..
 			// Find the start from where to draw first icon
-			while (hourly[startHourlyIndex].Time.Hour % eachNthHour != 0) // Look for the first divisible
+			while (hourly[startHourlyIndex].LocalTime.Hour % eachNthHour != 0) // Look for the first divisible
 			{
 				startHourlyIndex++;
 			}
@@ -324,18 +324,18 @@ namespace Aer.Drawing
 			var dayExtremes = new List<DayExtremes>();
 			var currentExtremes = new DayExtremes();
 			// Daily extremes
-			int lastDay = hourly[0].Time.Day;
+			int lastDay = hourly[0].LocalTime.Day;
 			for (int i = 0; i < hourly.Count; i++)
 			{
-				if (hourly[i].Time.Day != lastDay)
+				if (hourly[i].LocalTime.Day != lastDay)
 				{
 					dayExtremes.Add(currentExtremes);
 					currentExtremes = new DayExtremes();
-					lastDay = hourly[i].Time.Day;
+					lastDay = hourly[i].LocalTime.Day;
 				}
 				
 				double temperature = showApparentSpline ? hourly[i].ApparentTemperature : hourly[i].Temperature;
-				int hour = hourly[i].Time.Hour;
+				int hour = hourly[i].LocalTime.Hour;
 				if (temperature < currentExtremes.DayLow.temperature)
 					currentExtremes.DayLow = (temperature, i);
 				if (temperature > currentExtremes.DayHigh.temperature)
