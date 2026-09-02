@@ -16,5 +16,9 @@ Build, or get from MS Store.
 - Language: C#
 - Platform: Windows App SDK
 
+### Data Source
+- [Open-Meteo](https://open-meteo.com/)
+- [MET Weather API (experimental)](https://api.met.no/)
+
 ### License: Freeware, source-available
 For brief details see [LICENSE.md](LICENSE.md)
