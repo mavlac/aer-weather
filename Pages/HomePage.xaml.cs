@@ -200,6 +200,7 @@ namespace Aer
 				{
 					// Normal
 					HeaderText.Text = $"{WeatherDataManager.WeatherData.ReadableTemperature}, {WeatherDataManager.WeatherData.ConditionDescription}";
+					ToolTipService.SetToolTip(HeaderText, IsApparentViewSupported ? $"Feels like: {WeatherDataManager.WeatherData.ReadableApparentTemperature}" : null);
 					CurrentConditionIcon.Visibility = Visibility.Visible;
 					CurrentConditionIcon.Glyph = WeatherDataManager.WeatherData.ConditionWeatherIconsGlyph;
 				}
@@ -207,6 +208,7 @@ namespace Aer
 				{
 					// Apparent / Feels-like
 					HeaderText.Text = $"{WeatherDataManager.WeatherData.ReadableApparentTemperature} (feels like)";
+					ToolTipService.SetToolTip(HeaderText, null);
 					CurrentConditionIcon.Visibility = Visibility.Collapsed;
 				}
 				// Location
@@ -225,9 +227,10 @@ namespace Aer
 				// No data at all
 				// There should always be at least some cache, no matter how valid.
 				// This means that app is started a first time or settings were cleared.
-
+				
 				// Condition - unknown
 				HeaderText.Text = "No data";
+				ToolTipService.SetToolTip(HeaderText, null);
 				// Location - always known
 				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
 				CurrentConditionIcon.Visibility = Visibility.Collapsed;
