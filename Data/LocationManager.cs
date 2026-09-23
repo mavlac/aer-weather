@@ -1,4 +1,5 @@
-﻿using System;
+using Aer.Utils;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -89,7 +90,8 @@ namespace Aer.Data
 		}
 
 		/// <summary>
-		/// Sets the current location and saves it to LocalSettings.
+		/// Sets the current location.
+		/// <seealso cref="Set(Location)"/>
 		/// </summary>
 		public static void Set(string newLocationName, string newLocationCountryCode, double newLocationLatitude, double newLocationLongitude)
 		{
@@ -104,7 +106,9 @@ namespace Aer.Data
 		}
 
 		/// <summary>
-		/// Sets the current location and saves it to LocalSettings.
+		/// Sets the current location.
+		/// Updates the recent locations list, the current one is always the last in the list.
+		/// The list is serialized and saved to LocalSettings.
 		/// </summary>
 		public static void Set(Location location)
 		{
@@ -123,6 +127,9 @@ namespace Aer.Data
 			{
 				recentLocations.RemoveAt(0);
 			}
+
+			// Refresh the TaskBar right-click menu JumpList
+			_ = JumpListManager.UpdateAsync(recentLocations.ToList()); // Passing a copy to avoid potential modification during async operation
 
 			var localSettings = ApplicationData.Current.LocalSettings;
 
