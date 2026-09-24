@@ -27,7 +27,7 @@ namespace Aer.Utils
 						string.Format(ArgumentsFormat, recentLocation.Latitude, recentLocation.Longitude),
 						recentLocation.Label);
 				jumpListItem.Description = recentLocation.ReadableCoordinates;
-				jumpListItem.Logo = new Uri("ms-appx:///Assets/JumpListMapPin-48.png");
+				jumpListItem.Logo = new Uri("ms-appx:///Assets/JumpListMapPin.png");
 				jumpList.Items.Add(jumpListItem);
 			}
 
