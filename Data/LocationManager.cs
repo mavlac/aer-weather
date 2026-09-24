@@ -41,7 +41,9 @@ namespace Aer.Data
 		}
 
 		/// <summary>
-		/// Loads the location from LocalSettings. If not found, sets the default location.
+		/// Initializes the current location.
+		/// This is done by loading the recent location list from LocalSettings and using the topmost record.
+		/// If not found, sets the default location.
 		/// </summary>
 		public static bool Load()
 		{
@@ -91,22 +93,6 @@ namespace Aer.Data
 
 		/// <summary>
 		/// Sets the current location.
-		/// <seealso cref="Set(Location)"/>
-		/// </summary>
-		public static void Set(string newLocationName, string newLocationCountryCode, double newLocationLatitude, double newLocationLongitude)
-		{
-			var location = new Location(
-				GetLocationID(newLocationLatitude, newLocationLongitude),
-				newLocationName,
-				newLocationCountryCode,
-				newLocationLatitude,
-				newLocationLongitude);
-
-			Set(location);
-		}
-
-		/// <summary>
-		/// Sets the current location.
 		/// Updates the recent locations list, the current one is always the last in the list.
 		/// The list is serialized and saved to LocalSettings.
 		/// </summary>
@@ -136,6 +122,32 @@ namespace Aer.Data
 			var json = JsonSerializer.Serialize(recentLocations);
 			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(recentLocations)}"] = json;
 		}
+
+		/// <summary>
+		/// Sets the current location.
+		/// <seealso cref="Set(Location)"/>
+		/// </summary>
+		public static void Set(string newLocationName, string newLocationCountryCode, double newLocationLatitude, double newLocationLongitude)
+		{
+			var location = new Location(
+				GetLocationID(newLocationLatitude, newLocationLongitude),
+				newLocationName,
+				newLocationCountryCode,
+				newLocationLatitude,
+				newLocationLongitude);
+			
+			Set(location);
+		}
+
+		public static void SetFromRecent(int recentIndex)
+		{
+			if (recentIndex < 0 || recentIndex >= recentLocations.Count)
+				throw new ArgumentOutOfRangeException(nameof(recentIndex), "Recent index is out of range.");
+			var location = recentLocations[recentIndex];
+			
+			Set(location);
+		}
+
 
 		/// <summary>
 		/// LocationManager ID is a hash calculated from rounded latitude/longitude.

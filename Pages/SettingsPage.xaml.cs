@@ -1,4 +1,4 @@
-﻿using Aer.Data;
+using Aer.Data;
 using Aer.Utils;
 using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;

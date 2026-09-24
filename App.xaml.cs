@@ -1,8 +1,9 @@
-﻿using Aer.Data;
+using Aer.Data;
 using Aer.Utils;
 using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,6 +46,8 @@ namespace Aer
 			Preferences.Load();
 			LocationManager.Load();
 
+			HandleLaunchArguments();
+
 			WeatherDataCache.Initialize();
 			WeatherDataCache.CleanupRecords();
 
@@ -65,6 +68,29 @@ namespace Aer
 				Debug.WriteLine("App MainWindow Closed - Shutdown Signal");
 				SignalShutdown();
 			};
+		}
+
+		private static void HandleLaunchArguments()
+		{
+			string arguments =
+				Environment.GetCommandLineArgs().Length > 1
+					? Environment.GetCommandLineArgs()[1] // 0 is the app executable path, 1 is the first argument
+					: string.Empty;
+
+			if (string.IsNullOrEmpty(arguments))
+				return;
+
+			Debug.WriteLine($"Launch arguments: [{arguments}]");
+
+			// Parsing recent location arguments from JumpList
+			if (arguments.StartsWith(JumpListManager.RecentLocationArgumentsPrefix))
+			{
+				if (int.TryParse(arguments.AsSpan(JumpListManager.RecentLocationArgumentsPrefix.Length), NumberStyles.Integer, CultureInfo.InvariantCulture, out int index))
+				{
+					Debug.WriteLine($"Using JumpList recent location (index {index})");
+					LocationManager.SetFromRecent(index);
+				}
+			}
 		}
 
 		internal static async Task Restart()
