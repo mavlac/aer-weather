@@ -19,7 +19,6 @@ namespace Aer.Utils
 
 			jumpList.Items.Clear();
 
-			recentLocations.Reverse();
 			foreach (var recentLocation in recentLocations)
 			{
 				var jumpListItem =

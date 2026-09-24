@@ -26,7 +26,7 @@ namespace Aer.Data
 
 		private static List<Location> recentLocations = [];
 
-		public static Location? CurrentLocation => recentLocations.LastOrDefault();
+		public static Location? CurrentLocation => recentLocations.FirstOrDefault();
 		public static List<Location> RecentLocations => recentLocations;
 
 		/// <summary>
@@ -119,13 +119,13 @@ namespace Aer.Data
 			// Remove existing occurrence
 			recentLocations.RemoveAll(x => x.ID == location.ID);
 
-			// Add as most recent
-			recentLocations.Add(location);
+			// Add as most recent, at index 0
+			recentLocations.Insert(0, location);
 
-			// Keep only newest entries
+			// Keep only newest entries, trim from the end
 			while (recentLocations.Count > MaxRecentLocations)
 			{
-				recentLocations.RemoveAt(0);
+				recentLocations.RemoveAt(recentLocations.Count - 1);
 			}
 
 			// Refresh the TaskBar right-click menu JumpList
