@@ -1,4 +1,4 @@
-﻿using Aer.Data;
+using Aer.Data;
 using Aer.Drawing;
 using Aer.Utils;
 using Aer.Weather;
@@ -317,7 +317,6 @@ namespace Aer
 			var flyout = new MenuFlyout();
 
 			var locationItems = new List<LocationManager.Location>(LocationManager.RecentLocations);
-			locationItems.Reverse();
 			foreach (var location in locationItems)
 			{
 				bool isCurrent = location.ID == LocationManager.CurrentLocation?.ID;
