@@ -14,6 +14,9 @@ namespace Aer.Utils
 	{
 		public const string RecentLocationArgumentsPrefix = "/recentLocationIndex/";
 
+		private const string CurrentLocationIconPath = "ms-appx:///Assets/JumpList/JumpListMapPin.png";
+		private const string RecentLocationIconPath = "ms-appx:///Assets/JumpList/JumpListMapPin2.png";
+
 		internal static async Task UpdateAsync(List<Location> recentLocations)
 		{
 			var jumpList = await JumpList.LoadCurrentAsync();
@@ -29,7 +32,7 @@ namespace Aer.Utils
 
 				var jumpListItem = JumpListItem.CreateWithArguments(arguments, recentLocation.Name);
 				jumpListItem.Description = $"{recentLocation.Label} ({recentLocation.ReadableCoordinates})";
-				jumpListItem.Logo = new Uri("ms-appx:///Assets/JumpListMapPin.png");
+				jumpListItem.Logo = new Uri(i == 0 ? CurrentLocationIconPath : RecentLocationIconPath);
 				jumpList.Items.Add(jumpListItem);
 			}
 
