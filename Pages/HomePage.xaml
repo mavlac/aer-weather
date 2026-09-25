@@ -22,7 +22,7 @@
 			<StackPanel x:Name="HeaderPanel"
 						Grid.Row="0"
 						Orientation="Vertical"
-						Padding="24,18,24,0">
+						Padding="24,14,24,0">
 				<StackPanel Orientation="Horizontal">
 					<TextBlock x:Name="HeaderText"
 							   Style="{StaticResource HeaderTextBlockStyle}"
