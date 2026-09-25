@@ -1,4 +1,4 @@
-﻿using Aer.Utils;
+using Aer.Utils;
 using Aer.Utils.Extensions;
 using Aer.Weather;
 using Microsoft.UI.Xaml;
@@ -23,6 +23,7 @@ namespace Aer.Data
 		public static ElementTheme AppTheme { get; private set; }
 		public static bool UseSystemAccentColor { get; private set; }
 		public static bool UseThickChartLine { get; private set; }
+		public static bool AllowMultipleInstances { get; private set; }
 		public static bool WasWelcomeShown { get; private set; }
 
 		public static void Load()
@@ -30,8 +31,9 @@ namespace Aer.Data
 			WeatherProviderId = GetValueOrDefault(nameof(WeatherProviderId), WeatherProvider.GetDefaultPreferredProviderId());
 			TemperatureUnits = (TemperatureUtils.Unit)GetValueOrDefault(nameof(TemperatureUnits), (int)TemperatureUtils.GetPreferredTemperatureUnit());
 			AppTheme = (ElementTheme)GetValueOrDefault(nameof(AppTheme), (int)ElementTheme.Default);
-			UseThickChartLine = GetValueOrDefault(nameof(UseThickChartLine), true);
 			UseSystemAccentColor = GetValueOrDefault(nameof(UseSystemAccentColor), false);
+			UseThickChartLine = GetValueOrDefault(nameof(UseThickChartLine), true);
+			AllowMultipleInstances = GetValueOrDefault(nameof(AllowMultipleInstances), false);
 			WasWelcomeShown = GetValueOrDefault(nameof(WasWelcomeShown), false);
 			
 			static T GetValueOrDefault<T>(string key, T defaultValue)
@@ -54,6 +56,7 @@ namespace Aer.Data
 			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(AppTheme)}"] = (int)AppTheme;
 			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(UseSystemAccentColor)}"] = UseSystemAccentColor;
 			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(UseThickChartLine)}"] = UseThickChartLine;
+			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(AllowMultipleInstances)}"] = AllowMultipleInstances;
 			localSettings.Values[$"{LocalSettingsKeyPrefix}_{nameof(WasWelcomeShown)}"] = WasWelcomeShown;
 		}
 
@@ -119,6 +122,13 @@ namespace Aer.Data
 		{
 			Debug.WriteLine($"Preferences: Setting line thickness to {(useThickChartLine ? "Thick" : "Thin")}");
 			UseThickChartLine = useThickChartLine;
+			Save();
+		}
+
+		public static void SetAllowMultipleInstances(bool allowMultipleInstances)
+		{
+			Debug.WriteLine($"Preferences: Setting allow multiple instances to {allowMultipleInstances}");
+			AllowMultipleInstances = allowMultipleInstances;
 			Save();
 		}
 

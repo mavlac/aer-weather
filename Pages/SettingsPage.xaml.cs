@@ -30,6 +30,12 @@ namespace Aer
 			set => Preferences.SetLineThickness(value);
 		}
 
+		public bool AreMultipleInstancesAllowed
+		{
+			get => Preferences.AllowMultipleInstances;
+			set => Preferences.SetAllowMultipleInstances(value);
+		}
+
 		public SettingsPage()
 		{
 			InitializeComponent();

@@ -182,6 +182,17 @@
 									  OnContent="On"
 									  OffContent="Off"/>
 					</controls:SettingsCard>
+
+					<controls:SettingsCard Header="Allow multiple instances"
+										   Description="Run each launch in a separate app window">
+						<controls:SettingsCard.HeaderIcon>
+							<FontIcon Glyph="&#xE7C4;" /><!-- TaskView Icon -->
+						</controls:SettingsCard.HeaderIcon>
+						<ToggleSwitch x:Name="MultipleInstancesToggle"
+									  IsOn="{x:Bind AreMultipleInstancesAllowed, Mode=TwoWay}"
+									  OnContent="On"
+									  OffContent="Off"/>
+					</controls:SettingsCard>
 					
 					
 					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
