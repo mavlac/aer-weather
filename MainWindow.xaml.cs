@@ -47,8 +47,8 @@ namespace Aer
 			// Load nav state
 			NavigationViewStateManager.Restore(NavView, false);
 
-			Debug.Assert((string)HomeNavigationViewItem.Content == nameof(Pages.Home));
-			Debug.Assert((string)LocationNavigationViewItem.Content == nameof(Pages.Location));
+			Debug.Assert((string)HomeNavigationViewItem.Tag == nameof(Pages.Home));
+			Debug.Assert((string)LocationNavigationViewItem.Tag == nameof(Pages.Location));
 
 			ContentFrame.Navigated += ContentFrame_Navigated;
 			ContentFrame.Navigate(typeof(Pages.Home));
@@ -130,11 +130,11 @@ namespace Aer
 			}
 			else if (args.SelectedItem is NavigationViewItem selectedItem)
 			{
-				if ((string)selectedItem.Content == nameof(Pages.Home))
+				if ((string)selectedItem.Tag == nameof(Pages.Home))
 				{
 					ContentFrame.Navigate(typeof(Pages.Home));
 				}
-				else if ((string)selectedItem.Content == nameof(Pages.Location))
+				else if ((string)selectedItem.Tag == nameof(Pages.Location))
 				{
 					ContentFrame.Navigate(typeof(Pages.Location));
 				}
@@ -159,13 +159,13 @@ namespace Aer
 			{
 				NavView.SelectedItem = NavView.MenuItems
 					.OfType<NavigationViewItem>()
-					.FirstOrDefault(item => (string)item.Content == nameof(Pages.Home));
+					.FirstOrDefault(item => (string)item.Tag == nameof(Pages.Home));
 			}
 			else if (e.SourcePageType == typeof(Pages.Location))
 			{
 				NavView.SelectedItem = NavView.MenuItems
 					.OfType<NavigationViewItem>()
-					.FirstOrDefault(item => (string)item.Content == nameof(Pages.Location));
+					.FirstOrDefault(item => (string)item.Tag == nameof(Pages.Location));
 			}
 			else
 			{

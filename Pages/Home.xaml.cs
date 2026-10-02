@@ -337,14 +337,13 @@ namespace Aer.Pages
 
 			var openLocationPageItem = new MenuFlyoutItem
 			{
-				Text = "Specify location...",
+				Text = "Choose location...",
 				KeyboardAccelerators =
 				{
 					new KeyboardAccelerator
 					{
-						Key = Windows.System.VirtualKey.S,
-						Modifiers = Windows.System.VirtualKeyModifiers.Control |
-									Windows.System.VirtualKeyModifiers.Menu // Alt
+						Key = Windows.System.VirtualKey.L,
+						Modifiers = Windows.System.VirtualKeyModifiers.Control
 					}
 				}
 			};
