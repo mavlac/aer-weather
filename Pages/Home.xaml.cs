@@ -49,7 +49,7 @@ namespace Aer.Pages
 				bool proceedToLocation = await MessageBoxEx.ShowAsync(
 					$"Welcome to {Package.Current.DisplayName}!",
 					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now.\r\nSet your preferred location on the Location page.",
-					primaryButtonText: "Open Location");
+					primaryButtonText: "Choose Location...");
 				
 				if (proceedToLocation)
 				{
