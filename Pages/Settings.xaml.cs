@@ -13,9 +13,10 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.System;
 
-namespace Aer
+namespace Aer.Pages
 {
-	public sealed partial class SettingsPage : Page
+
+	public sealed partial class Settings : Page
 	{
 		private Dictionary<string, GeoNames.GeoNamesLocation> _locationSuggestionsMap = [];
 		private bool _isUpdatingWeatherProviderSelector;
@@ -30,7 +31,7 @@ namespace Aer
 			set => Preferences.SetLineThickness(value);
 		}
 
-		public SettingsPage()
+		public Settings()
 		{
 			InitializeComponent();
 			
@@ -233,7 +234,7 @@ namespace Aer
 				LocationManager.Set(location.Name, location.CountryCode, location.Latitude, location.Longitude);
 				UpdateLocationSectionFromData(true);
 				
-				// LocationAndCacheData will update when showing the HomePage
+				// LocationAndCacheData will update when showing the Home
 			}
 		}
 		#endregion

@@ -46,10 +46,11 @@ namespace Aer
 			// Load nav state
 			NavigationViewStateManager.Restore(NavView, false);
 
-			Debug.Assert((string)HomeNavItem.Content == nameof(HomePage), "HomeNavItem content should match HomePage name");
+			Debug.Assert((string)HomeNavigationViewItem.Content == nameof(Pages.Home));
+			Debug.Assert((string)LocationNavigationViewItem.Content == nameof(Pages.Location));
 
 			ContentFrame.Navigated += ContentFrame_Navigated;
-			ContentFrame.Navigate(typeof(HomePage));
+			ContentFrame.Navigate(typeof(Pages.Home));
 
 			// Run after first layout pass of the visual tree
 			RootGrid.LayoutUpdated += RootGrid_LayoutUpdatedOnce;
@@ -126,14 +127,15 @@ namespace Aer
 			{
 				NavigateToSettingsPage();
 			}
-			else
+			else if (args.SelectedItem is NavigationViewItem selectedItem)
 			{
-				if (args.SelectedItem is NavigationViewItem selectedItem)
+				if ((string)selectedItem.Content == nameof(Pages.Home))
 				{
-					if ((string)selectedItem.Content == nameof(HomePage))
-					{
-						ContentFrame.Navigate(typeof(HomePage));
-					}
+					ContentFrame.Navigate(typeof(Pages.Home));
+				}
+				else if ((string)selectedItem.Content == nameof(Pages.Location))
+				{
+					ContentFrame.Navigate(typeof(Pages.Location));
 				}
 			}
 		}
@@ -152,11 +154,17 @@ namespace Aer
 			NavView.IsBackEnabled = ContentFrame.CanGoBack;
 
 			// Highlight the correct menu item
-			if (e.SourcePageType == typeof(HomePage))
+			if (e.SourcePageType == typeof(Pages.Home))
 			{
 				NavView.SelectedItem = NavView.MenuItems
 					.OfType<NavigationViewItem>()
-					.FirstOrDefault(item => (string)item.Content == nameof(HomePage));
+					.FirstOrDefault(item => (string)item.Content == nameof(Pages.Home));
+			}
+			else if (e.SourcePageType == typeof(Pages.Location))
+			{
+				NavView.SelectedItem = NavView.MenuItems
+					.OfType<NavigationViewItem>()
+					.FirstOrDefault(item => (string)item.Content == nameof(Pages.Location));
 			}
 			else
 			{
@@ -166,12 +174,12 @@ namespace Aer
 
 		public void NavigateToHomePage()
 		{
-			ContentFrame.Navigate(typeof(HomePage));
+			ContentFrame.Navigate(typeof(Pages.Home));
 		}
 
 		public void NavigateToSettingsPage(bool focusLocationSearch = false)
 		{
-			ContentFrame.Navigate(typeof(SettingsPage), new SettingsNavigationArgs { FocusLocationSearch = focusLocationSearch });
+			ContentFrame.Navigate(typeof(Pages.Settings), new SettingsNavigationArgs { FocusLocationSearch = focusLocationSearch });
 		}
 
 		public class SettingsNavigationArgs

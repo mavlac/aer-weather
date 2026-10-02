@@ -18,9 +18,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 
-namespace Aer
+namespace Aer.Pages
 {
-	public sealed partial class HomePage : Page
+	public sealed partial class Home : Page
 	{
 		private readonly MinuteTimer _minuteTimer = new();
 		private bool _isMouseDownOverChart = false;
@@ -30,7 +30,7 @@ namespace Aer
 
 		private bool IsApparentViewSupported => WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).IsFeatureSupported(WeatherProvider.Feature.ApparentTemperature);
 
-		public HomePage()
+		public Home()
 		{
 			InitializeComponent();
 			

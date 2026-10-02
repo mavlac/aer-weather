@@ -23,7 +23,8 @@
 
 			<!-- Navigation -->
 			<NavigationView.MenuItems>
-				<NavigationViewItem x:Name="HomeNavItem" Content="HomePage" Icon="Home" />
+				<NavigationViewItem x:Name="HomeNavigationViewItem" Content="Home" Icon="Home" />
+				<NavigationViewItem x:Name="LocationNavigationViewItem" Content="Location" Icon="MapPin" />
 			</NavigationView.MenuItems>
 
 			<!-- Frame to host pages -->
