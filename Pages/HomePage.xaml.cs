@@ -22,8 +22,6 @@ namespace Aer
 {
 	public sealed partial class HomePage : Page
 	{
-		public const string NavigationTag = "home";
-
 		private readonly MinuteTimer _minuteTimer = new();
 		private bool _isMouseDownOverChart = false;
 

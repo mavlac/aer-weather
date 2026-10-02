@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Windows.ApplicationModel;
 using Windows.System;
@@ -45,7 +46,7 @@ namespace Aer
 			// Load nav state
 			NavigationViewStateManager.Restore(NavView, false);
 
-			HomeNavItem.Tag = HomePage.NavigationTag;
+			Debug.Assert((string)HomeNavItem.Content == nameof(HomePage), "HomeNavItem content should match HomePage name");
 
 			ContentFrame.Navigated += ContentFrame_Navigated;
 			ContentFrame.Navigate(typeof(HomePage));
@@ -129,7 +130,7 @@ namespace Aer
 			{
 				if (args.SelectedItem is NavigationViewItem selectedItem)
 				{
-					if ((string)selectedItem.Tag == HomePage.NavigationTag)
+					if ((string)selectedItem.Content == nameof(HomePage))
 					{
 						ContentFrame.Navigate(typeof(HomePage));
 					}
@@ -155,7 +156,7 @@ namespace Aer
 			{
 				NavView.SelectedItem = NavView.MenuItems
 					.OfType<NavigationViewItem>()
-					.FirstOrDefault(x => (string)x.Tag == HomePage.NavigationTag);
+					.FirstOrDefault(item => (string)item.Content == nameof(HomePage));
 			}
 			else
 			{

@@ -23,7 +23,7 @@
 
 			<!-- Navigation -->
 			<NavigationView.MenuItems>
-				<NavigationViewItem x:Name="HomeNavItem" Content="Home" Icon="Home" />
+				<NavigationViewItem x:Name="HomeNavItem" Content="HomePage" Icon="Home" />
 			</NavigationView.MenuItems>
 
 			<!-- Frame to host pages -->
