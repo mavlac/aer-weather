@@ -46,14 +46,14 @@ namespace Aer.Pages
 			{
 				Preferences.SetWelcomeShown(true);
 				
-				bool proceedToSettings = await MessageBoxEx.ShowAsync(
+				bool proceedToLocation = await MessageBoxEx.ShowAsync(
 					$"Welcome to {Package.Current.DisplayName}!",
-					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now.\r\nSet your preferred location in Settings.",
-					primaryButtonText: "Open Settings");
+					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now.\r\nSet your preferred location on the Location page.",
+					primaryButtonText: "Open Location");
 				
-				if (proceedToSettings)
+				if (proceedToLocation)
 				{
-					App.MainWindow.NavigateToSettingsPage(true);
+					App.MainWindow.NavigateToLocationPage(true);
 				}
 			}
 		}
@@ -91,12 +91,16 @@ namespace Aer.Pages
 			MainWindow.GlobalHotkeyPressed -= MainWindow_GlobalHotkeyPressed;
 		}
 
-		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey obj)
+		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey globalHotkey)
 		{
-			switch(obj)
+			switch(globalHotkey)
 			{
-				case MainWindow.GlobalHotkey.OpenSettings:
-					App.MainWindow.NavigateToSettingsPage(false);
+				case MainWindow.GlobalHotkey.OpenLocationPage:
+					App.MainWindow.NavigateToLocationPage(false);
+					break;
+
+				case MainWindow.GlobalHotkey.OpenSettingsPage:
+					App.MainWindow.NavigateToSettingsPage();
 					break;
 
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
@@ -331,9 +335,9 @@ namespace Aer.Pages
 
 			flyout.Items.Add(new MenuFlyoutSeparator());
 
-			var openSettingsItem = new MenuFlyoutItem
+			var openLocationPageItem = new MenuFlyoutItem
 			{
-				Text = "Location Settings...",
+				Text = "Specify location...",
 				KeyboardAccelerators =
 				{
 					new KeyboardAccelerator
@@ -344,9 +348,9 @@ namespace Aer.Pages
 					}
 				}
 			};
-			openSettingsItem.Click += (_, _) => App.MainWindow.NavigateToSettingsPage(true);
+			openLocationPageItem.Click += (_, _) => App.MainWindow.NavigateToLocationPage(true);
 
-			flyout.Items.Add(openSettingsItem);
+			flyout.Items.Add(openLocationPageItem);
 
 			flyout.ShowAt(
 				SubHeaderTextBlock,

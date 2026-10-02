@@ -40,7 +40,7 @@ namespace Aer.Pages
 
 		private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
 		{
-			UpdateLocationSectionFromData(false);
+			UpdateLocationSection(false);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
 			UpdateAboutUIControls();
@@ -50,7 +50,7 @@ namespace Aer.Pages
 		{
 			base.OnNavigatedTo(e);
 
-			if (e.Parameter is MainWindow.SettingsNavigationArgs args && args.FocusLocationSearch)
+			if (e.Parameter is MainWindow.LocationNavigationArgs args && args.FocusSearchInput)
 			{
 				// Onboarding
 				LocationAutoSuggestBoxTeachingTip.IsOpen = true;
@@ -77,12 +77,16 @@ namespace Aer.Pages
 			MainWindow.WindowSizeChanged -= MainWindow_WindowSizeChanged;
 		}
 
-		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey obj)
+		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey globalHotkey)
 		{
-			switch (obj)
+			switch (globalHotkey)
 			{
-				case MainWindow.GlobalHotkey.BackToHome:
+				case MainWindow.GlobalHotkey.BackToHomePage:
 					App.MainWindow.NavigateToHomePage();
+					break;
+
+				case MainWindow.GlobalHotkey.OpenLocationPage:
+					App.MainWindow.NavigateToLocationPage(false);
 					break;
 
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
@@ -124,7 +128,7 @@ namespace Aer.Pages
 		}
 	
 		#region Location
-		private void UpdateLocationSectionFromData(bool popIfChanged)
+		private void UpdateLocationSection(bool popIfChanged)
 		{
 			bool didChange =
 				(string)LocationSettingsCard.Header != LocationManager.CurrentLocation?.Label ||
@@ -163,7 +167,7 @@ namespace Aer.Pages
 				{
 					LocationManager.Set(location.City, location.Country, location.Latitude, location.Longitude);
 					
-					UpdateLocationSectionFromData(true);
+					UpdateLocationSection(true);
 				}
 				
 				button.IsEnabled = true;
@@ -232,7 +236,7 @@ namespace Aer.Pages
 				Debug.WriteLine($"Chosen: {location.Name}, {location.CountryCode} ({location.Latitude}, {location.Longitude})");
 				
 				LocationManager.Set(location.Name, location.CountryCode, location.Latitude, location.Longitude);
-				UpdateLocationSectionFromData(true);
+				UpdateLocationSection(true);
 				
 				// LocationAndCacheData will update when showing the Home
 			}
@@ -418,7 +422,7 @@ namespace Aer.Pages
 			Preferences.Load();
 
 			// 5. Refresh UI with default values
-			UpdateLocationSectionFromData(true);
+			UpdateLocationSection(true);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
 			UpdateAboutUIControls();

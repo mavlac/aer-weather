@@ -19,8 +19,9 @@ namespace Aer
 	{
 		public enum GlobalHotkey
 		{
-			BackToHome,
-			OpenSettings,
+			BackToHomePage,
+			OpenLocationPage,
+			OpenSettingsPage,
 			DarkThemeToggle
 		}
 
@@ -177,14 +178,19 @@ namespace Aer
 			ContentFrame.Navigate(typeof(Pages.Home));
 		}
 
-		public void NavigateToSettingsPage(bool focusLocationSearch = false)
+		public void NavigateToLocationPage(bool focusSearchInput = false)
 		{
-			ContentFrame.Navigate(typeof(Pages.Settings), new SettingsNavigationArgs { FocusLocationSearch = focusLocationSearch });
+			ContentFrame.Navigate(typeof(Pages.Location), new LocationNavigationArgs(focusSearchInput));
 		}
 
-		public class SettingsNavigationArgs
+		public void NavigateToSettingsPage()
 		{
-			public bool FocusLocationSearch { get; set; }
+			ContentFrame.Navigate(typeof(Pages.Settings));
+		}
+
+		public class LocationNavigationArgs(bool focusSearchInput = false)
+		{
+			public bool FocusSearchInput { get; private set; } = focusSearchInput;
 		}
 		#endregion
 
@@ -195,7 +201,15 @@ namespace Aer
 			if (e.Key == VirtualKey.Escape)
 			{
 				e.Handled = true;
-				GlobalHotkeyPressed?.Invoke(GlobalHotkey.BackToHome);
+				GlobalHotkeyPressed?.Invoke(GlobalHotkey.BackToHomePage);
+			}
+
+			// Ctrl + L
+			if (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) &&
+				e.Key == VirtualKey.L)
+			{
+				e.Handled = true;
+				GlobalHotkeyPressed?.Invoke(GlobalHotkey.OpenLocationPage);
 			}
 
 			// Ctrl + Alt + S
@@ -204,7 +218,7 @@ namespace Aer
 				e.Key == VirtualKey.S)
 			{
 				e.Handled = true;
-				GlobalHotkeyPressed?.Invoke(GlobalHotkey.OpenSettings);
+				GlobalHotkeyPressed?.Invoke(GlobalHotkey.OpenSettingsPage);
 			}
 
 			// Ctrl + D
