@@ -23,53 +23,58 @@
 			<Grid Padding="0,0,0,14">
 				<StackPanel HorizontalAlignment="Stretch" Spacing="4">
 
-					<TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-							   Text="Find a location or use your current position" />
+					<TextBlock x:Name="SectionHeaderText"
+							   Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+							   Text="Location Section Header"/>
 
 					<controls:SettingsCard x:Name="LocationSettingsCard"
-													   Header="LocationSettingsCard.Header"
-													   Description="LocationSettingsCard.Description"
-													   HeaderIcon="Map">
+										   Header="LocationSettingsCard.Header"
+										   Description="LocationSettingsCard.Description"
+										   HeaderIcon="Map">
 						<StackPanel Orientation="Horizontal">
 							<ProgressRing x:Name="LocationLoadingProgressRing"
-													  IsActive="False"
-													  Background="Transparent"
-													  Width="18"
-													  Height="18"
-													  Margin="0,0,8,0"/>
+										  IsActive="False"
+										  Background="Transparent"
+										  Width="18"
+										  Height="18"
+										  Margin="0,0,8,0"/>
 							<AutoSuggestBox x:Name="LocationAutoSuggestBox"
-														TextChanged="LocationAutoSuggestBox_TextChanged"
-														SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
-														PlaceholderText="Type a location"
-														Width="280">
+										    TextChanged="LocationAutoSuggestBox_TextChanged"
+										    SuggestionChosen="LocationAutoSuggestBox_SuggestionChosen"
+										    PlaceholderText="Type a location"
+										    Width="280">
 								<TeachingTip
-												x:Name="LocationAutoSuggestBoxTeachingTip"
-												Title="Find your city"
-												Subtitle="Begin typing to see suggestions"
-												Target="{x:Bind LocationAutoSuggestBox}"
-												IsOpen="False"
-												IsLightDismissEnabled="True">
+									x:Name="LocationAutoSuggestBoxTeachingTip"
+									Title="Find your city"
+									Subtitle="Begin typing to see suggestions"
+									Target="{x:Bind LocationAutoSuggestBox}"
+									IsOpen="False"
+									IsLightDismissEnabled="True">
 									<TeachingTip.IconSource>
-										<FontIconSource Glyph="&#xE92E;" />
-										<!-- KeyboardStandard Icon -->
+										<FontIconSource Glyph="&#xE92E;" /><!-- KeyboardStandard Icon -->
 									</TeachingTip.IconSource>
 								</TeachingTip>
 							</AutoSuggestBox>
 							<Button x:Name="UseCurrentLocationButton"
-												Click="UseCurrentLocationButton_Click"
-												Margin="4,0,0,0"
-												Padding="2,2,2,2"
-												VerticalAlignment="Center"
-												HorizontalAlignment="Center"
-												Height="32"
-												Width="36"
-												ToolTipService.ToolTip="Estimate your current location from your IP address">
-								<FontIcon Glyph="&#xE81D;" FontSize="14"/>
-								<!-- Location Icon -->
+									Click="UseCurrentLocationButton_Click"
+									Margin="4,0,0,0"
+									Padding="2,2,2,2"
+									VerticalAlignment="Center"
+									HorizontalAlignment="Center"
+									Height="32"
+									Width="36"
+									ToolTipService.ToolTip="Estimate your current location from your IP address">
+								<FontIcon Glyph="&#xE81D;" FontSize="14"/><!-- Location Icon -->
 							</Button>
 						</StackPanel>
 					</controls:SettingsCard>
-					
+
+					<StackPanel x:Name="RecentLocationsStackPanel"
+								Orientation="Vertical"
+								Padding="0,4,0,0">
+						<!-- Dynamic content here -->
+					</StackPanel>
+
 				</StackPanel>
 			</Grid>
 		</ScrollViewer>

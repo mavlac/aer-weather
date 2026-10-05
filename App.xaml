@@ -20,15 +20,6 @@
 					<Setter Property="Margin" Value="1,30,0,6" />
 				</Style.Setters>
 			</Style>
-			<!-- HyperlinkButton, but without button paddings, so it looks like a text -->
-			<Style x:Key="HyperlinkButtonTextStyle" TargetType="HyperlinkButton">
-				<Setter Property="Padding" Value="0" />
-				<Setter Property="Background" Value="Transparent" />
-				<Setter Property="BorderThickness" Value="0" />
-				<Setter Property="HorizontalAlignment" Value="Left" />
-				<Setter Property="Foreground"
-					Value="{ThemeResource TextFillColorPrimary}" />
-			</Style>
 
 			<!-- App -->
 			<!-- AppName: Package.Current.DisplayName -->

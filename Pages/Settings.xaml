@@ -221,10 +221,8 @@
 					
 					
 					<StackPanel Orientation="Vertical"
-								Margin="2,12,0,0"
-								Spacing="12">
-						<HyperlinkButton Click="ShareButton_Click"
-										 Style="{StaticResource HyperlinkButtonTextStyle}">
+								Padding="0,4,0,0">
+						<HyperlinkButton Click="ShareButton_Click">
 							<StackPanel Orientation="Horizontal">
 								<!-- Share Icon -->
 								<FontIcon Glyph="&#xE72D;"
@@ -234,8 +232,7 @@
 							</StackPanel>
 						</HyperlinkButton>
 						<HyperlinkButton Click="HyperlinkButton_Click"
-										 DataContext="https://github.com/mavlac/aer-weather/issues/new"
-										 Style="{StaticResource HyperlinkButtonTextStyle}">
+										 DataContext="https://github.com/mavlac/aer-weather/issues/new">
 							<StackPanel Orientation="Horizontal">
 								<!-- Bug Icon -->
 								<FontIcon Glyph="&#xEBE8;"

@@ -73,7 +73,6 @@ namespace Aer.Pages
 			}
 		}
 
-		#region Location
 		private void UpdateLocationSection(bool popIfChanged)
 		{
 			bool didChange =
@@ -98,6 +97,17 @@ namespace Aer.Pages
 					CompositorAnimations.AnimateFadeIn(descriptionPresenter!, 1d);
 				}
 			}
+
+			UpdateSectionHeaderText();
+			PopulateRecentLocationButtons();
+		}
+
+		private void UpdateSectionHeaderText()
+		{
+			SectionHeaderText.Text =
+				LocationManager.RecentLocations.Count > 1
+					? "Find a location or pick a recent one"
+					: "Find a location";
 		}
 
 		private async void UseCurrentLocationButton_Click(object sender, RoutedEventArgs e)
@@ -187,6 +197,39 @@ namespace Aer.Pages
 				// LocationAndCacheData will update when showing the Home
 			}
 		}
-		#endregion
+
+		private void PopulateRecentLocationButtons()
+		{
+			RecentLocationsStackPanel.Children.Clear();
+
+			foreach (var location in LocationManager.RecentLocations)
+			{
+				// Skip first, first is the current location, we don't need a button for it
+				if (location == LocationManager.CurrentLocation)
+					continue;
+
+				var button = new HyperlinkButton
+				{
+					Content = location.Label,
+					DataContext = location
+				};
+
+				button.Click += RecentLocationButton_Click;
+				RecentLocationsStackPanel.Children.Add(button);
+			}
+		}
+
+		private void RecentLocationButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (sender is HyperlinkButton recentLocationButton)
+			{
+				if (recentLocationButton.DataContext is LocationManager.Location selectedLocation)
+				{
+					LocationManager.Set(selectedLocation);
+					
+					App.MainWindow.NavigateToHomePage();
+				}
+			}
+		}
 	}
 }
