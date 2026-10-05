@@ -64,6 +64,7 @@
     <None Remove="Assets\StoreLogo.scale-100.png" />
     <None Remove="Assets\StoreLogo.scale-200.png" />
     <None Remove="Assets\StoreLogo.scale-400.png" />
+    <None Remove="Pages\Location.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -108,6 +109,9 @@
     <None Update="Assets\Data\cities5000.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Pages\Location.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Content Update="Assets\Fonts\weathericons-regular-webfont.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>

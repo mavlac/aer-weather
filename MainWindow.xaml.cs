@@ -19,8 +19,9 @@ namespace Aer
 	{
 		public enum GlobalHotkey
 		{
-			BackToHome,
-			OpenSettings,
+			BackToHomePage,
+			OpenLocationPage,
+			OpenSettingsPage,
 			DarkThemeToggle
 		}
 
@@ -46,10 +47,11 @@ namespace Aer
 			// Load nav state
 			NavigationViewStateManager.Restore(NavView, false);
 
-			Debug.Assert((string)HomeNavItem.Content == nameof(HomePage), "HomeNavItem content should match HomePage name");
+			Debug.Assert((string)HomeNavigationViewItem.Tag == nameof(Pages.Home));
+			Debug.Assert((string)LocationNavigationViewItem.Tag == nameof(Pages.Location));
 
 			ContentFrame.Navigated += ContentFrame_Navigated;
-			ContentFrame.Navigate(typeof(HomePage));
+			ContentFrame.Navigate(typeof(Pages.Home));
 
 			// Run after first layout pass of the visual tree
 			RootGrid.LayoutUpdated += RootGrid_LayoutUpdatedOnce;
@@ -126,14 +128,15 @@ namespace Aer
 			{
 				NavigateToSettingsPage();
 			}
-			else
+			else if (args.SelectedItem is NavigationViewItem selectedItem)
 			{
-				if (args.SelectedItem is NavigationViewItem selectedItem)
+				if ((string)selectedItem.Tag == nameof(Pages.Home))
 				{
-					if ((string)selectedItem.Content == nameof(HomePage))
-					{
-						ContentFrame.Navigate(typeof(HomePage));
-					}
+					ContentFrame.Navigate(typeof(Pages.Home));
+				}
+				else if ((string)selectedItem.Tag == nameof(Pages.Location))
+				{
+					ContentFrame.Navigate(typeof(Pages.Location));
 				}
 			}
 		}
@@ -152,11 +155,17 @@ namespace Aer
 			NavView.IsBackEnabled = ContentFrame.CanGoBack;
 
 			// Highlight the correct menu item
-			if (e.SourcePageType == typeof(HomePage))
+			if (e.SourcePageType == typeof(Pages.Home))
 			{
 				NavView.SelectedItem = NavView.MenuItems
 					.OfType<NavigationViewItem>()
-					.FirstOrDefault(item => (string)item.Content == nameof(HomePage));
+					.FirstOrDefault(item => (string)item.Tag == nameof(Pages.Home));
+			}
+			else if (e.SourcePageType == typeof(Pages.Location))
+			{
+				NavView.SelectedItem = NavView.MenuItems
+					.OfType<NavigationViewItem>()
+					.FirstOrDefault(item => (string)item.Tag == nameof(Pages.Location));
 			}
 			else
 			{
@@ -166,17 +175,22 @@ namespace Aer
 
 		public void NavigateToHomePage()
 		{
-			ContentFrame.Navigate(typeof(HomePage));
+			ContentFrame.Navigate(typeof(Pages.Home));
 		}
 
-		public void NavigateToSettingsPage(bool focusLocationSearch = false)
+		public void NavigateToLocationPage(bool focusSearchInput = false)
 		{
-			ContentFrame.Navigate(typeof(SettingsPage), new SettingsNavigationArgs { FocusLocationSearch = focusLocationSearch });
+			ContentFrame.Navigate(typeof(Pages.Location), new LocationNavigationArgs(focusSearchInput));
 		}
 
-		public class SettingsNavigationArgs
+		public void NavigateToSettingsPage()
 		{
-			public bool FocusLocationSearch { get; set; }
+			ContentFrame.Navigate(typeof(Pages.Settings));
+		}
+
+		public class LocationNavigationArgs(bool focusSearchInput = false)
+		{
+			public bool FocusSearchInput { get; private set; } = focusSearchInput;
 		}
 		#endregion
 
@@ -187,7 +201,15 @@ namespace Aer
 			if (e.Key == VirtualKey.Escape)
 			{
 				e.Handled = true;
-				GlobalHotkeyPressed?.Invoke(GlobalHotkey.BackToHome);
+				GlobalHotkeyPressed?.Invoke(GlobalHotkey.BackToHomePage);
+			}
+
+			// Ctrl + L
+			if (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) &&
+				e.Key == VirtualKey.L)
+			{
+				e.Handled = true;
+				GlobalHotkeyPressed?.Invoke(GlobalHotkey.OpenLocationPage);
 			}
 
 			// Ctrl + Alt + S
@@ -196,7 +218,7 @@ namespace Aer
 				e.Key == VirtualKey.S)
 			{
 				e.Handled = true;
-				GlobalHotkeyPressed?.Invoke(GlobalHotkey.OpenSettings);
+				GlobalHotkeyPressed?.Invoke(GlobalHotkey.OpenSettingsPage);
 			}
 
 			// Ctrl + D

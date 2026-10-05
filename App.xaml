@@ -10,7 +10,17 @@
 				<XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
 				<!-- Other merged dictionaries here -->
 			</ResourceDictionary.MergedDictionaries>
-			
+
+			<!-- Shared page layout styles -->
+			<!-- Section header style (inc. the correct spacing) -->
+			<Style x:Key="SettingsSectionHeaderTextBlockStyle"
+			   BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+			   TargetType="TextBlock">
+				<Style.Setters>
+					<Setter Property="Margin" Value="1,30,0,6" />
+				</Style.Setters>
+			</Style>
+
 			<!-- App -->
 			<!-- AppName: Package.Current.DisplayName -->
 			<x:String x:Key="AppDescription">A minimalistic WinUI 3 weather app for Windows</x:String>

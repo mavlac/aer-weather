@@ -18,9 +18,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 
-namespace Aer
+namespace Aer.Pages
 {
-	public sealed partial class HomePage : Page
+	public sealed partial class Home : Page
 	{
 		private readonly MinuteTimer _minuteTimer = new();
 		private bool _isMouseDownOverChart = false;
@@ -30,7 +30,7 @@ namespace Aer
 
 		private bool IsApparentViewSupported => WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).IsFeatureSupported(WeatherProvider.Feature.ApparentTemperature);
 
-		public HomePage()
+		public Home()
 		{
 			InitializeComponent();
 			
@@ -46,14 +46,14 @@ namespace Aer
 			{
 				Preferences.SetWelcomeShown(true);
 				
-				bool proceedToSettings = await MessageBoxEx.ShowAsync(
+				bool proceedToLocation = await MessageBoxEx.ShowAsync(
 					$"Welcome to {Package.Current.DisplayName}!",
-					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now.\r\nSet your preferred location in Settings.",
-					primaryButtonText: "Open Settings");
+					"Thank you for using my weather app.\r\n\r\nThe default location is shown for now.\r\nSet your preferred location on the Location page.",
+					primaryButtonText: "Choose Location...");
 				
-				if (proceedToSettings)
+				if (proceedToLocation)
 				{
-					App.MainWindow.NavigateToSettingsPage(true);
+					App.MainWindow.NavigateToLocationPage(true);
 				}
 			}
 		}
@@ -91,12 +91,16 @@ namespace Aer
 			MainWindow.GlobalHotkeyPressed -= MainWindow_GlobalHotkeyPressed;
 		}
 
-		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey obj)
+		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey globalHotkey)
 		{
-			switch(obj)
+			switch(globalHotkey)
 			{
-				case MainWindow.GlobalHotkey.OpenSettings:
-					App.MainWindow.NavigateToSettingsPage(false);
+				case MainWindow.GlobalHotkey.OpenLocationPage:
+					App.MainWindow.NavigateToLocationPage(false);
+					break;
+
+				case MainWindow.GlobalHotkey.OpenSettingsPage:
+					App.MainWindow.NavigateToSettingsPage();
 					break;
 
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
@@ -331,22 +335,21 @@ namespace Aer
 
 			flyout.Items.Add(new MenuFlyoutSeparator());
 
-			var openSettingsItem = new MenuFlyoutItem
+			var openLocationPageItem = new MenuFlyoutItem
 			{
-				Text = "Location Settings...",
+				Text = "Choose location...",
 				KeyboardAccelerators =
 				{
 					new KeyboardAccelerator
 					{
-						Key = Windows.System.VirtualKey.S,
-						Modifiers = Windows.System.VirtualKeyModifiers.Control |
-									Windows.System.VirtualKeyModifiers.Menu // Alt
+						Key = Windows.System.VirtualKey.L,
+						Modifiers = Windows.System.VirtualKeyModifiers.Control
 					}
 				}
 			};
-			openSettingsItem.Click += (_, _) => App.MainWindow.NavigateToSettingsPage(true);
+			openLocationPageItem.Click += (_, _) => App.MainWindow.NavigateToLocationPage(true);
 
-			flyout.Items.Add(openSettingsItem);
+			flyout.Items.Add(openLocationPageItem);
 
 			flyout.ShowAt(
 				SubHeaderTextBlock,

@@ -5,19 +5,17 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.System;
 
-namespace Aer
+namespace Aer.Pages
 {
-	public sealed partial class SettingsPage : Page
+
+	public sealed partial class Settings : Page
 	{
-		private Dictionary<string, GeoNames.GeoNamesLocation> _locationSuggestionsMap = [];
 		private bool _isUpdatingWeatherProviderSelector;
 
 		public string AppName => Package.Current.DisplayName;
@@ -30,7 +28,7 @@ namespace Aer
 			set => Preferences.SetLineThickness(value);
 		}
 
-		public SettingsPage()
+		public Settings()
 		{
 			InitializeComponent();
 			
@@ -39,7 +37,6 @@ namespace Aer
 
 		private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
 		{
-			UpdateLocationSectionFromData(false);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
 			UpdateAboutUIControls();
@@ -48,21 +45,6 @@ namespace Aer
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-
-			if (e.Parameter is MainWindow.SettingsNavigationArgs args && args.FocusLocationSearch)
-			{
-				// Onboarding
-				LocationAutoSuggestBoxTeachingTip.IsOpen = true;
-
-				Loaded += (_, __) =>
-				{
-					DispatcherQueue.TryEnqueue(() =>
-					{
-						// Focus but wait until loaded and after the current UI pass completes
-						LocationAutoSuggestBox.Focus(FocusState.Programmatic);
-					});
-				};
-			}
 
 			MainWindow.GlobalHotkeyPressed += MainWindow_GlobalHotkeyPressed;
 			MainWindow.WindowSizeChanged += MainWindow_WindowSizeChanged;
@@ -76,12 +58,16 @@ namespace Aer
 			MainWindow.WindowSizeChanged -= MainWindow_WindowSizeChanged;
 		}
 
-		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey obj)
+		private void MainWindow_GlobalHotkeyPressed(MainWindow.GlobalHotkey globalHotkey)
 		{
-			switch (obj)
+			switch (globalHotkey)
 			{
-				case MainWindow.GlobalHotkey.BackToHome:
+				case MainWindow.GlobalHotkey.BackToHomePage:
 					App.MainWindow.NavigateToHomePage();
+					break;
+
+				case MainWindow.GlobalHotkey.OpenLocationPage:
+					App.MainWindow.NavigateToLocationPage(false);
 					break;
 
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
@@ -121,122 +107,6 @@ namespace Aer
 				await Launcher.LaunchUriAsync(uri);
 			}
 		}
-	
-		#region Location
-		private void UpdateLocationSectionFromData(bool popIfChanged)
-		{
-			bool didChange =
-				(string)LocationSettingsCard.Header != LocationManager.CurrentLocation?.Label ||
-				(string)LocationSettingsCard.Description != LocationManager.CurrentLocation?.ReadableCoordinates;
-
-			LocationSettingsCard.Header = LocationManager.CurrentLocation?.Label!;
-			LocationSettingsCard.Description = LocationManager.CurrentLocation?.ReadableCoordinates!;
-
-			// Highlight changes in LocationSettingsCard
-			if (popIfChanged)
-			{
-				// Icon always
-				var iconPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderIconPresenter");
-				CompositorAnimations.AnimatePop(iconPresenter!, 1.2f, 0.5d);
-				// Text only if did change
-				if (didChange)
-				{
-					var headerPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_HeaderPresenter");
-					CompositorAnimations.AnimateFadeIn(headerPresenter!, 1d);
-					var descriptionPresenter = FrameworkUtils.FindChildByName<FrameworkElement>(LocationSettingsCard, "PART_DescriptionPresenter");
-					CompositorAnimations.AnimateFadeIn(descriptionPresenter!, 1d);
-				}
-			}
-		}
-
-		private async void UseCurrentLocationButton_Click(object sender, RoutedEventArgs e)
-		{
-			if (sender is Button button)
-			{
-				button.IsEnabled = false;
-
-				var location = await IpInfoHelper.GetLocationAsync();
-				if (location != null
-					&& !string.IsNullOrWhiteSpace(location.City)
-					&& !string.IsNullOrWhiteSpace(location.Country))
-				{
-					LocationManager.Set(location.City, location.Country, location.Latitude, location.Longitude);
-					
-					UpdateLocationSectionFromData(true);
-				}
-				
-				button.IsEnabled = true;
-			}
-		}
-
-		private async void LocationAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
-		{
-			if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
-				return;
-
-			LocationAutoSuggestBoxTeachingTip.IsOpen = false;
-
-			if (!GeoNames.IsLoaded)
-			{
-				if (GeoNames.IsLoading)
-					return;
-				
-				LocationLoadingProgressRing.IsActive = true;
-				await GeoNames.Load(App.ShutdownToken); // Wait for it to finish and respect app shutdown
-				LocationLoadingProgressRing.IsActive = false; // disable the ring
-				
-				// LocationAndCacheData ready - continue with creating options
-			}
-
-			string query = sender.Text;
-
-			// Clear suggestions if query is too short
-			if (query.Length < 2)
-			{
-				sender.ItemsSource = null;
-				return;
-			}
-
-			// Build suggestions
-
-			// Find locations where name or any alternate name starts with the query (case insensitive)
-			var filteredGeoNames = GeoNames.AllGeoNamesLocations
-				.Where(c =>
-					c.NameASCII.StartsWith(query, StringComparison.InvariantCultureIgnoreCase)
-					|| (c.AlternateNames?.Split(',').Any(a => a.Trim().StartsWith(query, StringComparison.InvariantCultureIgnoreCase)) ?? false))
-				.OrderByDescending(c => c.Population)
-				.Take(15)
-				.ToList();
-
-			// Dictionary of labels and location objects for easy lookup when suggestion is chosen
-			_locationSuggestionsMap = [];
-			foreach (var c in filteredGeoNames)
-			{
-				// Keep Admin1Code only if it present and not a digit
-				string adminCode = string.IsNullOrWhiteSpace(c.Admin1Code) || double.TryParse(c.Admin1Code, out _) ? "" : $", {c.Admin1Code}";
-				string key = $"{c.Name}, {c.CountryCode}{adminCode}";
-
-				// Only add if not present (or replace if population is higher), keys can repeat
-				if (!_locationSuggestionsMap.TryGetValue(key, out var existing) || c.Population > existing.Population)
-					_locationSuggestionsMap[key] = c;
-			}
-
-			sender.ItemsSource = _locationSuggestionsMap.Keys.ToList();
-		}
-
-		private void LocationAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
-		{
-			if (args.SelectedItem is string text && _locationSuggestionsMap.TryGetValue(text, out var location))
-			{
-				Debug.WriteLine($"Chosen: {location.Name}, {location.CountryCode} ({location.Latitude}, {location.Longitude})");
-				
-				LocationManager.Set(location.Name, location.CountryCode, location.Latitude, location.Longitude);
-				UpdateLocationSectionFromData(true);
-				
-				// LocationAndCacheData will update when showing the HomePage
-			}
-		}
-		#endregion
 
 		#region Data
 		private void UpdateDataUIControls()
@@ -417,7 +287,6 @@ namespace Aer
 			Preferences.Load();
 
 			// 5. Refresh UI with default values
-			UpdateLocationSectionFromData(true);
 			UpdateDataUIControls();
 			UpdatePreferenceUIControls();
 			UpdateAboutUIControls();
