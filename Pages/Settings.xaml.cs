@@ -155,11 +155,13 @@ namespace Aer.Pages
 					{
 						WeatherProviderInfoBar.Title = "Experimental Feature";
 						WeatherProviderInfoBar.Message = "The Yr weather provider powered by the MET Norway Locationforecast API is an experimental feature with limited functionality. It does not support apparent temperature, and hourly forecasts are limited to approximately three days. It may not behave as expected and may be removed in a future update.";
+						WeatherProviderInfoBar.Visibility = Visibility.Visible;
 						WeatherProviderInfoBar.IsOpen = true;
 					}
 					else
 					{
 						WeatherProviderInfoBar.IsOpen = false;
+						WeatherProviderInfoBar.Visibility = Visibility.Collapsed;
 					}
 				}
 			}

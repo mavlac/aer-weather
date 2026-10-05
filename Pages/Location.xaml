@@ -25,7 +25,7 @@
 
 					<TextBlock x:Name="SectionHeaderText"
 							   Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-							   Text="Location Section Header"/>
+							   Text="Find a location"/>
 
 					<controls:SettingsCard x:Name="LocationSettingsCard"
 										   Header="LocationSettingsCard.Header"
@@ -69,9 +69,13 @@
 						</StackPanel>
 					</controls:SettingsCard>
 
+
+					<TextBlock x:Name="RecentLocationsSectionHeaderText"
+							   Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+							   Text="Pick a recent one"/>
+
 					<StackPanel x:Name="RecentLocationsStackPanel"
-								Orientation="Vertical"
-								Padding="0,4,0,0">
+								Orientation="Vertical">
 						<!-- Dynamic content here -->
 					</StackPanel>
 

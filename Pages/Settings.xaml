@@ -39,6 +39,7 @@
 					</controls:SettingsCard>
 					<InfoBar x:Name="WeatherProviderInfoBar"
 							 IsOpen="False"
+							 Visibility="Collapsed"
 							 Severity="Informational"
 							 IsClosable="True" />
 					

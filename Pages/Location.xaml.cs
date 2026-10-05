@@ -98,16 +98,7 @@ namespace Aer.Pages
 				}
 			}
 
-			UpdateSectionHeaderText();
 			PopulateRecentLocationButtons();
-		}
-
-		private void UpdateSectionHeaderText()
-		{
-			SectionHeaderText.Text =
-				LocationManager.RecentLocations.Count > 1
-					? "Find a location or pick a recent one"
-					: "Find a location";
 		}
 
 		private async void UseCurrentLocationButton_Click(object sender, RoutedEventArgs e)
@@ -200,6 +191,12 @@ namespace Aer.Pages
 
 		private void PopulateRecentLocationButtons()
 		{
+			// Collapse the header if there are no recent locations
+			RecentLocationsSectionHeaderText.Visibility =
+				LocationManager.RecentLocations.Count > 1
+					? Visibility.Visible
+					: Visibility.Collapsed;
+
 			RecentLocationsStackPanel.Children.Clear();
 
 			foreach (var location in LocationManager.RecentLocations)
