@@ -1,5 +1,6 @@
 using Aer.Data;
 using Aer.Utils;
+using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -13,6 +14,8 @@ namespace Aer.Pages
 	public sealed partial class Location : Page
 	{
 		private Dictionary<string, GeoNames.GeoNamesLocation> _locationSuggestionsMap = [];
+
+		private static bool IsHistoryAvailable => LocationManager.RecentLocations.Count > 1;
 
 		public Location()
 		{
@@ -191,28 +194,30 @@ namespace Aer.Pages
 
 		private void PopulateRecentLocationButtons()
 		{
-			// Collapse the header if there are no recent locations
-			RecentLocationsSectionHeaderText.Visibility =
-				LocationManager.RecentLocations.Count > 1
-					? Visibility.Visible
-					: Visibility.Collapsed;
+			RecentlyUsedLocationsCard.Header =
+				IsHistoryAvailable
+					? "Recently used locations"
+					: "No recently used locations";
 
 			RecentLocationsStackPanel.Children.Clear();
 
-			foreach (var location in LocationManager.RecentLocations)
+			if (IsHistoryAvailable)
 			{
-				// Skip first, first is the current location, we don't need a button for it
-				if (location == LocationManager.CurrentLocation)
-					continue;
-
-				var button = new HyperlinkButton
+				foreach (var location in LocationManager.RecentLocations)
 				{
-					Content = location.Label,
-					DataContext = location
-				};
+					// Skip first, first is the current location, we don't need a button for it
+					if (location == LocationManager.CurrentLocation)
+						continue;
 
-				button.Click += RecentLocationButton_Click;
-				RecentLocationsStackPanel.Children.Add(button);
+					var button = new HyperlinkButton
+					{
+						Content = location.Label,
+						DataContext = location
+					};
+
+					button.Click += RecentLocationButton_Click;
+					RecentLocationsStackPanel.Children.Add(button);
+				}
 			}
 		}
 
