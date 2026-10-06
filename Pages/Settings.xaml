@@ -182,8 +182,13 @@
 								<StackPanel Margin="-12,0,0,0"
 											Orientation="Vertical">
 									<HyperlinkButton Click="HyperlinkButton_Click"
-												   DataContext="https://github.com/microsoft/Win2D/">
-										<TextBlock Text="Win2D"
+													 DataContext="https://github.com/microsoft/WindowsAppSDK">
+										<TextBlock Text="Windows App SDK"
+												   TextDecorations="Underline" />
+									</HyperlinkButton>
+									<HyperlinkButton Click="HyperlinkButton_Click"
+													 DataContext="https://aka.ms/winui3">
+										<TextBlock Text="WinUI 3"
 												   TextDecorations="Underline" />
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click"
@@ -192,8 +197,8 @@
 												   TextDecorations="Underline" />
 									</HyperlinkButton>
 									<HyperlinkButton Click="HyperlinkButton_Click"
-													 DataContext="https://github.com/microsoft/WindowsAppSDK">
-										<TextBlock Text="Windows App SDK"
+												   DataContext="https://github.com/microsoft/Win2D/">
+										<TextBlock Text="Win2D"
 												   TextDecorations="Underline" />
 									</HyperlinkButton>
 								</StackPanel>
