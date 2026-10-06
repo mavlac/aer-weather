@@ -37,6 +37,8 @@
     <Content Remove="Assets\StoreLogo.scale-150.png" />
     <Content Remove="Assets\_IconSource.png" />
     <Content Remove="Assets\_IconSource.svg" />
+    <Content Remove="Assets\_StoreLogoSource.png" />
+    <Content Remove="Assets\_StoreLogoSource.svg" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\AppIcon.altform-lightunplated_targetsize-16.png" />
@@ -107,7 +109,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <None Update="Assets\Data\cities5000.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Page Update="Pages\Location.xaml">
       <Generator>MSBuild:Compile</Generator>
