@@ -222,7 +222,7 @@ namespace Aer.Pages
 					{
 						Glyph = "\uE7B7", // MapPin2 Icon
 						FontSize = 15,
-						Margin = new Thickness(-2, 0, 8, 0)
+						Margin = new Thickness(-3, 0, 8, 0)
 					});
 					panel.Children.Add(new TextBlock
 					{
