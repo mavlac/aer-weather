@@ -214,8 +214,24 @@ namespace Aer.Pages
 						Content = location.Label,
 						DataContext = location
 					};
+					var panel = new StackPanel
+					{
+						Orientation = Orientation.Horizontal
+					};
+					panel.Children.Add(new FontIcon
+					{
+						Glyph = "\uE7B7", // MapPin2 Icon
+						FontSize = 15,
+						Margin = new Thickness(-2, 0, 8, 0)
+					});
+					panel.Children.Add(new TextBlock
+					{
+						Text = location.Label
+					});
 
+					button.Content = panel;
 					button.Click += RecentLocationButton_Click;
+
 					RecentLocationsStackPanel.Children.Add(button);
 				}
 			}
