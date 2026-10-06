@@ -1,4 +1,4 @@
-﻿using Aer.Data;
+using Aer.Data;
 using Aer.Utils;
 using Aer.Utils.Extensions;
 using Aer.Weather;
@@ -65,8 +65,8 @@ namespace Aer.Drawing
 				case false:
 					// Light theme
 					isDarkTheme = false;
-					mainColor = Color.FromArgb(255, 26, 26, 26);
-					fillColor = mainColor.WithAlpha(8);
+					mainColor = Color.FromArgb(255, 26, 26, 26); // Temp line and labels
+					fillColor = Color.FromArgb(255, 243, 243, 243); // Background
 					freezeFillColor = Color.FromArgb(48, 135, 206, 250);
 					gridColor = Colors.Gainsboro;
 					textColor = Colors.Gray;
@@ -80,7 +80,7 @@ namespace Aer.Drawing
 					// Dark theme
 					isDarkTheme = true;
 					mainColor = Colors.White;
-					fillColor = mainColor.WithAlpha(8);
+					fillColor = Color.FromArgb(255, 32, 32, 32);
 					freezeFillColor = Color.FromArgb(32, 173, 216, 230);
 					gridColor = Color.FromArgb(255, 65, 65, 65);
 					textColor = Colors.Gray;
@@ -158,20 +158,6 @@ namespace Aer.Drawing
 
 
 			// Drawing
-
-			// Zero degree horizontal line
-			// Draw only if not above top padding (a little upper) and under some constant height
-			if (zeroDegPositionY > (paddingBottom - 15f) && zeroDegPositionY < (height - 50f))
-			{
-				var strokeStyle = new CanvasStrokeStyle();
-				float strokeWidth = mainLineStrokeWidth;
-				strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
-				strokeStyle.DashStyle = CanvasDashStyle.Dash;
-				strokeStyle.DashOffset = hourWidth / strokeWidth * 0.5f;
-				float dotLength = 0.175f;
-				strokeStyle.CustomDashStyle = [dotLength / strokeWidth, (hourWidth - dotLength) / strokeWidth];
-				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), gridColor, strokeWidth, strokeStyle);
-			}
 
 			// Main temperature spline fill
 			var fillBrush = new CanvasSolidColorBrush(ds, fillColor);
@@ -256,6 +242,20 @@ namespace Aer.Drawing
 					float lineCapY = bottomLineY + snowBarHeight;
 					ds.FillCircle(x + barWidth / 2f, chart.Y(lineCapY), snowBarDotRadius, rainBarDrawColor);
 				}
+			}
+
+			// Zero degree horizontal line
+			// Draw only if not above top padding (a little upper) and under some constant height
+			if (zeroDegPositionY > (paddingBottom - 15f) && zeroDegPositionY < (height - 50f))
+			{
+				var strokeStyle = new CanvasStrokeStyle();
+				float strokeWidth = mainLineStrokeWidth;
+				strokeStyle.StartCap = strokeStyle.EndCap = CanvasCapStyle.Round;
+				strokeStyle.DashStyle = CanvasDashStyle.Dash;
+				strokeStyle.DashOffset = hourWidth / strokeWidth * 0.5f;
+				float dotLength = 0.175f;
+				strokeStyle.CustomDashStyle = [dotLength / strokeWidth, (hourWidth - dotLength) / strokeWidth];
+				ds.DrawLine(0f, chart.Y(zeroDegPositionY), width, chart.Y(zeroDegPositionY), gridColor, strokeWidth, strokeStyle);
 			}
 
 			// Legend - Grid
