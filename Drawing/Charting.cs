@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Windows.Foundation;
 using Windows.UI;
 
 namespace Aer.Drawing
@@ -52,7 +53,7 @@ namespace Aer.Drawing
 
 			// Colors
 			bool isDarkTheme;
-			Color mainColor, fillColor, freezeFillColor, gridColor, textColor, rainBarColor, snowBarColor;
+			Color pageBackgroungColor, mainColor, fillColor, freezeFillColor, gridColor, legendColor, rainBarColor, snowBarColor;
 			// Muted colors used to suppress rain/snow bars when showing apparent temperature
 			Color rainBarMutedColor, snowBarMutedColor;
 			switch (sender.ActualTheme switch // Is Dark? If unable to get from FrameworkElement, get from ApplicationTheme
@@ -65,11 +66,12 @@ namespace Aer.Drawing
 				case false:
 					// Light theme
 					isDarkTheme = false;
+					pageBackgroungColor = Color.FromArgb(255, 249, 249, 249); // Page BG, for text outlines
 					mainColor = Color.FromArgb(255, 26, 26, 26); // Temp line and labels
 					fillColor = Color.FromArgb(255, 243, 243, 243); // Background
 					freezeFillColor = Color.FromArgb(48, 135, 206, 250);
 					gridColor = Colors.Gainsboro;
-					textColor = Colors.Gray;
+					legendColor = Colors.Gray;
 					rainBarColor = Colors.LightSkyBlue; // #84C9F3
 					snowBarColor = Colors.White;
 					rainBarMutedColor = Color.FromArgb(255, 205, 233, 250);
@@ -79,11 +81,12 @@ namespace Aer.Drawing
 				case true:
 					// Dark theme
 					isDarkTheme = true;
+					pageBackgroungColor = Color.FromArgb(255, 39, 39, 39);
 					mainColor = Colors.White;
 					fillColor = Color.FromArgb(255, 32, 32, 32);
 					freezeFillColor = Color.FromArgb(32, 173, 216, 230);
 					gridColor = Color.FromArgb(255, 65, 65, 65);
-					textColor = Colors.Gray;
+					legendColor = Colors.Gray;
 					rainBarColor = Color.FromArgb(255, 19, 130, 197);
 					snowBarColor = Colors.White;
 					rainBarMutedColor = Color.FromArgb(255, 30, 70, 92);
@@ -284,7 +287,7 @@ namespace Aer.Drawing
 				}
 			}
 			// Legend - Condition icons
-			Color legendColor = showApparentSpline ? gridColor : textColor; // Suppressed on "feels like"
+			Color legendDrawColor = showApparentSpline ? gridColor : legendColor; // Suppressed on "feels like"
 			int eachNthHour = isWide ? 3 : 6; // Density
 			int startHourlyIndex = 0;
 			// When dense, got to start at hours 0,3,6,9,12.. When sparse, got to start at hours 0,6,12,18..
@@ -300,13 +303,13 @@ namespace Aer.Drawing
 				if (!isOnRightEdge)
 				{
 					var glyph = WeatherIconsUtils.GetWeatherIcon(hourly[i].WeatherCode, hourly[i].IsDaytime);
-					ds.DrawText(glyph, x + 15f, chart.Y(40f), legendColor, iconFormat);
+					ds.DrawText(glyph, x + 15f, chart.Y(40f), legendDrawColor, iconFormat);
 				}
 			}
 			// Legend - Labels
 			foreach (var (label, x, y) in labels)
 			{
-				ds.DrawText(label, x, y, legendColor, textFormat);
+				ds.DrawText(label, x, y, legendDrawColor, textFormat);
 			}
 
 			// Temperature spline
@@ -365,7 +368,7 @@ namespace Aer.Drawing
 					previousPrintedHigh != null && day.DayLow.chartHour - previousPrintedHigh.DayHigh.chartHour <= 3;
 				printLow = !isOnRightEdge && !isOnLeftEdge && !isVerticallyOut && !isNextToPrevious;
 				if (printLow)
-					ds.DrawText(label, x, chart.Y(y - 12), mainColor, textFormatCentered);
+					DrawTextWithOutline(ds, label, x, chart.Y(y - 12), mainColor, pageBackgroungColor, textFormatCentered);
 				
 				// High
 				x = hourWidth * day.DayHigh.chartHour;
@@ -379,7 +382,7 @@ namespace Aer.Drawing
 					previousPrintedLow != null && day.DayHigh.chartHour - previousPrintedLow.DayLow.chartHour <= 3;
 				printHigh = !isOnRightEdge && !isOnLeftEdge && !isVerticallyOut && !isNextToPrevious;
 				if (printHigh)
-					ds.DrawText(label, x, chart.Y(y + 12), mainColor, textFormatCentered);
+					DrawTextWithOutline(ds, label, x, chart.Y(y + 12), mainColor, pageBackgroungColor, textFormatCentered);
 				
 				if (printLow)
 					previousPrintedLow = day;
@@ -388,7 +391,7 @@ namespace Aer.Drawing
 			}
 		}
 
-		public class ChartSpace(float height)
+		private class ChartSpace(float height)
 		{
 			private readonly float _height = height;
 			
@@ -402,7 +405,7 @@ namespace Aer.Drawing
 		/// Draws a smooth curve through the given points using quadratic Beziers.
 		/// Points should be in “data coordinates” (before flipping Y).
 		/// </summary>
-		public static void DrawMainTemperatureSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, ICanvasBrush? fillBrush)
+		private static void DrawMainTemperatureSpline(CanvasDrawingSession ds, List<Vector2> points, ChartSpace chart, Color? lineColor, float lineThickness, ICanvasBrush? fillBrush)
 		{
 			if (points.Count < 2)
 				return;
@@ -452,7 +455,7 @@ namespace Aer.Drawing
 			}
 		}
 
-		public static void DrawStripedBar(CanvasDrawingSession ds, float x, float y, float width, float height, float cornerRadius, Color color1, Color color2)
+		private static void DrawStripedBar(CanvasDrawingSession ds, float x, float y, float width, float height, float cornerRadius, Color color1, Color color2)
 		{
 			// Create a small off-screen pattern (tile)
 			int patternSize = 4;
@@ -474,6 +477,27 @@ namespace Aer.Drawing
 
 			// Fill the bar area
 			ds.FillRoundedRectangle(x, y, width, height, cornerRadius, cornerRadius, brush);
+		}
+
+		private static void DrawTextWithOutline(
+			CanvasDrawingSession ds,
+			string text,
+			float x,
+			float y,
+			Color color,
+			Color outlineColor,
+			CanvasTextFormat textFormat)
+		{
+			for (int ox = -1; ox <= 1; ox++)
+			{
+				for (int oy = -1; oy <= 1; oy++)
+				{
+					if (ox != 0 || oy != 0)
+						ds.DrawText(text, x + ox, y + oy, outlineColor, textFormat);
+				}
+			}
+
+			ds.DrawText(text, x, y, color, textFormat);
 		}
 
 		private record DayExtremes
