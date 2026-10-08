@@ -133,14 +133,15 @@ namespace Aer.Drawing
 
 			float paddingBottom = Math.Max(100f, height * 0.33f);
 			float paddingTop = Math.Max(35f, (height - paddingBottom) * 0.22f);
+			// Debug visualise paddings
 			//ds.DrawLine(0f, chart.Y(paddingBottom), width, chart.Y(paddingBottom), Colors.Orange, 0.5f);
 			//ds.DrawLine(0f, chart.Y(height - paddingTop), width, chart.Y(height - paddingTop), Colors.Orange, 0.5f);
-			// total temperature tempRange
+			// Total temperature tempRange
 			float tempRange = maxTemp - minTemp;
 			if (tempRange < 0.1f) tempRange = 0.1f; // avoid division by zero
-			// how tall one degree is in pixels
+			// How tall one degree is in pixels
 			float degreeHeight = (height - (paddingTop + paddingBottom)) / tempRange;
-			// actual position of 0 °C based on data range
+			// Actual position of 0 °C based on data range
 			float dataZeroY = (0 - minTemp) * degreeHeight + paddingBottom;
 			float zeroDegPositionY = dataZeroY;
 
@@ -356,13 +357,18 @@ namespace Aer.Drawing
 				bool isOnLeftEdge, isOnRightEdge, isVerticallyOut, isNextToPrevious;
 				bool printLow, printHigh;
 
+				// Vertical limits
+				float maxTopEdge = height - paddingTop / 2f;
+				// Bottom edge can overlap supressed legend, when showing apparent temperature
+				float minBottomEdge = showApparentSpline ? 20f : paddingBottom / 2f;
+
 				// Low
 				x = hourWidth * day.DayLow.chartHour;
 				y = zeroDegPositionY + (float)day.DayLow.temperature * degreeHeight;
 				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayLow.temperature))).ToString();
 				isOnLeftEdge = x < 10;
 				isOnRightEdge = x > width - 15;
-				isVerticallyOut = y > (height - paddingTop / 2f) || y < paddingBottom / 2f;
+				isVerticallyOut = y > maxTopEdge || y < minBottomEdge;
 				isNextToPrevious =
 					previousPrintedLow != null && day.DayLow.chartHour - previousPrintedLow.DayLow.chartHour <= 3 ||
 					previousPrintedHigh != null && day.DayLow.chartHour - previousPrintedHigh.DayHigh.chartHour <= 3;
@@ -376,7 +382,7 @@ namespace Aer.Drawing
 				label = ((int)Math.Round(TemperatureUtils.GetTemperatureInPreferredUnit(day.DayHigh.temperature))).ToString();
 				isOnLeftEdge = x < 10;
 				isOnRightEdge = x > width - 15;
-				isVerticallyOut = y > (height - paddingTop / 2f) || y < paddingBottom / 2f;
+				isVerticallyOut = y > maxTopEdge || y < minBottomEdge;
 				isNextToPrevious =
 					previousPrintedHigh != null && day.DayHigh.chartHour - previousPrintedHigh.DayHigh.chartHour <= 3 ||
 					previousPrintedLow != null && day.DayHigh.chartHour - previousPrintedLow.DayLow.chartHour <= 3;
