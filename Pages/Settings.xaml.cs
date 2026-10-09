@@ -250,17 +250,30 @@ namespace Aer.Pages
 
 		public string? WindowSizeInfoText()
 		{
-			if (App.MainWindow == null) return null;
-
-			var appWindow = WindowUtils.GetAppWindow(App.MainWindow);
-			if (appWindow == null) return null;
-
-			return "Window size: " + appWindow.Size.Width + "\u00D7" + appWindow.Size.Height;
+			if (App.MainWindow == null)
+				return null;
+			
+			var (width, height) = WindowPlacementManager.GetCurrentSize(App.MainWindow);
+			
+			return "Window size: " + width + "\u00D7" + height;
 		}
 
 		private void OpenAppLocalFolderButton_Click(object sender, RoutedEventArgs e)
 		{
 			AppStorage.OpenLocalFolder();
+		}
+
+		private void ResetWindowSizeButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (App.MainWindow == null)
+				return;
+
+			WindowPlacementManager.Reset(
+				App.MainWindow,
+				(int)Application.Current.Resources["DefaultWindowWidth"],
+				(int)Application.Current.Resources["DefaultWindowHeight"]);
+
+			this.Bindings.Update();
 		}
 
 		private void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs e)

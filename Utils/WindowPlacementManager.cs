@@ -1,4 +1,4 @@
-﻿using Microsoft.UI;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using System;
@@ -18,6 +18,19 @@ namespace Aer.Utils
 
 		[DllImport("User32.dll")]
 		private static extern int GetDpiForWindow(IntPtr hwnd);
+
+		public static (int width, int height) GetCurrentSize(Window window)
+		{
+			var appWindow = WindowUtils.GetAppWindow(window);
+			if (appWindow == null) return (0, 0);
+
+			var hwnd = WindowNative.GetWindowHandle(window);
+			var dpi = GetDpiForWindow(hwnd);
+			double scale = dpi / 96.0;
+
+			var size = appWindow.Size;
+			return ((int)(size.Width / scale), (int)(size.Height / scale));
+		}
 
 		public static void Save(Window window)
 		{
@@ -74,12 +87,12 @@ namespace Aer.Utils
 				}
 				else
 				{
-					appWindow.Resize(new SizeInt32((int)(defaultWidth * scale), (int)(defaultHeight * scale)));
+					Reset(window, defaultWidth, defaultHeight);
 				}
 			}
 			else
 			{
-				appWindow.Resize(new SizeInt32(defaultWidth, defaultHeight));
+				Reset(window, defaultWidth, defaultHeight);
 			}
 
 			// try maximized
@@ -90,6 +103,36 @@ namespace Aer.Utils
 			{
 				overlapped.Maximize();
 			}
+		}
+
+		public static void Reset(Window window, int defaultWidth, int defaultHeight)
+		{
+			var appWindow = WindowUtils.GetAppWindow(window);
+			if (appWindow == null) return;
+
+			var hwnd = WindowNative.GetWindowHandle(window);
+			var dpi = GetDpiForWindow(hwnd);
+			double scale = dpi / 96.0;
+
+			var settings = ApplicationData.Current.LocalSettings;
+			foreach (var key in new[]
+			{
+				$"{LocalSettingsKeyPrefix}_X",
+				$"{LocalSettingsKeyPrefix}_Y",
+				$"{LocalSettingsKeyPrefix}_W",
+				$"{LocalSettingsKeyPrefix}_H",
+				$"{LocalSettingsKeyPrefix}_IsMaximized"
+			})
+			{
+				settings.Values.Remove(key);
+			}
+
+			if (appWindow.Presenter is OverlappedPresenter overlapped && overlapped.State == OverlappedPresenterState.Maximized)
+			{
+				overlapped.Restore();
+			}
+
+			appWindow.Resize(new SizeInt32((int)(defaultWidth * scale), (int)(defaultHeight * scale)));
 		}
 
 		private static bool IsRectVisible(RectInt32 rect, Window window)

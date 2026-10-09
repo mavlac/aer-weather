@@ -217,9 +217,11 @@
 											   Text="DB Info Text"
 											   Padding="12,8,0,8"/>
 									<HyperlinkButton Content="Open app local folder"
-													 Click="OpenAppLocalFolderButton_Click" />
+																		 Click="OpenAppLocalFolderButton_Click" />
+									<HyperlinkButton Content="Reset window size to default"
+																		 Click="ResetWindowSizeButton_Click" />
 									<HyperlinkButton Content="Reset all data and settings"
-													 Click="ClearLocalSettingsButton_Click" />
+																		 Click="ClearLocalSettingsButton_Click" />
 								</StackPanel>
 							</controls:SettingsCard>
 						</controls:SettingsExpander.Items>
