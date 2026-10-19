@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.System;
 
 namespace Aer.Pages
 {
@@ -33,7 +34,9 @@ namespace Aer.Pages
 		public Home()
 		{
 			InitializeComponent();
-			
+
+			InitializeKeyboardAccelerators();
+
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
 			
@@ -296,8 +299,29 @@ namespace Aer.Pages
 			ContentChart.Invalidate();
 			ContentChart.ReleasePointerCapture(e.Pointer);
 		}
+
+		private async void ChartCopy_Click(object sender, RoutedEventArgs e)
+		{
+			await CopyChartAsync();
+		}
+
+		private async void ChartSaveAs_Click(object sender, RoutedEventArgs e)
+		{
+			await SaveChartAsAsync();
+		}
+
+		private async Task SaveChartAsAsync()
+		{
+			Debug.WriteLine("TODO: Save chart as image");
+		}
+
+		private async Task CopyChartAsync()
+		{
+			Debug.WriteLine("TODO: Copy chart as image");
+		}
 		#endregion
 
+		#region Data
 		private static string GetContentDataTabText()
 		{
 			var tabContent = new StringBuilder();
@@ -312,6 +336,7 @@ namespace Aer.Pages
 
 			return tabContent.ToString();
 		}
+		#endregion
 
 		#region User Interface
 		private void SubHeaderTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
@@ -391,6 +416,37 @@ namespace Aer.Pages
 				Scroller.VerticalScrollMode = ScrollMode.Auto;
 				Scroller.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 			}
+		}
+		#endregion
+
+		#region Accelerators
+		private void InitializeKeyboardAccelerators()
+		{
+			var saveAccelerator = new KeyboardAccelerator
+			{
+				Key = VirtualKey.S,
+				Modifiers = VirtualKeyModifiers.Control
+			};
+			saveAccelerator.Invoked += async (sender, args) =>
+			{
+				args.Handled = true;
+				await SaveChartAsAsync();
+			};
+			ContentChart.KeyboardAccelerators.Add(saveAccelerator);
+
+			var copyAccelerator = new KeyboardAccelerator
+			{
+				Key = VirtualKey.C,
+				Modifiers = VirtualKeyModifiers.Control
+			};
+			copyAccelerator.Invoked += async (sender, args) =>
+			{
+				args.Handled = true;
+				await CopyChartAsync();
+			};
+			ContentChart.KeyboardAccelerators.Add(copyAccelerator);
+
+			ContentChart.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
 		}
 		#endregion
 	}
