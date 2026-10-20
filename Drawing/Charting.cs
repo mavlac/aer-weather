@@ -6,7 +6,6 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
-using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -22,14 +21,17 @@ namespace Aer.Drawing
 {
 	public static class Charting
 	{
-		public static void DrawHomePageChart(CanvasControl sender, CanvasDrawingSession ds, List<HourlyForecast> hourly, bool showApparentSpline)
+		public enum Theme { Light, Dark }
+		public enum DataMode { Normal, Apparent }
+
+		public static void DrawChart(CanvasDrawingSession ds, Size size, List<HourlyForecast> hourly, DataMode dataMode, Theme theme)
 		{
 			ds.Antialiasing = CanvasAntialiasing.Antialiased;
 			ds.TextAntialiasing = CanvasTextAntialiasing.Auto;
 
 			// Responsivity
-			float width = (float)sender.ActualWidth;
-			float height = (float)sender.ActualHeight;
+			float width = (float)size.Width;
+			float height = (float)size.Height;
 			const float defaultWidth = 600;
 			bool isWide = width > defaultWidth;
 
@@ -52,20 +54,12 @@ namespace Aer.Drawing
 			}
 
 			// Colors
-			bool isDarkTheme;
 			Color pageBackgroungColor, mainColor, fillColor, freezeFillColor, gridColor, legendColor, rainBarColor, snowBarColor;
 			// Muted colors used to suppress rain/snow bars when showing apparent temperature
 			Color rainBarMutedColor, snowBarMutedColor;
-			switch (sender.ActualTheme switch // Is Dark? If unable to get from FrameworkElement, get from ApplicationTheme
-				{
-					ElementTheme.Dark => true,
-					ElementTheme.Light => false,
-					_ => Application.Current.RequestedTheme == ApplicationTheme.Dark
-				})
+			switch (theme)
 			{
-				case false:
-					// Light theme
-					isDarkTheme = false;
+				case Theme.Light:
 					pageBackgroungColor = Color.FromArgb(255, 249, 249, 249); // Page BG, for text outlines
 					mainColor = Color.FromArgb(255, 26, 26, 26); // Temp line and labels
 					fillColor = Color.FromArgb(255, 243, 243, 243); // Background
@@ -78,9 +72,7 @@ namespace Aer.Drawing
 					snowBarMutedColor = snowBarColor;
 					break;
 
-				case true:
-					// Dark theme
-					isDarkTheme = true;
+				default:
 					pageBackgroungColor = Color.FromArgb(255, 39, 39, 39);
 					mainColor = Colors.White;
 					fillColor = Color.FromArgb(255, 32, 32, 32);
@@ -139,7 +131,7 @@ namespace Aer.Drawing
 			// Total temperature tempRange
 			float tempRange = maxTemp - minTemp;
 			if (tempRange < 0.1f) tempRange = 0.1f; // avoid division by zero
-			// How tall one degree is in pixels
+													// How tall one degree is in pixels
 			float degreeHeight = (height - (paddingTop + paddingBottom)) / tempRange;
 			// Actual position of 0 °C based on data range
 			float dataZeroY = (0 - minTemp) * degreeHeight + paddingBottom;
@@ -201,8 +193,8 @@ namespace Aer.Drawing
 
 			// Rain and snow bars
 			// Choose draw colors. When apparent temperature spline is shown we use muted variants
-			Color rainBarDrawColor = showApparentSpline ? rainBarMutedColor : rainBarColor;
-			Color snowBarDrawColor = showApparentSpline ? snowBarMutedColor : snowBarColor;
+			Color rainBarDrawColor = (dataMode is DataMode.Apparent) ? rainBarMutedColor : rainBarColor;
+			Color snowBarDrawColor = (dataMode is DataMode.Apparent) ? snowBarMutedColor : snowBarColor;
 			for (int i = 0; i < hourly.Count; i++)
 			{
 				float rain = (float)hourly[i].Rain;
@@ -217,7 +209,7 @@ namespace Aer.Drawing
 				const float minBarHeight = 0.15f;
 				float rainBarHeight = (rainRounded + minBarHeight) * (height * rainBarHeightMultiplier);
 				float snowBarHeight = (snowRounded + minBarHeight) * (height * snowBarHeightMultiplier);
-				bool drawSnowBarDot = !isDarkTheme && drawSnowBar;
+				bool drawSnowBarDot = (theme is Theme.Light) && drawSnowBar;
 				if (drawRainBar && !drawSnowBar)
 				{
 					ds.FillRoundedRectangle(x, chart.Y(bottomLineY), barWidth, -rainBarHeight, rainSnowBarCornerRadius, rainSnowBarCornerRadius, rainBarDrawColor);
@@ -288,7 +280,7 @@ namespace Aer.Drawing
 				}
 			}
 			// Legend - Condition icons
-			Color legendDrawColor = showApparentSpline ? gridColor : legendColor; // Suppressed on "feels like"
+			Color legendDrawColor = (dataMode is DataMode.Apparent) ? gridColor : legendColor; // Suppressed on "feels like"
 			int eachNthHour = isWide ? 3 : 6; // Density
 			int startHourlyIndex = 0;
 			// When dense, got to start at hours 0,3,6,9,12.. When sparse, got to start at hours 0,6,12,18..
@@ -314,14 +306,13 @@ namespace Aer.Drawing
 			}
 
 			// Temperature spline
-			if (showApparentSpline)
+			if (dataMode is DataMode.Normal)
 			{
-				//DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, gridColor, gridStrokeWidth, null);
-				DrawMainTemperatureSpline(ds, apparentTemperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
+				DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
 			}
 			else
 			{
-				DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
+				DrawMainTemperatureSpline(ds, apparentTemperatureLinePoints, chart, mainColor, mainLineStrokeWidth, null);
 			}
 
 			// Temperature readings
@@ -338,7 +329,7 @@ namespace Aer.Drawing
 					lastDay = hourly[i].LocalTime.Day;
 				}
 				
-				double temperature = showApparentSpline ? hourly[i].ApparentTemperature : hourly[i].Temperature;
+				double temperature = (dataMode is DataMode.Apparent) ? hourly[i].ApparentTemperature : hourly[i].Temperature;
 				int hour = hourly[i].LocalTime.Hour;
 				if (temperature < currentExtremes.DayLow.temperature)
 					currentExtremes.DayLow = (temperature, i);
@@ -360,7 +351,7 @@ namespace Aer.Drawing
 				// Vertical limits
 				float maxTopEdge = height - paddingTop / 2f;
 				// Bottom edge can overlap supressed legend, when showing apparent temperature
-				float minBottomEdge = showApparentSpline ? 20f : paddingBottom / 2f;
+				float minBottomEdge = (dataMode is DataMode.Apparent) ? 20f : paddingBottom / 2f;
 
 				// Low
 				x = hourWidth * day.DayLow.chartHour;

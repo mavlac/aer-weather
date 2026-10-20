@@ -251,11 +251,6 @@ namespace Aer.Pages
 		#region Canvas
 		private void ContentChart_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
 		{
-			var ds = args.DrawingSession;
-
-			// Clear the canvas first
-			ds.Clear(Colors.Transparent);
-
 			// No data
 			if (!WeatherDataManager.IsWeatherDataLoaded)
 				return;
@@ -265,9 +260,25 @@ namespace Aer.Pages
 			if (hourlyData.Count <= 2)
 				return;
 
+			var ds = args.DrawingSession;
+			ds.Clear(Colors.Transparent);
+
+			var size = sender.Size;
+
+			var chartDataMode =
+				IsApparentViewSupported && _isMouseDownOverChart
+					? Charting.DataMode.Apparent
+					: Charting.DataMode.Normal;
+
+			var chartTheme = sender.ActualTheme switch
+			{
+				ElementTheme.Dark => Charting.Theme.Dark,
+				ElementTheme.Light => Charting.Theme.Light,
+				_ => Application.Current.RequestedTheme == ApplicationTheme.Dark ? Charting.Theme.Dark : Charting.Theme.Light
+			};
+
 			// Call Charting class to do the actual drawing
-			bool showApparentSpline = IsApparentViewSupported && _isMouseDownOverChart;
-			Charting.DrawHomePageChart(sender, ds, hourlyData, showApparentSpline);
+			Charting.DrawChart(ds, size, hourlyData, chartDataMode, chartTheme);
 		}
 
 		private void ContentChart_PointerPressed(object sender, PointerRoutedEventArgs e)
