@@ -29,7 +29,7 @@ namespace Aer.Pages
 		private Task<(bool status, string message)>? _updateTask;
 		private CancellationTokenSource? _updateTaskCts;
 
-		private bool IsApparentViewSupported => WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).IsFeatureSupported(WeatherProvider.Feature.ApparentTemperature);
+		private static bool IsApparentViewSupported => WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).IsFeatureSupported(WeatherProvider.Feature.ApparentTemperature);
 
 		public Home()
 		{
@@ -218,10 +218,11 @@ namespace Aer.Pages
 				}
 				// Location
 				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
-				// Content tabs: Chart / LocationAndCacheData
+				// Chart and Data tabs
+				// TODO: Enable context flyout and accelerators on chart
 				ContentChart.Invalidate();
 				ContentData.Text = GetContentDataTabText();
-				// Last updated
+				// Footer
 				LastUpdateTimeText.Text = $"Updated {DateTimeUtils.GetRelativeTimeString(WeatherDataManager.WeatherData.Created)}";
 				ToolTipService.SetToolTip(
 					LastUpdateTimeText,
@@ -229,20 +230,18 @@ namespace Aer.Pages
 			}
 			else
 			{
-				// No data at all
-				// There should always be at least some cache, no matter how valid.
-				// This means that app is started a first time or settings were cleared.
-				
+				// No data
 				// Condition - unknown
 				HeaderText.Text = "No data";
 				ToolTipService.SetToolTip(HeaderText, null);
 				// Location - always known
 				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
 				CurrentConditionIcon.Visibility = Visibility.Collapsed;
-				// Content tabs: Chart / LocationAndCacheData
+				// Chart and Data tabs - blank
+				// TODO: Disable context flyout and accelerators on chart if no data
 				ContentChart.Invalidate();
 				ContentData.Text = string.Empty;
-				// Last updated - unknown
+				// Footer - blank, no last update time
 				LastUpdateTimeText.Text = string.Empty;
 				ToolTipService.SetToolTip(LastUpdateTimeText, null);
 			}
@@ -251,13 +250,8 @@ namespace Aer.Pages
 		#region Canvas
 		private void ContentChart_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
 		{
-			// No data
-			if (!WeatherDataManager.IsWeatherDataLoaded)
-				return;
-
-			// Insufficient data
-			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
-			if (hourlyData.Count <= 2)
+			// No data early return, don't draw anything
+			if (!WeatherDataManager.IsWeatherDataSufficientForChartDrawing)
 				return;
 
 			var ds = args.DrawingSession;
@@ -265,11 +259,14 @@ namespace Aer.Pages
 
 			var size = sender.Size;
 
+			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
+
 			var chartDataMode =
 				IsApparentViewSupported && _isMouseDownOverChart
 					? Charting.DataMode.Apparent
 					: Charting.DataMode.Normal;
 
+			// TODO: Get app theme from some helper class not from sender
 			var chartTheme = sender.ActualTheme switch
 			{
 				ElementTheme.Dark => Charting.Theme.Dark,
@@ -349,7 +346,7 @@ namespace Aer.Pages
 		}
 		#endregion
 
-		#region User Interface
+		#region UI Handlers
 		private void SubHeaderTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
 		{
 			var flyout = new MenuFlyout();

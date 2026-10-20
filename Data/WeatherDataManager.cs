@@ -1,4 +1,4 @@
-﻿using Aer.Weather;
+using Aer.Weather;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +13,7 @@ namespace Aer.Data
 		private static WeatherData? weatherData;
 
 		public static bool IsWeatherDataLoaded => weatherData is not null;
+		public static bool IsWeatherDataSufficientForChartDrawing => weatherData is not null && GetHourlyDataSinceNow().Count >= 2;
 		public static bool IsUpdatingFromNetwork { get; set; }
 		public static WeatherData WeatherData
 		{
