@@ -3,7 +3,7 @@ using Aer.Drawing;
 using Aer.Utils;
 using Aer.Weather;
 using CommunityToolkit.WinUI;
-using Microsoft.UI;
+using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -17,7 +17,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Streams;
 using Windows.System;
+using WinRT.Interop;
 
 namespace Aer.Pages
 {
@@ -255,14 +260,13 @@ namespace Aer.Pages
 			// No data early return, don't draw anything
 			if (!WeatherDataManager.IsWeatherDataSufficientForChartDrawing)
 				return;
-
-			var ds = args.DrawingSession;
+			
 			var size = sender.Size;
+			var ds = args.DrawingSession;
 			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
 			var chartDataMode = IsApparentView ? Charting.DataMode.Apparent : Charting.DataMode.Normal;
 			var chartTheme = ThemeUtils.GetActualAppTheme();
-
-			// Call Charting class to do the actual drawing
+			
 			Charting.DrawChart(ds, size, hourlyData, chartDataMode, chartTheme, true);
 		}
 
@@ -306,14 +310,64 @@ namespace Aer.Pages
 			await SaveChartAsAsync();
 		}
 
+		private CanvasRenderTarget CreateChartImage()
+		{
+			var size = ContentChart.Size;
+			var renderTarget = new CanvasRenderTarget(ContentChart, (float)size.Width, (float)size.Height);
+			var ds = renderTarget.CreateDrawingSession();
+			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
+			var chartTheme = ThemeUtils.GetActualAppTheme();
+			
+			Charting.DrawChart(ds, size, hourlyData, Charting.DataMode.Normal, chartTheme, false);
+			
+			return renderTarget;
+		}
+
 		private async Task SaveChartAsAsync()
 		{
-			Debug.WriteLine("TODO: Save chart as image");
+			using (CanvasRenderTarget renderTarget = CreateChartImage())
+			{
+				if (renderTarget == null)
+					return;
+				
+				var picker = new FileSavePicker
+				{
+					SuggestedFileName = "WeatherChart", // TODO: Location and time
+					SuggestedStartLocation = PickerLocationId.PicturesLibrary
+				};
+				
+				picker.FileTypeChoices.Add("PNG image", new List<string> { ".png" });
+				
+				InitializeWithWindow.Initialize(picker, WindowNative.GetWindowHandle(App.MainWindow));
+				
+				StorageFile file = await picker.PickSaveFileAsync();
+				
+				if (file == null)
+					return;
+				
+				await renderTarget.SaveAsync(file.Path, CanvasBitmapFileFormat.Png);
+			}
 		}
 
 		private async Task CopyChartAsync()
 		{
-			Debug.WriteLine("TODO: Copy chart as image");
+			using (CanvasRenderTarget renderTarget = CreateChartImage())
+			{
+				if (renderTarget == null)
+					return;
+				
+				StorageFolder tempFolder = ApplicationData.Current.TemporaryFolder;
+				StorageFile tempFile = await tempFolder.CreateFileAsync(
+					"WeatherChart.png", // TODO: Constant for temp file name
+					CreationCollisionOption.ReplaceExisting);
+				
+				await renderTarget.SaveAsync(tempFile.Path, CanvasBitmapFileFormat.Png);
+				
+				var package = new DataPackage();
+				package.SetBitmap(RandomAccessStreamReference.CreateFromFile(tempFile));
+				
+				Clipboard.SetContent(package);
+			}
 		}
 		#endregion
 
