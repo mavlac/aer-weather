@@ -63,7 +63,7 @@
 						  HorizontalScrollMode="Disabled"
 						  VerticalScrollMode="Auto">
 				<Grid x:Name="ContentGrid">
-					<!-- A) Chart fills all the space -->
+					<!-- Chart tab: fills all the space -->
 					<win2d:CanvasControl x:Name="ContentChart"
 										 ClearColor="Transparent"
 										 Draw="ContentChart_Draw"
@@ -75,7 +75,7 @@
 										 VerticalAlignment="Stretch">
 						<!-- Context Menu -->
 						<win2d:CanvasControl.ContextFlyout>
-							<MenuFlyout>
+							<MenuFlyout x:Name="ContentChartFlyout">
 								<MenuFlyoutItem Icon="Save"
 												Text="Save as..."
 												Click="ChartSaveAs_Click"
@@ -89,7 +89,7 @@
 							</MenuFlyout>
 						</win2d:CanvasControl.ContextFlyout>
 					</win2d:CanvasControl>
-					<!-- B) Scrollable data text, initially hidden -->
+					<!-- Data tab: scrollable text, initially hidden -->
 					<TextBlock x:Name="ContentData"
 							   Text="Data"
 							   TextWrapping="Wrap"

@@ -41,7 +41,7 @@ namespace Aer.Pages
 		{
 			InitializeComponent();
 
-			InitializeKeyboardAccelerators();
+			InitializeChartKeyboardAccelerators();
 
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
@@ -225,9 +225,11 @@ namespace Aer.Pages
 				}
 				// Location
 				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
-				// Chart and Data tabs
-				// TODO: Enable context flyout and accelerators on chart
+				// Chart
 				ContentChart.Invalidate();
+				ContentChart.ContextFlyout = ContentChartFlyout;
+				ActivateChartKyboardAccelators(true);
+				// Data
 				ContentData.Text = GetContentDataTabText();
 				// Footer
 				LastUpdateTimeText.Text = $"Updated {DateTimeUtils.GetRelativeTimeString(WeatherDataManager.WeatherData.Created)}";
@@ -244,10 +246,12 @@ namespace Aer.Pages
 				// Location - always known
 				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
 				CurrentConditionIcon.Visibility = Visibility.Collapsed;
-				// Chart and Data tabs - blank
-				// TODO: Disable context flyout and accelerators on chart if no data
+				// Chart - blank, no context flyout, no accelerators
 				ContentChart.Invalidate();
+				ContentChart.ContextFlyout = null;
+				// Data - blank
 				ContentData.Text = string.Empty;
+				ActivateChartKyboardAccelators(false);
 				// Footer - blank, no last update time
 				LastUpdateTimeText.Text = string.Empty;
 				ToolTipService.SetToolTip(LastUpdateTimeText, null);
@@ -473,7 +477,7 @@ namespace Aer.Pages
 		#endregion
 
 		#region Accelerators
-		private void InitializeKeyboardAccelerators()
+		private void InitializeChartKeyboardAccelerators()
 		{
 			var saveAccelerator = new KeyboardAccelerator
 			{
@@ -500,6 +504,14 @@ namespace Aer.Pages
 			ContentChart.KeyboardAccelerators.Add(copyAccelerator);
 
 			ContentChart.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
+		}
+
+		private void ActivateChartKyboardAccelators(bool value)
+		{
+			foreach (var accelerator in ContentChart.KeyboardAccelerators)
+			{
+				accelerator.IsEnabled = value;
+			}
 		}
 		#endregion
 	}
