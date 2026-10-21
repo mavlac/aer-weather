@@ -314,11 +314,13 @@ namespace Aer.Pages
 		{
 			var size = ContentChart.Size;
 			var renderTarget = new CanvasRenderTarget(ContentChart, (float)size.Width, (float)size.Height);
-			var ds = renderTarget.CreateDrawingSession();
 			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
 			var chartTheme = ThemeUtils.GetActualAppTheme();
 			
-			Charting.DrawChart(ds, size, hourlyData, Charting.DataMode.Normal, chartTheme, false);
+			using (var ds = renderTarget.CreateDrawingSession())
+			{
+				Charting.DrawChart(ds, size, hourlyData, Charting.DataMode.Normal, chartTheme, false);
+			}
 			
 			return renderTarget;
 		}
