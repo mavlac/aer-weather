@@ -1,4 +1,4 @@
-﻿using Aer.Utils;
+using Aer.Utils;
 using Aer.Utils.Extensions;
 using Aer.Weather;
 using Microsoft.UI.Xaml;
@@ -104,8 +104,6 @@ namespace Aer.Data
 			}
 
 			SetAppTheme(newTheme);
-
-			WindowUtils.ApplyAppTheme(App.MainWindow);
 		}
 
 		public static void SetAccentColor(bool useSystemAccentColor)

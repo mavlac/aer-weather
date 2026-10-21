@@ -72,6 +72,7 @@ namespace Aer.Pages
 
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
 					Preferences.ToggleDarkAndLightTheme();
+					WindowUtils.ApplyAppTheme(App.MainWindow);
 					break;
 			}
 		}
