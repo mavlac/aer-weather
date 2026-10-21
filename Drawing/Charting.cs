@@ -21,10 +21,9 @@ namespace Aer.Drawing
 {
 	public static class Charting
 	{
-		public enum Theme { Light, Dark }
 		public enum DataMode { Normal, Apparent }
 
-		public static void DrawChart(CanvasDrawingSession ds, Size size, List<HourlyForecast> hourly, DataMode dataMode, Theme theme)
+		public static void DrawChart(CanvasDrawingSession ds, Size size, List<HourlyForecast> hourly, DataMode dataMode, Theme theme, bool transparentBackground)
 		{
 			ds.Antialiasing = CanvasAntialiasing.Antialiased;
 			ds.TextAntialiasing = CanvasTextAntialiasing.Auto;
@@ -54,15 +53,18 @@ namespace Aer.Drawing
 			}
 
 			// Colors
-			Color pageBackgroungColor, mainColor, fillColor, freezeFillColor, gridColor, legendColor, rainBarColor, snowBarColor;
-			// Muted colors used to suppress rain/snow bars when showing apparent temperature
-			Color rainBarMutedColor, snowBarMutedColor;
+			Color pageBackgroungColor; // Page background, when opaque and for text outlines
+			Color mainColor; // Temp line and labels
+			Color fillColor; // Spline to bottom fill
+			Color freezeFillColor;
+			Color gridColor, legendColor, rainBarColor, snowBarColor;
+			Color rainBarMutedColor, snowBarMutedColor; // Suppressed rain/snow bars when showing apparent
 			switch (theme)
 			{
 				case Theme.Light:
-					pageBackgroungColor = Color.FromArgb(255, 249, 249, 249); // Page BG, for text outlines
-					mainColor = Color.FromArgb(255, 26, 26, 26); // Temp line and labels
-					fillColor = Color.FromArgb(255, 243, 243, 243); // Background
+					pageBackgroungColor = Color.FromArgb(255, 249, 249, 249);
+					mainColor = Color.FromArgb(255, 26, 26, 26);
+					fillColor = Color.FromArgb(255, 243, 243, 243);
 					freezeFillColor = Color.FromArgb(48, 135, 206, 250);
 					gridColor = Colors.Gainsboro;
 					legendColor = Colors.Gray;
@@ -71,7 +73,7 @@ namespace Aer.Drawing
 					rainBarMutedColor = Color.FromArgb(255, 205, 233, 250);
 					snowBarMutedColor = snowBarColor;
 					break;
-
+				
 				default:
 					pageBackgroungColor = Color.FromArgb(255, 39, 39, 39);
 					mainColor = Colors.White;
@@ -155,7 +157,10 @@ namespace Aer.Drawing
 
 			// Drawing
 
-			// Main temperature spline fill
+			// Background - opacity is optional and not used in app window
+			ds.Clear(transparentBackground ? Colors.Transparent : pageBackgroungColor);
+
+			// Main temperature fill
 			var fillBrush = new CanvasSolidColorBrush(ds, fillColor);
 			DrawMainTemperatureSpline(ds, temperatureLinePoints, chart, null, 0f, fillBrush);
 

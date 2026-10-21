@@ -256,7 +256,6 @@ namespace Aer.Pages
 				return;
 
 			var ds = args.DrawingSession;
-			ds.Clear(Colors.Transparent);
 
 			var size = sender.Size;
 
@@ -267,16 +266,10 @@ namespace Aer.Pages
 					? Charting.DataMode.Apparent
 					: Charting.DataMode.Normal;
 
-			// TODO: Get app theme from some helper class not from sender
-			var chartTheme = sender.ActualTheme switch
-			{
-				ElementTheme.Dark => Charting.Theme.Dark,
-				ElementTheme.Light => Charting.Theme.Light,
-				_ => Application.Current.RequestedTheme == ApplicationTheme.Dark ? Charting.Theme.Dark : Charting.Theme.Light
-			};
+			var chartTheme = ThemeUtils.GetActualAppTheme();
 
 			// Call Charting class to do the actual drawing
-			Charting.DrawChart(ds, size, hourlyData, chartDataMode, chartTheme);
+			Charting.DrawChart(ds, size, hourlyData, chartDataMode, chartTheme, true);
 		}
 
 		private void ContentChart_PointerPressed(object sender, PointerRoutedEventArgs e)

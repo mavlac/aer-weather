@@ -80,7 +80,9 @@ namespace Aer.Data
 
 		public static void ToggleDarkAndLightTheme()
 		{
-			var systemTheme = ThemeUtils.GetSystemTheme(); // Dark or Light (only. OS is always specific)
+			// Dark or Light only
+			// OS is always specific
+			var systemTheme = ThemeUtils.GetSystemTheme().ToElementTheme();
 
 			ElementTheme newTheme;
 			if (AppTheme == ElementTheme.Default)
