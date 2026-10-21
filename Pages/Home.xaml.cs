@@ -1,6 +1,7 @@
 using Aer.Data;
 using Aer.Drawing;
 using Aer.Utils;
+using Aer.Utils.Extensions;
 using Aer.Weather;
 using CommunityToolkit.WinUI;
 using Microsoft.Graphics.Canvas;
@@ -256,7 +257,7 @@ namespace Aer.Pages
 			}
 		}
 
-		#region Canvas
+		#region Chart
 		private void ContentChart_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
 		{
 			// No data early return, don't draw anything
@@ -329,7 +330,8 @@ namespace Aer.Pages
 		private CanvasRenderTarget CreateChartImage()
 		{
 			var size = ContentChart.Size;
-			var renderTarget = new CanvasRenderTarget(ContentChart, (float)size.Width, (float)size.Height);
+			var dpi = WindowPlacementManager.GetCurrentDpi(App.MainWindow);
+			var renderTarget = new CanvasRenderTarget(ContentChart, (float)size.Width, (float)size.Height, dpi);
 			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
 			var chartTheme = ThemeUtils.GetActualAppTheme();
 			
@@ -350,7 +352,7 @@ namespace Aer.Pages
 				
 				var picker = new FileSavePicker
 				{
-					SuggestedFileName = "WeatherChart", // TODO: Location and time
+					SuggestedFileName = GetChartImageFileName(),
 					SuggestedStartLocation = PickerLocationId.PicturesLibrary
 				};
 				
@@ -376,7 +378,7 @@ namespace Aer.Pages
 				
 				StorageFolder tempFolder = ApplicationData.Current.TemporaryFolder;
 				StorageFile tempFile = await tempFolder.CreateFileAsync(
-					"WeatherChart.png", // TODO: Constant for temp file name
+					GetChartImageFileName(),
 					CreationCollisionOption.ReplaceExisting);
 				
 				await renderTarget.SaveAsync(tempFile.Path, CanvasBitmapFileFormat.Png);
@@ -395,6 +397,15 @@ namespace Aer.Pages
 			{
 				accelerator.IsEnabled = value;
 			}
+		}
+
+		private static string GetChartImageFileName()
+		{
+			string locationName = LocationManager.CurrentLocation?.Name ?? "UnknownLocation";
+			string locationASCII = locationName.ToASCII(true);
+			string timestamp = DateTime.Now.ToString("yyyy-MM-dd HHmmss");
+			
+			return $"{locationASCII} {timestamp}.png";
 		}
 		#endregion
 

@@ -32,6 +32,12 @@ namespace Aer.Utils
 			return ((int)(size.Width / scale), (int)(size.Height / scale));
 		}
 
+		public static int GetCurrentDpi(Window window)
+		{
+			var hwnd = WindowNative.GetWindowHandle(window);
+			return GetDpiForWindow(hwnd);
+		}
+
 		public static void Save(Window window)
 		{
 			var appWindow = WindowUtils.GetAppWindow(window);
