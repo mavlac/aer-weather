@@ -72,6 +72,7 @@ namespace Aer.Pages
 
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
 					Preferences.ToggleDarkAndLightTheme();
+					WindowUtils.ApplyAppTheme(App.MainWindow);
 					UpdatePreferenceUIControls();
 					this.Bindings.Update();
 					break;
@@ -254,8 +255,10 @@ namespace Aer.Pages
 				return null;
 			
 			var (width, height) = WindowPlacementManager.GetCurrentSize(App.MainWindow);
-			
-			return "Window size: " + width + "\u00D7" + height;
+			int dpi = WindowPlacementManager.GetCurrentDpi(App.MainWindow);
+			int scale = (int)Math.Round(dpi / 96.0 * 100); // Convert DPI to percentage scale
+
+			return $"Window size: {width}\u00D7{height} (DPI: {dpi}, Scale: {scale}%)";
 		}
 
 		private void OpenAppLocalFolderButton_Click(object sender, RoutedEventArgs e)

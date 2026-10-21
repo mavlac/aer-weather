@@ -63,7 +63,7 @@
 						  HorizontalScrollMode="Disabled"
 						  VerticalScrollMode="Auto">
 				<Grid x:Name="ContentGrid">
-					<!-- A) Chart fills all space -->
+					<!-- Chart tab: fills all the space -->
 					<win2d:CanvasControl x:Name="ContentChart"
 										 ClearColor="Transparent"
 										 Draw="ContentChart_Draw"
@@ -72,8 +72,38 @@
 										 PointerCanceled="ContentChart_PointerCanceled"
 										 Visibility="Visible"
 										 HorizontalAlignment="Stretch"
-										 VerticalAlignment="Stretch" />
-					<!-- B) Scrollable data text, initially hidden -->
+										 VerticalAlignment="Stretch"
+										 KeyboardAcceleratorPlacementMode="Hidden">
+						<!-- Accelerators -->
+						<win2d:CanvasControl.KeyboardAccelerators>
+							<KeyboardAccelerator
+								Key="C"
+								Modifiers="Control"
+								IsEnabled="True"
+								Invoked="ChartCopy_Invoked" />
+							<KeyboardAccelerator
+								Key="S"
+								Modifiers="Control"
+								IsEnabled="True"
+								Invoked="ChartSaveAs_Invoked" />
+						</win2d:CanvasControl.KeyboardAccelerators>
+						<!-- Context Flyout -->
+						<win2d:CanvasControl.ContextFlyout>
+							<MenuFlyout x:Name="ContentChartFlyout">
+								<MenuFlyoutItem Icon="Copy"
+												Text="Copy"
+												Click="ChartCopy_Click"
+												KeyboardAcceleratorTextOverride="Ctrl+C">
+								</MenuFlyoutItem>
+								<MenuFlyoutItem Icon="Save"
+												Text="Save as..."
+												Click="ChartSaveAs_Click"
+												KeyboardAcceleratorTextOverride="Ctrl+S">
+								</MenuFlyoutItem>
+							</MenuFlyout>
+						</win2d:CanvasControl.ContextFlyout>
+					</win2d:CanvasControl>
+					<!-- Data tab: scrollable text, initially hidden -->
 					<TextBlock x:Name="ContentData"
 							   Text="Data"
 							   TextWrapping="Wrap"

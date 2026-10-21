@@ -1,4 +1,4 @@
-﻿using Aer.Utils;
+using Aer.Utils;
 using Aer.Utils.Extensions;
 using Aer.Weather;
 using Microsoft.UI.Xaml;
@@ -80,7 +80,9 @@ namespace Aer.Data
 
 		public static void ToggleDarkAndLightTheme()
 		{
-			var systemTheme = ThemeUtils.GetSystemTheme(); // Dark or Light (only. OS is always specific)
+			// Dark or Light only
+			// OS is always specific
+			var systemTheme = ThemeUtils.GetSystemTheme().ToElementTheme();
 
 			ElementTheme newTheme;
 			if (AppTheme == ElementTheme.Default)
@@ -104,8 +106,6 @@ namespace Aer.Data
 			}
 
 			SetAppTheme(newTheme);
-
-			WindowUtils.ApplyAppTheme(App.MainWindow);
 		}
 
 		public static void SetAccentColor(bool useSystemAccentColor)

@@ -1,4 +1,4 @@
-﻿using Aer.Data;
+using Aer.Data;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -81,14 +81,18 @@ namespace Aer.Utils
 			}
 		}
 
+		/// <summary>
+		/// Applies the theme based on saved value from Preferences
+		/// </summary>
 		internal static void ApplyAppTheme(Window window)
 		{
-			if (window.Content is FrameworkElement rootElement)
-			{
-				rootElement.RequestedTheme = Preferences.AppTheme;
-				ApplyTitleBarTheme(window);
-				ApplyAccentColor(); // This needs to reassign colors based on theme
-			}
+			if (window.Content is not FrameworkElement rootElement)
+				throw new InvalidOperationException("Window content is not a FrameworkElement.");
+			
+			rootElement.RequestedTheme = Preferences.AppTheme;
+
+			ApplyTitleBarTheme(window);
+			ApplyAccentColor(); // This needs to reassign colors based on theme
 		}
 
 		private static void ApplyTitleBarTheme(Window window)

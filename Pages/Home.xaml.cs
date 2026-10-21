@@ -1,9 +1,10 @@
 using Aer.Data;
 using Aer.Drawing;
 using Aer.Utils;
+using Aer.Utils.Extensions;
 using Aer.Weather;
 using CommunityToolkit.WinUI;
-using Microsoft.UI;
+using Microsoft.Graphics.Canvas;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -17,6 +18,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Streams;
+using Windows.System;
+using WinRT.Interop;
 
 namespace Aer.Pages
 {
@@ -28,12 +35,13 @@ namespace Aer.Pages
 		private Task<(bool status, string message)>? _updateTask;
 		private CancellationTokenSource? _updateTaskCts;
 
-		private bool IsApparentViewSupported => WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).IsFeatureSupported(WeatherProvider.Feature.ApparentTemperature);
+		private static bool IsApparentViewSupported => WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).IsFeatureSupported(WeatherProvider.Feature.ApparentTemperature);
+		private bool IsApparentView => IsApparentViewSupported && _isMouseDownOverChart;
 
 		public Home()
 		{
 			InitializeComponent();
-			
+
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
 			
@@ -105,6 +113,7 @@ namespace Aer.Pages
 
 				case MainWindow.GlobalHotkey.DarkThemeToggle:
 					Preferences.ToggleDarkAndLightTheme();
+					WindowUtils.ApplyAppTheme(App.MainWindow);
 					ContentChart.Invalidate();
 					break;
 			}
@@ -198,7 +207,7 @@ namespace Aer.Pages
 			if (WeatherDataManager.IsWeatherDataLoaded)
 			{
 				// Temperature, Condition, Icon
-				if (_isMouseDownOverChart == false || !IsApparentViewSupported)
+				if (!IsApparentView)
 				{
 					// Normal
 					HeaderText.Text = $"{WeatherDataManager.WeatherData.ReadableTemperature}, {WeatherDataManager.WeatherData.ConditionDescription}";
@@ -215,10 +224,13 @@ namespace Aer.Pages
 				}
 				// Location
 				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
-				// Content tabs: Chart / LocationAndCacheData
+				// Chart
 				ContentChart.Invalidate();
+				ContentChart.ContextFlyout = ContentChartFlyout;
+				ActivateChartKyboardAccelators(true);
+				// Data
 				ContentData.Text = GetContentDataTabText();
-				// Last updated
+				// Footer
 				LastUpdateTimeText.Text = $"Updated {DateTimeUtils.GetRelativeTimeString(WeatherDataManager.WeatherData.Created)}";
 				ToolTipService.SetToolTip(
 					LastUpdateTimeText,
@@ -226,45 +238,39 @@ namespace Aer.Pages
 			}
 			else
 			{
-				// No data at all
-				// There should always be at least some cache, no matter how valid.
-				// This means that app is started a first time or settings were cleared.
-				
+				// No data
 				// Condition - unknown
 				HeaderText.Text = "No data";
 				ToolTipService.SetToolTip(HeaderText, null);
 				// Location - always known
 				SubHeaderText.Text = LocationManager.CurrentLocation?.Label;
 				CurrentConditionIcon.Visibility = Visibility.Collapsed;
-				// Content tabs: Chart / LocationAndCacheData
+				// Chart - blank, no context flyout, no accelerators
 				ContentChart.Invalidate();
+				ContentChart.ContextFlyout = null;
+				// Data - blank
 				ContentData.Text = string.Empty;
-				// Last updated - unknown
+				ActivateChartKyboardAccelators(false);
+				// Footer - blank, no last update time
 				LastUpdateTimeText.Text = string.Empty;
 				ToolTipService.SetToolTip(LastUpdateTimeText, null);
 			}
 		}
 
-		#region Canvas
+		#region Chart
 		private void ContentChart_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
 		{
+			// No data early return, don't draw anything
+			if (!WeatherDataManager.IsWeatherDataSufficientForChartDrawing)
+				return;
+			
+			var size = sender.Size;
 			var ds = args.DrawingSession;
-
-			// Clear the canvas first
-			ds.Clear(Colors.Transparent);
-
-			// No data
-			if (!WeatherDataManager.IsWeatherDataLoaded)
-				return;
-
-			// Insufficient data
 			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
-			if (hourlyData.Count <= 2)
-				return;
-
-			// Call Charting class to do the actual drawing
-			bool showApparentSpline = IsApparentViewSupported && _isMouseDownOverChart;
-			Charting.DrawHomePageChart(sender, ds, hourlyData, showApparentSpline);
+			var chartDataMode = IsApparentView ? Charting.DataMode.Apparent : Charting.DataMode.Normal;
+			var chartTheme = ThemeUtils.GetActualAppTheme();
+			
+			Charting.DrawChart(ds, size, hourlyData, chartDataMode, chartTheme, true);
 		}
 
 		private void ContentChart_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -296,8 +302,114 @@ namespace Aer.Pages
 			ContentChart.Invalidate();
 			ContentChart.ReleasePointerCapture(e.Pointer);
 		}
+
+		private async void ChartCopy_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+			args.Handled = true;
+			
+			await CopyChartAsync();
+		}
+
+		private async void ChartSaveAs_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+			args.Handled = true;
+			
+			await SaveChartAsAsync();
+		}
+
+		private async void ChartCopy_Click(object sender, RoutedEventArgs e)
+		{
+			await CopyChartAsync();
+		}
+
+		private async void ChartSaveAs_Click(object sender, RoutedEventArgs e)
+		{
+			await SaveChartAsAsync();
+		}
+
+		private CanvasRenderTarget CreateChartImage()
+		{
+			var size = ContentChart.Size;
+			var dpi = WindowPlacementManager.GetCurrentDpi(App.MainWindow);
+			var renderTarget = new CanvasRenderTarget(ContentChart, (float)size.Width, (float)size.Height, dpi);
+			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
+			var chartTheme = ThemeUtils.GetActualAppTheme();
+			
+			using (var ds = renderTarget.CreateDrawingSession())
+			{
+				Charting.DrawChart(ds, size, hourlyData, Charting.DataMode.Normal, chartTheme, false);
+			}
+			
+			return renderTarget;
+		}
+
+		private async Task SaveChartAsAsync()
+		{
+			using (CanvasRenderTarget renderTarget = CreateChartImage())
+			{
+				if (renderTarget == null)
+					return;
+				
+				var picker = new FileSavePicker
+				{
+					SuggestedFileName = GetChartImageFileName(),
+					SuggestedStartLocation = PickerLocationId.PicturesLibrary
+				};
+				
+				picker.FileTypeChoices.Add("PNG image", new List<string> { ".png" });
+				
+				InitializeWithWindow.Initialize(picker, WindowNative.GetWindowHandle(App.MainWindow));
+				
+				StorageFile file = await picker.PickSaveFileAsync();
+				
+				if (file == null)
+					return;
+				
+				await renderTarget.SaveAsync(file.Path, CanvasBitmapFileFormat.Png);
+			}
+		}
+
+		private async Task CopyChartAsync()
+		{
+			using (CanvasRenderTarget renderTarget = CreateChartImage())
+			{
+				if (renderTarget == null)
+					return;
+				
+				StorageFolder tempFolder = ApplicationData.Current.TemporaryFolder;
+				StorageFile tempFile = await tempFolder.CreateFileAsync(
+					GetChartImageFileName(),
+					CreationCollisionOption.ReplaceExisting);
+				
+				await renderTarget.SaveAsync(tempFile.Path, CanvasBitmapFileFormat.Png);
+				
+				var package = new DataPackage();
+				package.SetBitmap(RandomAccessStreamReference.CreateFromFile(tempFile));
+				
+				Clipboard.SetContent(package);
+				Clipboard.Flush();
+			}
+		}
+
+		private void ActivateChartKyboardAccelators(bool value)
+		{
+			foreach (var accelerator in ContentChart.KeyboardAccelerators)
+			{
+				accelerator.IsEnabled = value;
+			}
+		}
+
+		private static string GetChartImageFileName()
+		{
+			string locationName = LocationManager.CurrentLocation?.Name ?? "UnknownLocation";
+			string locationASCII = locationName.ToASCII(true);
+			string timestamp = DateTime.Now.ToString("yyyy-MM-dd HHmmss");
+			
+			return $"{locationASCII} {timestamp}.png";
+		}
 		#endregion
 
+		#region Data
 		private static string GetContentDataTabText()
 		{
 			var tabContent = new StringBuilder();
@@ -312,8 +424,9 @@ namespace Aer.Pages
 
 			return tabContent.ToString();
 		}
+		#endregion
 
-		#region User Interface
+		#region UI Handlers
 		private void SubHeaderTextHyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
 		{
 			var flyout = new MenuFlyout();
