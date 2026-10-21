@@ -30,6 +30,7 @@ namespace Aer.Pages
 		private CancellationTokenSource? _updateTaskCts;
 
 		private static bool IsApparentViewSupported => WeatherProvider.Get(WeatherDataManager.WeatherData.WeatherProviderID).IsFeatureSupported(WeatherProvider.Feature.ApparentTemperature);
+		private bool IsApparentView => IsApparentViewSupported && _isMouseDownOverChart;
 
 		public Home()
 		{
@@ -202,7 +203,7 @@ namespace Aer.Pages
 			if (WeatherDataManager.IsWeatherDataLoaded)
 			{
 				// Temperature, Condition, Icon
-				if (_isMouseDownOverChart == false || !IsApparentViewSupported)
+				if (!IsApparentView)
 				{
 					// Normal
 					HeaderText.Text = $"{WeatherDataManager.WeatherData.ReadableTemperature}, {WeatherDataManager.WeatherData.ConditionDescription}";
@@ -256,16 +257,9 @@ namespace Aer.Pages
 				return;
 
 			var ds = args.DrawingSession;
-
 			var size = sender.Size;
-
 			var hourlyData = WeatherDataManager.GetHourlyDataSinceNow();
-
-			var chartDataMode =
-				IsApparentViewSupported && _isMouseDownOverChart
-					? Charting.DataMode.Apparent
-					: Charting.DataMode.Normal;
-
+			var chartDataMode = IsApparentView ? Charting.DataMode.Apparent : Charting.DataMode.Normal;
 			var chartTheme = ThemeUtils.GetActualAppTheme();
 
 			// Call Charting class to do the actual drawing
