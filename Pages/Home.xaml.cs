@@ -41,8 +41,6 @@ namespace Aer.Pages
 		{
 			InitializeComponent();
 
-			InitializeChartKeyboardAccelerators();
-
 			Loading += HomePage_Loading;
 			Loaded += HomePage_Loaded;
 			
@@ -304,6 +302,20 @@ namespace Aer.Pages
 			ContentChart.ReleasePointerCapture(e.Pointer);
 		}
 
+		private async void ChartCopy_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+			args.Handled = true;
+			
+			await CopyChartAsync();
+		}
+
+		private async void ChartSaveAs_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+			args.Handled = true;
+			
+			await SaveChartAsAsync();
+		}
+
 		private async void ChartCopy_Click(object sender, RoutedEventArgs e)
 		{
 			await CopyChartAsync();
@@ -374,6 +386,14 @@ namespace Aer.Pages
 				
 				Clipboard.SetContent(package);
 				Clipboard.Flush();
+			}
+		}
+
+		private void ActivateChartKyboardAccelators(bool value)
+		{
+			foreach (var accelerator in ContentChart.KeyboardAccelerators)
+			{
+				accelerator.IsEnabled = value;
 			}
 		}
 		#endregion
@@ -472,45 +492,6 @@ namespace Aer.Pages
 
 				Scroller.VerticalScrollMode = ScrollMode.Auto;
 				Scroller.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-			}
-		}
-		#endregion
-
-		#region Accelerators
-		private void InitializeChartKeyboardAccelerators()
-		{
-			var saveAccelerator = new KeyboardAccelerator
-			{
-				Key = VirtualKey.S,
-				Modifiers = VirtualKeyModifiers.Control
-			};
-			saveAccelerator.Invoked += async (sender, args) =>
-			{
-				args.Handled = true;
-				await SaveChartAsAsync();
-			};
-			ContentChart.KeyboardAccelerators.Add(saveAccelerator);
-
-			var copyAccelerator = new KeyboardAccelerator
-			{
-				Key = VirtualKey.C,
-				Modifiers = VirtualKeyModifiers.Control
-			};
-			copyAccelerator.Invoked += async (sender, args) =>
-			{
-				args.Handled = true;
-				await CopyChartAsync();
-			};
-			ContentChart.KeyboardAccelerators.Add(copyAccelerator);
-
-			ContentChart.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
-		}
-
-		private void ActivateChartKyboardAccelators(bool value)
-		{
-			foreach (var accelerator in ContentChart.KeyboardAccelerators)
-			{
-				accelerator.IsEnabled = value;
 			}
 		}
 		#endregion
