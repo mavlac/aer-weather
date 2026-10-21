@@ -369,6 +369,7 @@ namespace Aer.Pages
 				package.SetBitmap(RandomAccessStreamReference.CreateFromFile(tempFile));
 				
 				Clipboard.SetContent(package);
+				Clipboard.Flush();
 			}
 		}
 		#endregion
