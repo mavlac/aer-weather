@@ -36,8 +36,6 @@ namespace Aer
 		{
 			InitializeComponent();
 
-			WindowUtils.ApplyAppTheme(this);
-
 			this.Activated += MainWindow_Activated;
 			this.SizeChanged += MainWindow_SizeChanged;
 			this.Closed += MainWindow_Closed;
