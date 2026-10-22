@@ -306,8 +306,13 @@ namespace Aer.Pages
 		private async void ChartSaveAs_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
 		{
 			args.Handled = true;
-			
-			await SaveChartAsAsync();
+
+			// Defer opening the picker until keyboard accelerator processing has finished
+			// Opening the picker inside the accelerator handler breaks Esc handling to close the picker
+			DispatcherQueue.TryEnqueue(async () =>
+			{
+				await SaveChartAsAsync();
+			});
 		}
 
 		private async void ChartCopy_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
