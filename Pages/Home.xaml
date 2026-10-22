@@ -77,28 +77,28 @@
 						<!-- Accelerators -->
 						<win2d:CanvasControl.KeyboardAccelerators>
 							<KeyboardAccelerator
-								Key="C"
-								Modifiers="Control"
-								IsEnabled="True"
-								Invoked="ChartCopy_Invoked" />
-							<KeyboardAccelerator
 								Key="S"
 								Modifiers="Control"
 								IsEnabled="True"
 								Invoked="ChartSaveAs_Invoked" />
+							<KeyboardAccelerator
+								Key="C"
+								Modifiers="Control"
+								IsEnabled="True"
+								Invoked="ChartCopy_Invoked" />
 						</win2d:CanvasControl.KeyboardAccelerators>
 						<!-- Context Flyout -->
 						<win2d:CanvasControl.ContextFlyout>
 							<MenuFlyout x:Name="ContentChartFlyout">
-								<MenuFlyoutItem Icon="Copy"
-												Text="Copy"
-												Click="ChartCopy_Click"
-												KeyboardAcceleratorTextOverride="Ctrl+C">
-								</MenuFlyoutItem>
 								<MenuFlyoutItem Icon="Save"
 												Text="Save as..."
 												Click="ChartSaveAs_Click"
 												KeyboardAcceleratorTextOverride="Ctrl+S">
+								</MenuFlyoutItem>
+								<MenuFlyoutItem Icon="Copy"
+												Text="Copy"
+												Click="ChartCopy_Click"
+												KeyboardAcceleratorTextOverride="Ctrl+C">
 								</MenuFlyoutItem>
 							</MenuFlyout>
 						</win2d:CanvasControl.ContextFlyout>

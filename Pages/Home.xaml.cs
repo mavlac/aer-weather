@@ -303,13 +303,6 @@ namespace Aer.Pages
 			ContentChart.ReleasePointerCapture(e.Pointer);
 		}
 
-		private async void ChartCopy_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-		{
-			args.Handled = true;
-			
-			await CopyChartAsync();
-		}
-
 		private async void ChartSaveAs_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
 		{
 			args.Handled = true;
@@ -317,14 +310,21 @@ namespace Aer.Pages
 			await SaveChartAsAsync();
 		}
 
-		private async void ChartCopy_Click(object sender, RoutedEventArgs e)
+		private async void ChartCopy_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
 		{
+			args.Handled = true;
+			
 			await CopyChartAsync();
 		}
 
 		private async void ChartSaveAs_Click(object sender, RoutedEventArgs e)
 		{
 			await SaveChartAsAsync();
+		}
+
+		private async void ChartCopy_Click(object sender, RoutedEventArgs e)
+		{
+			await CopyChartAsync();
 		}
 
 		private CanvasRenderTarget CreateChartImage()
