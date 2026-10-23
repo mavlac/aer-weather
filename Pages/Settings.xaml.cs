@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Storage;
@@ -279,36 +280,50 @@ namespace Aer.Pages
 			this.Bindings.Update();
 		}
 
-		private void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs e)
+		private async void ClearLocalSettingsButton_Click(object sender, RoutedEventArgs _)
 		{
-			var localSettings = ApplicationData.Current.LocalSettings;
+			var senderButton = (HyperlinkButton)sender;
+			senderButton.IsEnabled = false;
 
-			// 1. Clear all local settings
-			// Clear all root-level key/value pairs
-			localSettings.Values.Clear();
-			// Delete all sub-containers, if any
-			var containersToRemove = localSettings.Containers.Keys.ToList(); // copy keys to avoid modifying collection while iterating
-			foreach (var containerName in containersToRemove)
+			try
 			{
-				localSettings.DeleteContainer(containerName);
+				// 1. Clear all local settings
+				var localSettings = ApplicationData.Current.LocalSettings;
+				// Clear all root-level key/value pairs
+				localSettings.Values.Clear();
+				// Delete all sub-containers, if any
+				var containersToRemove = localSettings.Containers.Keys.ToList(); // copy keys to avoid modifying collection while iterating
+				foreach (var containerName in containersToRemove)
+				{
+					localSettings.DeleteContainer(containerName);
+				}
+
+				// 2. Delete app storage file (currently unused)
+				AppStorage.Delete();
+
+				// 3. Delete temporary files
+				var tempFilesToRemove = await ApplicationData.Current.TemporaryFolder.GetItemsAsync();
+				foreach (var tempFile in tempFilesToRemove)
+					await tempFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+
+				// 4. Reset location and delete cache data
+				LocationManager.ClearRecents();
+				LocationManager.Load(); // Will reset to default
+				WeatherDataCache.ResetCache();
+
+				// 5. Reload default preferences
+				Preferences.Load();
+
+				// 6. Refresh UI with default values
+				UpdateDataUIControls();
+				UpdatePreferenceUIControls();
+				UpdateAboutUIControls();
+				this.Bindings.Update();
 			}
-
-			// 2. Delete app storage file
-			AppStorage.Delete();
-
-			// 3. Reset location and delete cache data
-			LocationManager.ClearRecents();
-			LocationManager.Load(); // Will reset to default
-			WeatherDataCache.ResetCache();
-
-			// 4. Reload default preferences
-			Preferences.Load();
-
-			// 5. Refresh UI with default values
-			UpdateDataUIControls();
-			UpdatePreferenceUIControls();
-			UpdateAboutUIControls();
-			this.Bindings.Update();
+			finally
+			{
+				senderButton.IsEnabled = true;
+			}
 		}
 		#endregion
 
