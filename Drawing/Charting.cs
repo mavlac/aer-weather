@@ -335,19 +335,21 @@ namespace Aer.Drawing
 				}
 				
 				double temperature = (dataMode is DataMode.Apparent) ? hourly[i].ApparentTemperature : hourly[i].Temperature;
-				int hour = hourly[i].LocalTime.Hour;
+				int dayHour = hourly[i].LocalTime.Hour;
 				if (temperature < currentExtremes.DayLow.temperature)
-					currentExtremes.DayLow = (temperature, i);
+					currentExtremes.DayLow = (temperature, i, dayHour);
 				if (temperature > currentExtremes.DayHigh.temperature)
-					currentExtremes.DayHigh = (temperature, i);
+					currentExtremes.DayHigh = (temperature, i, dayHour);
 			}
 			dayExtremes.Add(currentExtremes);
 
 			// Day Low/High labels
 			DayExtremes? previousPrintedLow = null;
 			DayExtremes? previousPrintedHigh = null;
-			foreach (var day in dayExtremes)
+			for (int i = 0; i < dayExtremes.Count; i++)
 			{
+				var day = dayExtremes[i];
+				var nextDay = (i < dayExtremes.Count - 1) ? dayExtremes[i + 1] : null;
 				float x, y;
 				string label;
 				bool isOnLeftEdge, isOnRightEdge, isVerticallyOut, isNextToPrevious;
@@ -368,7 +370,10 @@ namespace Aer.Drawing
 				isNextToPrevious =
 					previousPrintedLow != null && day.DayLow.chartHour - previousPrintedLow.DayLow.chartHour <= 3 ||
 					previousPrintedHigh != null && day.DayLow.chartHour - previousPrintedHigh.DayHigh.chartHour <= 3;
-				printLow = !isOnRightEdge && !isOnLeftEdge && !isVerticallyOut && !isNextToPrevious;
+				// This is a hacky way to avoid printing a low label on the last hour of a day when the next day has an even lower temperature (and will most likely print a low label after a day start)
+				bool isLastHourOfDay = day.DayLow.dayHour == 23;
+				bool isLastHourAndNextDayTemperatureDescendsEvenMore = isLastHourOfDay && nextDay != null && nextDay.DayLow.temperature < day.DayLow.temperature;
+				printLow = !isOnRightEdge && !isOnLeftEdge && !isVerticallyOut && !isNextToPrevious && !isLastHourOfDay;
 				if (printLow)
 					DrawTextWithOutline(ds, label, x, chart.Y(y - 12), mainColor, pageBackgroungColor, textFormatCentered);
 				
@@ -502,10 +507,14 @@ namespace Aer.Drawing
 			ds.DrawText(text, x, y, color, textFormat);
 		}
 
+		/// <summary>
+		/// Stores a minimal and maximum temperature, with a corresponding chart hour of a day.
+		/// Used for drawing daily low/high labels on the chart.
+		/// </summary>
 		private record DayExtremes
 		{
-			public (double temperature, int chartHour) DayLow = (double.PositiveInfinity, -1);
-			public (double temperature, int chartHour) DayHigh = (double.NegativeInfinity, -1);
+			public (double temperature, int chartHour, int dayHour) DayLow = (double.PositiveInfinity, -1, -1);
+			public (double temperature, int chartHour, int dayHour) DayHigh = (double.NegativeInfinity, -1, -1);
 		}
 	}
 }
